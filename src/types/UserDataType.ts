@@ -1,3 +1,5 @@
+import GroupDataType from "./GroupDataType";
+
 export interface UserDataType {
     uid: string; 
     username: string;
@@ -14,9 +16,7 @@ export interface UserDataType {
     };
     rank: number;
     globalPoints: number;
-    groups: {
-      [quizId: string]: string;
-    }
+    groups: GroupDataType[];
     isOwner: boolean,
     isAdmin: boolean,
     isBlocked: boolean,
