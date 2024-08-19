@@ -1,14 +1,42 @@
 import { NavLink } from "react-router-dom";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AppContext } from "../../state/app.context";
+import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../../services/auth.service";
+import { auth } from "../../config/firebase-config";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const Header = () => {
- return (
+  const { userData, setAppState } = useContext(AppContext);
+  const navigate = useNavigate();
+  const [user, loading, error] = useAuthState(auth);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+   if (!loading) {
+     setIsLoading(false);
+   }
+ }, [loading]);
+
+  const logout = async () => {
+    await logoutUser();
+    setAppState((prevState) => ({
+      ...prevState,
+      user: null,
+      userData: null
+    }));
+    navigate('/login');
+  };
+
+  return (
     <>
     <NavLink to="/">HOME</NavLink> <br />
-    <NavLink to="/login" >LOGIN</NavLink> <br />
-    <NavLink to="/register" >REGISTER</NavLink> <br />
+      <NavLink to="/profile">PROFILE</NavLink> <br />
+      <button onClick={logout}>LOGOUT</button> <br />
+    {!user && !isLoading && !userData && <NavLink to="/login">LOGIN</NavLink>} <br />
+    {!user && !isLoading && !userData && <NavLink to="/register">REGISTER</NavLink>} <br />
     </>
- )
-}
+  );
+};
 
 export default Header;
