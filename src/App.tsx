@@ -10,7 +10,7 @@ import Header from './components/common/Header';
 import { getUserData } from './services/users.service';
 import { UserDataType } from './types/UserDataType';
 import Home from './pages/home/Home';
-// import CreateQuiz from './components/quizzes/CreateQuiz/CreateQuiz';
+import CreateQuiz from './components/quizzes/CreateQuiz/CreateQuiz';
 import LoadingSpinner from './components/common/loading/LoadingSpinner';
 
 
@@ -80,7 +80,7 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          {/* <Route path="/create-quiz" element={<CreateQuiz />} /> */}
+          <Route path="/create-quiz" element={<CreateQuiz />} />
         </Routes>
       </BrowserRouter>
     </AppContext.Provider>
