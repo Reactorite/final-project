@@ -10,5 +10,5 @@ export interface AppContextType {
 export const AppContext = createContext<AppContextType>({
   user: null,
   userData: null,
-  setAppState: () => {}
+  setAppState: () => { }
 });

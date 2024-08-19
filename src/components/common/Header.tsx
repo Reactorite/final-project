@@ -1,12 +1,22 @@
 import { NavLink } from "react-router-dom";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../state/app.context";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../services/auth.service";
+import { auth } from "../../config/firebase-config";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const Header = () => {
-  const { user, userData, setAppState } = useContext(AppContext);
+  const { userData, setAppState } = useContext(AppContext);
   const navigate = useNavigate();
+  const [user, loading, error] = useAuthState(auth);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+   if (!loading) {
+     setIsLoading(false);
+   }
+ }, [loading]);
 
   const logout = async () => {
     await logoutUser();
@@ -25,7 +35,9 @@ const Header = () => {
       <NavLink to="/profile" onClick={logout}>LOGOUT</NavLink> <br />
     {!user && <NavLink to="/login">LOGIN</NavLink>} <br />
     {!user && <NavLink to="/register">REGISTER</NavLink>} <br />
-    {user && user.isTeacher && <NavLink to="/create-quiz">CREATE QUIZ</NavLink>} <br />
+    {!user && !isLoading && !userData && <NavLink to="/login">LOGIN</NavLink>} <br />
+    {!user && !isLoading && !userData && <NavLink to="/register">REGISTER</NavLink>} <br />
+    {user && userData!.isTeacher && <NavLink to="/create-quiz">CREATE QUIZ</NavLink>} <br />
     </>
   );
 };

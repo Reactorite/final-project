@@ -1,0 +1,12 @@
+.progress-circle-bg {
+  fill: none;
+  stroke: #e6e6e6;
+}
+
+.progress-circle-fg {
+  fill: none;
+  stroke: #007bff; /* Blue color */
+  transition: stroke-dashoffset 0.35s;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
