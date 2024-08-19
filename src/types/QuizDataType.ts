@@ -1,17 +1,21 @@
 import QuestionDataType from "./QuestionDataType";
 
-export interface QuizDataType {
-    [quizId: string]: { 
+export default interface QuizDataType {
     title: string;
     category: string;
     isOpen: boolean;
     isPublic: boolean;
     isOngoing: boolean;
-    questions: QuestionDataType[];
-    scores: string;
+    questions: {
+        [questID: string]: QuestionDataType;
+    }
+    scores: {
+        [uid: string]: number;
+    }
     creator: string;
     duration: number;
     totalPoints: number;
-    groups: string[];
-  };
+    groups: {
+        [groupName: string]: boolean;
+    }
 };

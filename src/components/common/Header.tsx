@@ -37,7 +37,7 @@ const Header = () => {
     {!user && <NavLink to="/register">REGISTER</NavLink>} <br />
     {!user && !isLoading && !userData && <NavLink to="/login">LOGIN</NavLink>} <br />
     {!user && !isLoading && !userData && <NavLink to="/register">REGISTER</NavLink>} <br />
-    {user && userData!.isTeacher && <NavLink to="/create-quiz">CREATE QUIZ</NavLink>} <br />
+    {/* {user && userData!.isTeacher && <NavLink to="/create-quiz">CREATE QUIZ</NavLink>} <br /> */}
     </>
   );
 };

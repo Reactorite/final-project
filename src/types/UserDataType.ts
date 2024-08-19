@@ -16,7 +16,9 @@ export interface UserDataType {
     };
     rank: number;
     globalPoints: number;
-    groups: GroupDataType[];
+    groups: {
+      [groupId: string]: GroupDataType;
+    };
     isOwner: boolean,
     isAdmin: boolean,
     isBlocked: boolean,
