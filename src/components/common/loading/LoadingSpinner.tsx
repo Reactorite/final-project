@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
-import './LoadingSpinner.css'; // Import the custom CSS file for SVG styling
+import 'bootstrap/dist/css/bootstrap.min.css'; 
+import './LoadingSpinner.css'; 
 
 export default function LoadingSpinner() {
   const [progress, setProgress] = useState(0);

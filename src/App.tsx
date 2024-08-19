@@ -51,6 +51,8 @@ function App() {
         isAdmin: false,
         isBlocked: false,
         isOwner: false,
+        isTeacher: false,
+        isStudent: false
       }));
     }
   }, [user]);
