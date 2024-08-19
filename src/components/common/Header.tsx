@@ -30,13 +30,13 @@ const Header = () => {
 
   return (
     <>
-    <NavLink to="/">HOME</NavLink> <br />
-      <NavLink to="/profile">PROFILE</NavLink> <br />
-      <NavLink to="/profile" onClick={logout}>LOGOUT</NavLink> <br />
-    {!user && <NavLink to="/login">LOGIN</NavLink>} <br />
-    {!user && <NavLink to="/register">REGISTER</NavLink>} <br />
-    {!user && !isLoading && !userData && <NavLink to="/login">LOGIN</NavLink>} <br />
-    {!user && !isLoading && !userData && <NavLink to="/register">REGISTER</NavLink>} <br />
+    <NavLink to="/">HOME</NavLink>
+    {user && userData && <NavLink to="/profile">PROFILE</NavLink>} 
+    {user && userData && <NavLink to="/profile" onClick={logout}>LOGOUT</NavLink>}
+    {/* {!user && <NavLink to="/login">LOGIN</NavLink>} <br />
+    {!user && <NavLink to="/register">REGISTER</NavLink>} <br /> */}
+    {!user && !isLoading && !userData && <NavLink to="/login">LOGIN</NavLink>} 
+    {!user && !isLoading && !userData && <NavLink to="/register">REGISTER</NavLink>} 
     {/* {user && userData!.isTeacher && <NavLink to="/create-quiz">CREATE QUIZ</NavLink>} <br /> */}
     </>
   );
