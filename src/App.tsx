@@ -12,6 +12,7 @@ import { UserDataType } from './types/UserDataType';
 import Home from './pages/home/Home';
 import CreateQuiz from './components/quizzes/CreateQuiz/CreateQuiz';
 import LoadingSpinner from './components/common/loading/LoadingSpinner';
+import './App.css'; // Import the global styles
 
 
 function App() {

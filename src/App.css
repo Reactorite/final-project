@@ -1,0 +1,15 @@
+/* Ensure this style is applied globally */
+html, body, #root {
+    height: 100%; /* Ensure full height */
+    margin: 0; /* Remove default margins */
+  }
+  
+  .app-container {
+    display: flex;
+    flex-direction: column; /* Align children vertically */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    text-align: center; /* Center text within the container */
+    height: 100vh; /* Full viewport height */
+  }
+  
