@@ -1,14 +1,12 @@
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import { db } from "../../../config/firebase-config";
 import { ref, set } from "firebase/database";
 import QuizDataType from "../../../types/QuizDataType";
 import QuestionDataType from "../../../types/QuestionDataType";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../../../config/firebase-config";
+import './CreateQuiz.css'; // Import the CSS file
 
 export default function CreateQuiz() {
-  const [user] = useAuthState(auth);
   const [quiz, setQuiz] = useState<QuizDataType>({
     title: '',
     category: '',
@@ -17,7 +15,7 @@ export default function CreateQuiz() {
     isOngoing: true,
     questions: {},
     scores: {},
-    creator: user?.uid || '', // Set creator field to current user's UID
+    creator: '',
     duration: 0,
     totalPoints: 0,
     groups: {}
@@ -26,17 +24,17 @@ export default function CreateQuiz() {
   const [showQuestionForm, setShowQuestionForm] = useState(false);
   const [question, setQuestion] = useState('');
   const [numAnswers, setNumAnswers] = useState(0);
-  const [answers, setAnswers] = useState<{ [key: string]: { text: string; isCorrect: boolean } }>({});
+  const [answers, setAnswers] = useState<{ [answer: string]: boolean }>({});
   const [questions, setQuestions] = useState<QuestionDataType[]>([]);
-  const [showCreateQuizButton, setShowCreateQuizButton] = useState(false);
+  const [totalPoints, setTotalPoints] = useState(0);
 
   const handleCreateQuestion = () => {
     setShowQuestionForm(true);
   };
 
   const addQuestionToQuiz = () => {
-    if (!question || numAnswers <= 0 || Object.keys(answers).length < numAnswers) {
-      alert("Please enter a question, the number of answers, and fill in all answer fields.");
+    if (!question || numAnswers <= 0) {
+      alert("Please enter a question and the number of answers.");
       return;
     }
 
@@ -44,10 +42,8 @@ export default function CreateQuiz() {
     const newQuestionData: QuestionDataType = {
       questID,
       question,
-      answers: Object.fromEntries(
-        Object.entries(answers).map(([key, value]) => [value.text, value.isCorrect])
-      ),
-      points: 0 // Default points, you might want to include a points input
+      answers,
+      points: 0 // Default points
     };
 
     // Add new question to the quiz state
@@ -62,224 +58,154 @@ export default function CreateQuiz() {
     // Add new question to the local list of questions for rendering
     setQuestions(prevQuestions => [...prevQuestions, newQuestionData]);
 
-    // Show Create Quiz button if it's the first question added
-    if (questions.length === 0) {
-      setShowCreateQuizButton(true);
-    }
-
     // Reset the form fields
     setQuestion('');
     setAnswers({});
     setNumAnswers(0);
     setShowQuestionForm(false); // Hide the form after adding the question
+    calculateTotalPoints();
   };
 
-  const handleAnswerChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
-    const answerKey = `Answer ${index + 1}`;
-    setAnswers(prevAnswers => ({
-      ...prevAnswers,
-      [answerKey]: { ...prevAnswers[answerKey], text: e.target.value || '' }
-    }));
+  const handleAnswerChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const answer = e.target.value;
+    const updatedAnswers = { ...answers, [answer]: answers[answer] || false };
+    setAnswers(updatedAnswers);
   };
 
-  const handleAnswerSelectChange = (index: number, e: ChangeEvent<HTMLSelectElement>) => {
-    const answerKey = `Answer ${index + 1}`;
-    setAnswers(prevAnswers => ({
-      ...prevAnswers,
-      [answerKey]: { ...prevAnswers[answerKey], isCorrect: e.target.value === 'true' }
-    }));
+  const handleAnswerSelectChange = (e: React.ChangeEvent<HTMLSelectElement>, answer: string) => {
+    const updatedAnswers = { ...answers, [answer]: e.target.value === 'true' };
+    setAnswers(updatedAnswers);
   };
 
-  const handleNumAnswersChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleNumAnswersChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNumAnswers(parseInt(e.target.value, 10));
   };
 
-  const handleNumAnswersSubmit = (e: FormEvent) => {
+  const handleNumAnswersSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Ensure answers state is correctly initialized for the number of answers
     setAnswers(prevAnswers => {
       const updatedAnswers = { ...prevAnswers };
       for (let i = 0; i < numAnswers; i++) {
-        const answerKey = `Answer ${i + 1}`;
-        if (!updatedAnswers[answerKey]) {
-          updatedAnswers[answerKey] = { text: '', isCorrect: false };
+        if (!Object.keys(updatedAnswers).some(key => key.startsWith(`Answer ${i + 1}`))) {
+          updatedAnswers[`Answer ${i + 1}`] = false; // Default to false
         }
       }
       return updatedAnswers;
     });
   };
 
-  const handleDurationChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setQuiz(prev => ({
-      ...prev,
-      duration: parseInt(e.target.value, 10) || 0
-    }));
-  };
-
-  const handleDropdownChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setQuiz(prev => ({
-      ...prev,
-      [name]: value === 'true'
-    }));
-  };
-
   const saveQuizToDB = async () => {
-    // Ensure all answers are properly initialized
-    const sanitizedQuiz = {
-      ...quiz,
-      questions: Object.fromEntries(
-        Object.entries(quiz.questions).map(([questID, questionData]) => [
-          questID,
-          {
-            ...questionData,
-            answers: Object.fromEntries(
-              Object.entries(questionData.answers).map(([answer, isCorrect]) => [answer, isCorrect || false])
-            )
-          }
-        ])
-      )
-    };
-
     const quizID = uuidv4(); // Generate a unique quiz ID
     const quizRef = ref(db, `quizzes/${quizID}`);
-    await set(quizRef, sanitizedQuiz);
+    await set(quizRef, quiz);
     alert("Quiz created successfully!");
   };
 
+  const calculateTotalPoints = () => {
+    const total = questions.reduce((sum, question) => sum + (question.points || 0), 0);
+    setTotalPoints(total);
+  };
+
   return (
-    <>
+    <div className="quiz-container">
       <h1>Create iQuiz</h1>
-      <label htmlFor="title">Title: </label>
-      <input
-        value={quiz.title}
-        onChange={(e) => setQuiz({ ...quiz, title: e.target.value })}
-        type="text"
-        name="title"
-        id="title"
-      />
-      <br />
 
-      <label htmlFor="category">Category: </label>
-      <input
-        value={quiz.category}
-        onChange={(e) => setQuiz({ ...quiz, category: e.target.value })}
-        type="text"
-        name="category"
-        id="category"
-      />
-      <br />
+      <div className="form-group">
+        <label htmlFor="title">Title: </label>
+        <input value={quiz.title} onChange={(e) => setQuiz({ ...quiz, title: e.target.value })} type="text" name="title" id="title" />
+      </div>
 
-      <label htmlFor="duration">Duration (minutes): </label>
-      <input
-        type="number"
-        value={quiz.duration}
-        onChange={handleDurationChange}
-        min="0"
-      />
-      <br />
+      <div className="form-group">
+        <label htmlFor="category">Category: </label>
+        <input value={quiz.category} onChange={(e) => setQuiz({ ...quiz, category: e.target.value })} type="text" name="category" id="category" />
+      </div>
 
-      <label htmlFor="isPublic">Public: </label>
-      <select
-        name="isPublic"
-        value={quiz.isPublic.toString()}
-        onChange={handleDropdownChange}
-      >
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-      <br />
+      <div className="form-group">
+        <label htmlFor="isOpen">Is the quiz open?: </label>
+        <select value={quiz.isOpen ? 'true' : 'false'} onChange={(e) => setQuiz({ ...quiz, isOpen: e.target.value === 'true' })}>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
 
-      <label htmlFor="isOpen">Open: </label>
-      <select
-        name="isOpen"
-        value={quiz.isOpen.toString()}
-        onChange={handleDropdownChange}
-      >
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-      <br />
+      <div className="form-group">
+        <label htmlFor="isPublic">Is the quiz public?: </label>
+        <select value={quiz.isPublic ? 'true' : 'false'} onChange={(e) => setQuiz({ ...quiz, isPublic: e.target.value === 'true' })}>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
 
-      <label htmlFor="isOngoing">Ongoing: </label>
-      <select
-        name="isOngoing"
-        value={quiz.isOngoing.toString()}
-        onChange={handleDropdownChange}
-      >
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-      <br />
+      <div className="form-group">
+        <label htmlFor="isOngoing">Is the quiz ongoing?: </label>
+        <select value={quiz.isOngoing ? 'true' : 'false'} onChange={(e) => setQuiz({ ...quiz, isOngoing: e.target.value === 'true' })}>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </div>
 
-      {/* Button to show question form */}
-      {!showQuestionForm && (
-        <button onClick={handleCreateQuestion}>Create Question</button>
-      )}
+      <div className="form-group">
+        <label htmlFor="duration">Duration (minutes): </label>
+        <input
+          type="number"
+          value={quiz.duration}
+          onChange={(e) => setQuiz({ ...quiz, duration: parseInt(e.target.value, 10) })}
+          min="1"
+        />
+      </div>
 
-      {/* Show question form if showQuestionForm is true */}
+      <div className="form-group">
+        <button onClick={handleCreateQuestion} disabled={showQuestionForm}>Create Question</button>
+      </div>
+
       {showQuestionForm && (
         <>
-          <br />
-          <label htmlFor="question">Enter Question: </label>
-          <input
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            type="text"
-            name="question"
-            id="question"
-          />
-          <br />
-
           <form onSubmit={handleNumAnswersSubmit}>
-            <label htmlFor="numAnswers">Number of answers: </label>
-            <input
-              type="number"
-              value={numAnswers}
-              onChange={handleNumAnswersChange}
-              min="1"
-            />
-            <br />
+            <div className="form-group">
+              <label htmlFor="question">Enter Question: </label>
+              <input value={question} onChange={(e) => setQuestion(e.target.value)} type="text" name="question" id="question" />
+            </div>
 
-            {/* Render input fields for answers */}
-            {Array.from({ length: numAnswers }, (_, index) => {
-              const answerKey = `Answer ${index + 1}`;
-              return (
-                <div key={index}>
-                  <label htmlFor={`answer${index + 1}`}>Answer {index + 1}:</label>
-                  <input
-                    type="text"
-                    id={`answer${index + 1}`}
-                    value={answers[answerKey]?.text || ''}
-                    onChange={(e) => handleAnswerChange(index, e)}
-                  />
-                  <label>
-                    Correct:
+            <div className="form-group">
+              <label htmlFor="numAnswers">Number of answers: </label>
+              <input type="number" value={numAnswers} onChange={handleNumAnswersChange} min="1" />
+            </div>
+
+            <div className="form-group">
+              {Array.from({ length: numAnswers }, (_, index) => {
+                const answerKey = `Answer ${index + 1}`;
+                return (
+                  <div key={index} className="answer-option">
+                    <input
+                      type="text"
+                      placeholder={`Answer ${index + 1}`}
+                      onChange={(e) => handleAnswerChange(e, index)}
+                    />
                     <select
-                      value={answers[answerKey]?.isCorrect ? 'true' : 'false'}
-                      onChange={(e) => handleAnswerSelectChange(index, e)}
+                      value={answers[answerKey] ? 'true' : 'false'}
+                      onChange={(e) => handleAnswerSelectChange(e, answerKey)}
                     >
                       <option value="false">No</option>
                       <option value="true">Yes</option>
                     </select>
-                  </label>
-                </div>
-              );
-            })}
-            <br />
+                  </div>
+                );
+              })}
+            </div>
 
-            <button type="button" onClick={addQuestionToQuiz}>Add Question</button>
+            <div className="form-group">
+              <button type="button" onClick={addQuestionToQuiz}>Add Question</button>
+            </div>
           </form>
         </>
       )}
 
-      {/* Render added questions */}
-      <div>
+      <div className="questions-list">
         <h2>Questions:</h2>
         {questions.map(q => (
-          <div key={q.questID}>
+          <div key={q.questID} className="question-item">
             <p>Question: {q.question}</p>
-            <ul>
+            <ul className="answer-options">
               {Object.entries(q.answers).map(([answer, isCorrect], index) => (
                 <li key={index}>{answer} - {isCorrect ? 'Correct' : 'Incorrect'}</li>
               ))}
@@ -288,13 +214,12 @@ export default function CreateQuiz() {
         ))}
       </div>
 
-      {/* Show Create Quiz button only if at least 1 question is added */}
-      {showCreateQuizButton && (
-        <div>
-          <br />
+      <div className="form-group">
+        <p>Total Points: {totalPoints}</p>
+        {questions.length >= 1 && (
           <button onClick={saveQuizToDB}>Create Quiz</button>
-        </div>
-      )}
-    </>
+        )}
+      </div>
+    </div>
   );
 }

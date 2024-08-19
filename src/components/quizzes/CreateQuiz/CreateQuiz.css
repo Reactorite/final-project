@@ -1,0 +1,85 @@
+/* Container for the entire quiz creation form */
+.quiz-container {
+  max-width: 800px; /* Set a max width for the form */
+  margin: 0 auto; /* Center the form horizontally */
+  padding: 20px; /* Add padding around the form */
+  border: 1px solid #ddd; /* Add a border around the form */
+  border-radius: 8px; /* Rounded corners for the form */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  background-color: #f9f9f9; /* Light background color */
+}
+
+/* Style for form elements like labels and inputs */
+.form-group {
+  margin-bottom: 15px; /* Space between form groups */
+  display: flex; /* Use flexbox to align items horizontally */
+  align-items: center; /* Center items vertically */
+}
+
+/* Style for labels */
+.form-group label {
+  flex: 0 0 200px; /* Fixed width for labels */
+  font-weight: bold; /* Bold text for labels */
+  margin-right: 20px; /* Space between label and input */
+  text-align: right; /* Align label text to the right */
+}
+
+/* Common style for text inputs, number inputs, and select dropdowns */
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+  flex: 1; /* Allow inputs and selects to take up remaining space */
+  padding: 8px; /* Add padding inside inputs */
+  border: 1px solid #ccc; /* Border color for inputs */
+  border-radius: 4px; /* Rounded corners for inputs */
+  box-sizing: border-box; /* Include padding and border in the width */
+  width: 100%; /* Ensure inputs take up full width of their container */
+}
+
+/* Style for buttons */
+.form-group button {
+  padding: 10px 20px; /* Padding inside buttons */
+  border: none; /* Remove default border */
+  border-radius: 4px; /* Rounded corners for buttons */
+  background-color: #007bff; /* Button background color */
+  color: white; /* Button text color */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 16px; /* Font size for button text */
+}
+
+/* Button hover effect */
+.form-group button:hover {
+  background-color: #0056b3; /* Darker background color on hover */
+}
+
+/* Style for the questions list */
+.questions-list {
+  margin-top: 20px; /* Space above the questions list */
+}
+
+/* Style for individual questions */
+.question-item {
+  margin-bottom: 15px; /* Space between questions */
+  padding: 10px; /* Padding inside question item */
+  border: 1px solid #ddd; /* Border around question item */
+  border-radius: 4px; /* Rounded corners for question item */
+  background-color: #fff; /* Background color for question item */
+}
+
+/* Style for answer options container */
+.answer-options {
+  margin-top: 10px; /* Space above answer options */
+}
+
+/* Style for each answer option */
+.answer-option {
+  margin-bottom: 10px; /* Space between answer options */
+  display: flex; /* Use flexbox to arrange items horizontally */
+  align-items: center; /* Center items vertically */
+}
+
+/* Style for each answer input and select */
+.answer-option input[type="text"],
+.answer-option select {
+  margin-right: 10px; /* Space between answer input and select dropdown */
+}

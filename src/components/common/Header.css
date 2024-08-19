@@ -1,0 +1,22 @@
+/* Style the header container */
+.header-container {
+    margin-top: 20px; /* Adjust this value to control the top margin */
+    padding: 10px; /* Add padding if needed */
+    display: flex;
+    justify-content: center; /* Center align the nav links horizontally */
+    gap: 20px; /* Space between the nav links */
+  }
+  
+  /* Style individual nav links */
+  .header-link {
+    text-decoration: none;
+    color: #000; /* Change color as needed */
+    font-size: 16px; /* Adjust font size */
+    font-weight: bold; /* Optional: make the text bold */
+  }
+  
+  /* Optional: Add a hover effect for links */
+  .header-link:hover {
+    color: #007bff; /* Change color on hover */
+  }
+  
