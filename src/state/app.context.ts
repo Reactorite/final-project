@@ -1,39 +1,14 @@
-import { createContext } from "react";
+import { createContext, Dispatch, SetStateAction } from 'react';
+import { UserDataType } from '../types/UserDataType'; 
 
-interface UserDataType {
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  photo: string;
-  address: string;
-  quizRank: {
-    [category: string]: {
-      [quizId: string]: number;
-    }
-  };
-  rank: number;
-  globalPoints: number;
-  groups: string[];
-}
-
-interface AppContextType {
-  user: object | null;
+export interface AppContextType {
+  user: UserDataType | null; 
   userData: UserDataType | null;
-  isOwner: boolean;
-  isAdmin: boolean;
-  isBlocked: boolean;
-  isTeacher: boolean;
-  isStudent: boolean;
+  setAppState: Dispatch<SetStateAction<AppContextType>>;
 }
 
 export const AppContext = createContext<AppContextType>({
   user: null,
   userData: null,
-  isOwner: false,
-  isAdmin: false,
-  isBlocked: false,
-  isTeacher: false,
-  isStudent: false,
+  setAppState: () => {},
 });
