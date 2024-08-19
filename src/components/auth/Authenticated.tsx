@@ -1,5 +1,5 @@
 import React, { ReactNode, useContext } from "react";
-import { AppContext } from "../state/app.context";
+import { AppContext } from "../../state/app.context";
 import { Navigate, useLocation } from "react-router";
 
 interface AuthenticatedProps {
