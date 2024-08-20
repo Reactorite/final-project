@@ -1,112 +1,100 @@
-/* Container for the entire quiz creation form */
+/* CreateQuiz.css */
 .quiz-container {
-    width: 720px; /* Set the form width to 720px */
-    margin: 0 auto;
+    max-width: 800px;
+    margin: auto;
     padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
     font-family: Arial, sans-serif;
-}
-
-/* Style for form elements like labels and inputs */
-.form-group {
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
     margin-bottom: 15px;
-    display: flex;
-    flex-direction: column; /* Align labels and inputs vertically */
-}
-
-/* Style for labels */
-.form-group label {
+  }
+  
+  .form-group label {
+    display: block;
     margin-bottom: 5px;
-    font-weight: bold;
-}
-
-/* Common style for text inputs, number inputs, and select dropdowns */
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group select {
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
     padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
     box-sizing: border-box;
-    width: 100%; /* Ensure inputs take full width of the container */
-}
-
-/* Style for buttons */
-.form-group button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    margin-top: 10px; /* Added margin for spacing */
-}
-
-/* Button hover effect */
-.form-group button:hover {
-    background-color: #0056b3;
-}
-
-/* Style for the questions list */
-.questions-list {
-    margin-top: 20px;
-}
-
-/* Style for individual questions */
-.question-item {
+  }
+  
+  .answer-options {
     margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #fff;
-}
-
-/* Style for answer options container */
-.answer-options {
-    margin-top: 10px;
-    list-style-type: none;
-    padding-left: 0;
-}
-
-/* Style for each answer option */
-.answer-option {
-    margin-bottom: 10px;
+  }
+  
+  .answer-option {
     display: flex;
     align-items: center;
-}
-
-/* Style for each answer input and select */
-.answer-option input[type="text"],
-.answer-option select {
+    margin-bottom: 10px;
+  }
+  
+  .answer-option input,
+  .answer-option select {
     margin-right: 10px;
-    flex: 1;
-}
-
-/* Style for add answer button inside answer options */
-.answer-option button {
-    padding: 5px 10px;
-    background-color: #28a745;
-    color: white;
-    border-radius: 4px;
+  }
+  
+  button {
+    padding: 10px 15px;
     border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: #fff;
     cursor: pointer;
-    font-size: 14px;
-}
-
-/* Hover effect for add answer button */
-.answer-option button:hover {
-    background-color: #218838;
-}
-
-/* Style for the total points indicator */
-.total-points {
+    font-size: 16px;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+  }
+  
+  .questions-list {
+    margin-top: 20px;
+  }
+  
+  .question-item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .question-item h4 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .question-item p {
+    margin: 5px 0;
+  }
+  
+  .question-item ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .question-item ul li {
+    margin: 5px 0;
+  }
+  
+  .total-points {
     font-size: 18px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-top: 20px;
     text-align: center;
-}
+  }
+  
