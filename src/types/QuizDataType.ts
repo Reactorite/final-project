@@ -1,4 +1,5 @@
 import QuestionDataType from "./QuestionDataType";
+import { UserDataType } from "./UserDataType";
 
 export default interface QuizDataType {
     title: string;
@@ -18,4 +19,6 @@ export default interface QuizDataType {
     groups: {
         [groupName: string]: boolean;
     }
+    members: { [uid: string]: UserDataType };
+    quizID: string;
 };

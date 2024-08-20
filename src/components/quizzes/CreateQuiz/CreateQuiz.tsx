@@ -22,6 +22,8 @@ export default function CreateQuiz() {
     duration: 0,
     totalPoints: 0,
     groups: {},
+    members: {},       // New members property
+    quizID: "",        // New quizID property
   });
 
   const [showQuestionForm, setShowQuestionForm] = useState(false);
@@ -39,16 +41,19 @@ export default function CreateQuiz() {
 
   useEffect(() => {
     if (user) {
+      const newQuizID = uuidv4(); // Generate a new quiz ID here
       setQuiz((prev) => ({
         ...prev,
         creator: user.uid,
+        quizID: prev.quizID || newQuizID, // Set quizID if it's not already set
+        members: prev.members || {}, // Ensure members is at least an empty object
       }));
     }
   }, [user]);
 
   useEffect(() => {
     const fetchExistingQuizzes = async () => {
-      const quizzesRef = ref(db, 'quizzes');
+      const quizzesRef = ref(db, "quizzes");
       const snapshot = await get(quizzesRef);
       if (snapshot.exists()) {
         setExistingQuizzes(snapshot.val());
@@ -61,11 +66,14 @@ export default function CreateQuiz() {
   const handleQuizSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedID = e.target.value;
     setSelectedQuizID(selectedID);
+  
     if (selectedID) {
-      setQuiz(existingQuizzes[selectedID]);
-      setQuestionsList(Object.values(existingQuizzes[selectedID].questions));
+      const selectedQuiz = existingQuizzes[selectedID];
+      setQuiz(selectedQuiz);
+      setQuestionsList(Object.values(selectedQuiz.questions));
       setShowQuestionForm(false); // Collapse question editor
     } else {
+      const newQuizID = uuidv4();
       setQuiz({
         title: "",
         category: "",
@@ -78,6 +86,8 @@ export default function CreateQuiz() {
         duration: 0,
         totalPoints: 0,
         groups: {},
+        members: {},       // Initialize members as an empty object
+        quizID: newQuizID, // Assign a new UUID to quizID
       });
       setQuestionsList([]);
       setShowQuestionForm(true); // Show question editor when creating a new quiz
@@ -144,7 +154,7 @@ export default function CreateQuiz() {
 
     setQuestionsList((prevQuestions) => {
       if (editingQuestionID) {
-        return prevQuestions.map(q =>
+        return prevQuestions.map((q) =>
           q.questID === editingQuestionID ? newQuestionData : q
         );
       }
@@ -195,7 +205,7 @@ export default function CreateQuiz() {
       alert("Please make sure all options are selected.");
       return;
     }
-    const quizID = uuidv4();
+    const quizID = quiz.quizID || uuidv4(); // Use existing quizID or create a new one
     const quizRef = ref(db, `quizzes/${quizID}`);
     await set(quizRef, { ...quiz, totalPoints, creator: quiz.creator });
     alert("Quiz created successfully!");
@@ -284,169 +294,123 @@ export default function CreateQuiz() {
       </div>
 
       <div className="form-group">
-        <label htmlFor="duration">Duration (minutes):</label>
+        <label htmlFor="duration">Duration (in minutes):</label>
         <input
-          type="number"
           value={quiz.duration}
           onChange={(e) => setQuiz({ ...quiz, duration: parseInt(e.target.value, 10) })}
+          type="number"
           id="duration"
+          placeholder="Duration"
         />
       </div>
 
       <div className="form-group">
-        <button type="button" onClick={handleCreateQuestion}>
-          Create Question
-        </button>
+        <label htmlFor="totalPoints">Total Points:</label>
+        <input
+          value={totalPoints}
+          onChange={(e) => setTotalPoints(parseInt(e.target.value, 10))}
+          type="number"
+          id="totalPoints"
+          placeholder="Total Points"
+          readOnly
+        />
       </div>
 
+      <button onClick={handleCreateQuestion}>Add New Question</button>
+
       {showQuestionForm && (
-        <form className="question-form">
+        <div className="question-form">
+          <h2>{editingQuestionID ? "Edit Question" : "New Question"}</h2>
           <div className="form-group">
             <label htmlFor="question">Question:</label>
             <input
-              type="text"
-              id="question"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Enter question"
+              type="text"
+              id="question"
+              placeholder="Enter the question"
             />
           </div>
-
           <div className="form-group">
             <label htmlFor="numAnswers">Number of Answers:</label>
             <input
-              type="number"
-              id="numAnswers"
               value={numAnswers}
               onChange={handleNumAnswersChange}
-              min="1"
+              type="number"
+              id="numAnswers"
+              placeholder="Number of answers"
             />
           </div>
-
-          <div className="answer-options">
-            {Array.from({ length: numAnswers }).map((_, index) => (
-              <div key={index} className="answer-option">
-                <input
-                  type="text"
-                  value={Object.keys(answers)[index] || ""}
-                  onChange={(e) => {
-                    const updatedAnswers = { ...answers };
-                    const currentAnswer = Object.keys(answers)[index];
-                    delete updatedAnswers[currentAnswer];
-                    updatedAnswers[e.target.value] = updatedAnswers[currentAnswer] || false;
-                    setAnswers(updatedAnswers);
-                  }}
-                />
-                <select
-                  value={Object.values(answers)[index] ? "true" : "false"}
-                  onChange={(e) => {
-                    const isCorrect = e.target.value === "true";
-                    const currentAnswer = Object.keys(answers)[index];
-                    setAnswers((prev) => ({
-                      ...prev,
-                      [currentAnswer]: isCorrect,
-                    }));
-                  }}
-                >
-                  <option value="true">Correct</option>
-                  <option value="false">Incorrect</option>
-                </select>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newAnswers = { ...answers };
-                    const answerToDelete = Object.keys(answers)[index];
-                    delete newAnswers[answerToDelete];
-                    setAnswers(newAnswers);
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-
-            <div className="form-group">
-              <label htmlFor="currentAnswer">Add Answer:</label>
-              <input
-                type="text"
-                value={currentAnswer}
-                onChange={handleAnswerChange}
-                id="currentAnswer"
-                placeholder="Enter answer"
-                disabled={Object.keys(answers).length >= numAnswers}
-              />
-              <select
-                value={currentAnswerCorrect ? "true" : "false"}
-                onChange={handleAnswerSelectChange}
-                disabled={Object.keys(answers).length >= numAnswers}
-              >
-                <option value="true">Correct</option>
-                <option value="false">Incorrect</option>
-              </select>
-              <button
-                type="button"
-                onClick={addAnswer}
-                disabled={Object.keys(answers).length >= numAnswers}
-              >
-                Add Answer
-              </button>
-            </div>
-          </div>
-
           <div className="form-group">
             <label htmlFor="points">Points:</label>
             <input
-              type="number"
-              id="points"
               value={points}
               onChange={handlePointsChange}
-              placeholder="Enter points"
+              type="number"
+              id="points"
+              placeholder="Points for this question"
             />
           </div>
-
           <div className="form-group">
-            <button
-              type="button"
-              onClick={addQuestionToQuiz}
-              disabled={!question || numAnswers <= 0}
-            >
-              {editingQuestionID ? "Update Question" : "Add Question"}
-            </button>
+            <label htmlFor="currentAnswer">Current Answer:</label>
+            <input
+              value={currentAnswer}
+              onChange={handleAnswerChange}
+              type="text"
+              id="currentAnswer"
+              placeholder="Enter an answer"
+            />
           </div>
-        </form>
-      )}
-
-      <div className="questions-list">
-        {Object.values(quiz.questions).map((q) => (
-          <div key={q.questID} className="question-item">
-            <h4>{q.question}</h4>
+          <div className="form-group">
+            <label htmlFor="currentAnswerCorrect">Is this answer correct?:</label>
+            <select
+              value={currentAnswerCorrect ? "true" : "false"}
+              onChange={handleAnswerSelectChange}
+            >
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+          <button onClick={addAnswer}>Add Answer</button>
+          <div className="answers-list">
+            <h3>Answers:</h3>
             <ul>
-              {Object.keys(q.answers).map((answer, index) => (
-                <li key={index}>
-                  <input
-                    type="text"
-                    value={answer}
-                    readOnly
-                  />
-                  {q.answers[answer] ? "(Correct)" : "(Incorrect)"}
+              {Object.entries(answers).map(([ans, isCorrect]) => (
+                <li key={ans}>
+                  {ans} - {isCorrect ? "Correct" : "Incorrect"}
                 </li>
               ))}
             </ul>
-            <p>Points: {q.points}</p>
-            <button onClick={() => handleEditQuestion(q.questID)}>
-              Edit Question
-            </button>
+          </div>
+          <button onClick={addQuestionToQuiz}>
+            {editingQuestionID ? "Save Question" : "Add Question"}
+          </button>
+        </div>
+      )}
+
+      <div className="questions-list">
+        <h2>Questions</h2>
+        {questionsList.map((q) => (
+          <div key={q.questID} className="question-item">
+            <p>{q.question}</p>
+            <ul>
+              {Object.entries(q.answers).map(([ans, isCorrect]) => (
+                <li key={ans}>
+                  {ans} - {isCorrect ? "Correct" : "Incorrect"}
+                </li>
+              ))}
+            </ul>
+            <button onClick={() => handleEditQuestion(q.questID)}>Edit</button>
           </div>
         ))}
       </div>
 
-      <div className="total-points">Total Points: {totalPoints}</div>
-
-      <div className="form-group">
-        <button onClick={saveQuizToDB} disabled={!hasValidQuestions}>
-          Save Quiz
-        </button>
-      </div>
+      <button
+        onClick={saveQuizToDB}
+        disabled={!quiz.title || !quiz.category || !hasValidQuestions}
+      >
+        Save Quiz
+      </button>
     </div>
   );
 }
