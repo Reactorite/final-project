@@ -27,3 +27,9 @@ export const blockUser = async (username: string) => {
 export const unblockUser = async (username: string) => {
   await update(ref(db, `users/${username}`), { isBlocked: false });
 };
+
+export const getStudentUsers = async (): Promise<UserDataType[] | null> => {
+  const snapshot = await get(ref(db, 'users'));
+  const allUsers = snapshot.val() as Record<string, UserDataType> | null;
+  return allUsers ? Object.values(allUsers).filter(user => user.isStudent) : null;
+}
