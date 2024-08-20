@@ -17,7 +17,7 @@ export default function Register() {
     photo: '',
     address: '',
     quizRank: {},
-    rank: 0,
+    rank: 'Novice',
     globalPoints: 0,
     groups: {},
     isOwner: false,
@@ -89,7 +89,7 @@ export default function Register() {
       await createUserHandle(userData);
   
       setAppState({
-        user: userData,
+        user: credential.user,
         userData: userData,
         setAppState
       });

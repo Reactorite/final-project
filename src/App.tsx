@@ -12,7 +12,9 @@ import { UserDataType } from './types/UserDataType';
 import Home from './pages/home/Home';
 import CreateQuiz from './components/quizzes/CreateQuiz/CreateQuiz';
 import LoadingSpinner from './components/common/loading/LoadingSpinner';
-import './App.css'; // Import the global styles
+import User from './components/user/user-profile/User';
+import AdminPanel from './components/admin/AdminPanel/AdminPanel';
+import QuizzPage from './components/quizzes/quizz-page/QuizzPage';
 
 
 function App() {
@@ -23,6 +25,13 @@ function App() {
   });
 
   const [user, loading, error] = useAuthState(auth);
+
+  if (user !== appState.user) {
+    setAppState({
+      ...appState,
+      user: user || null
+    } )
+  }
 
   useEffect(() => {
     if (user) {
@@ -49,11 +58,6 @@ function App() {
         ...prevState,
         user: null,
         userData: null,
-        isAdmin: false,
-        isBlocked: false,
-        isOwner: false,
-        isTeacher: false,
-        isStudent: false
       }));
     }
   }, [user]);
@@ -82,6 +86,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/create-quiz" element={<CreateQuiz />} />
+          <Route path='/user-profile' element={<User />} />
+          <Route path='/quizz-page' element={<QuizzPage />} />
+          <Route path='/admin-panel' element={appState.userData?.isAdmin && <AdminPanel />}></Route>
         </Routes>
       </BrowserRouter>
     </AppContext.Provider>
