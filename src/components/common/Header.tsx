@@ -10,6 +10,7 @@ import './Header.css';
 const Header = () => {
   const { userData, setAppState } = useContext(AppContext);
   const navigate = useNavigate();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [user, loading, error] = useAuthState(auth);
   const [isLoading, setIsLoading] = useState(true);
 
