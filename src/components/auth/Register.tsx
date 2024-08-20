@@ -17,7 +17,7 @@ export default function Register() {
     photo: '',
     address: '',
     quizRank: {},
-    rank: 0,
+    rank: 'Novice',
     globalPoints: 0,
     groups: {},
     isOwner: false,
