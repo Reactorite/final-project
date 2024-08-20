@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppContext, AppContextType } from './state/app.context';
@@ -13,7 +12,7 @@ import { UserDataType } from './types/UserDataType';
 import Home from './pages/home/Home';
 import CreateQuiz from './components/quizzes/CreateQuiz/CreateQuiz';
 import LoadingSpinner from './components/common/loading/LoadingSpinner';
-import './App.css'; // Import the global styles
+import User from './components/user/user-profile/User';
 
 
 function App() {
@@ -24,6 +23,13 @@ function App() {
   });
 
   const [user, loading, error] = useAuthState(auth);
+
+  if (user !== appState.user) {
+    setAppState({
+      ...appState,
+      user: user || null
+    } )
+  }
 
   useEffect(() => {
     if (user) {
@@ -83,6 +89,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/create-quiz" element={<CreateQuiz />} />
+          <Route path='/user-profile' element={<User />} />
         </Routes>
       </BrowserRouter>
     </AppContext.Provider>

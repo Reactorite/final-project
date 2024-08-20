@@ -89,7 +89,7 @@ export default function Register() {
       await createUserHandle(userData);
   
       setAppState({
-        user: userData,
+        user: credential.user,
         userData: userData,
         setAppState
       });

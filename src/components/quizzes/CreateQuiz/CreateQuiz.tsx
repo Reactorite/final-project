@@ -4,7 +4,7 @@ import { db } from "../../../config/firebase-config";
 import { ref, set } from "firebase/database";
 import QuizDataType from "../../../types/QuizDataType";
 import QuestionDataType from "../../../types/QuestionDataType";
-import './CreateQuiz.css'; // Import the CSS file
+import './CreateQuiz.css'; 
 
 export default function CreateQuiz() {
   const [quiz, setQuiz] = useState<QuizDataType>({

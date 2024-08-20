@@ -28,11 +28,11 @@ export default function Login() {
     }
 
     try {
-      const userData: UserDataType = await loginUser(user.email, user.password);
+      const credentials = await loginUser(user.email, user.password);
 
       setAppState((prevState) => ({
         ...prevState,
-        user: userData, 
+        user: credentials,
         userData: null,
       }));
 
