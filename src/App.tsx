@@ -10,7 +10,7 @@ import Header from './components/common/Header';
 import { getUserData } from './services/users.service';
 import { UserDataType } from './types/UserDataType';
 import Home from './pages/home/Home';
-import CreateQuiz from './components/quizzes/CreateQuiz/CreateQuiz';
+import CreateQuiz from './components/quizzes/create-quiz/CreateQuiz';
 import LoadingSpinner from './components/common/loading/LoadingSpinner';
 import User from './components/user/user-profile/User';
 import AdminPanel from './components/admin/AdminPanel/AdminPanel';

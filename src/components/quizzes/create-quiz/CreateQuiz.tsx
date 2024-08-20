@@ -6,9 +6,11 @@ import QuizDataType from "../../../types/QuizDataType";
 import QuestionDataType from "../../../types/QuestionDataType";
 import { AppContext } from "../../../state/app.context";
 import "./CreateQuiz.css";
+import { useNavigate } from 'react-router-dom';
 
 export default function CreateQuiz() {
   const { user } = useContext(AppContext);
+  const navigate = useNavigate();
 
   const [quiz, setQuiz] = useState<QuizDataType>({
     title: "",
@@ -209,6 +211,7 @@ export default function CreateQuiz() {
     const quizRef = ref(db, `quizzes/${quizID}`);
     await set(quizRef, { ...quiz, totalPoints, creator: quiz.creator });
     alert("Quiz created successfully!");
+    navigate(`/quizz-page`);
   };
 
   const hasValidQuestions = questionsList.some(
