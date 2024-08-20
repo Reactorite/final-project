@@ -6,29 +6,30 @@ export const registerUser = (email: string, password: string) => {
   return createUserWithEmailAndPassword(auth, email, password);
 };
 
-export const loginUser = async (email: string, password: string): Promise<UserDataType> => {
+export const loginUser = async (email: string, password: string) => {
   const userCredential = await signInWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;
+  return user;
 
-  return {
-    uid: '',
-    username: user.displayName || '',
-    email: user.email || '',
-    firstName: '',  
-    lastName: '',
-    phoneNumber: user.phoneNumber || '',
-    photo: user.photoURL || '',
-    address: '',
-    quizRank: {},
-    rank: 0,
-    globalPoints: 0,
-    groups: {},
-    isOwner: false,
-    isAdmin: false,
-    isBlocked: false,
-    isTeacher: false,
-    isStudent: false,
-  };
+  // return {
+  //   uid: '',
+  //   username: user.displayName || '',
+  //   email: user.email || '',
+  //   firstName: '',  
+  //   lastName: '',
+  //   phoneNumber: user.phoneNumber || '',
+  //   photo: user.photoURL || '',
+  //   address: '',
+  //   quizRank: {},
+  //   rank: 0,
+  //   globalPoints: 0,
+  //   groups: {},
+  //   isOwner: false,
+  //   isAdmin: false,
+  //   isBlocked: false,
+  //   isTeacher: false,
+  //   isStudent: false,
+  // };
 };
 
 export const logoutUser = () => {
