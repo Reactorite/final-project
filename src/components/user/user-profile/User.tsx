@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { Form, Button, Container, Row, Col, Card, Spinner } from 'react-bootstrap';
 import { UserDataType } from '../../../types/UserDataType';
 import { AppContext } from '../../../state/app.context';
-import { blockUser, unblockUser, updateUserProfile } from '../../../services/users.service';
+import { updateUserProfile } from '../../../services/users.service';
 
 const User: React.FC = () => {
   const { user, userData: realUserData, setAppState } = useContext(AppContext);
@@ -33,79 +34,89 @@ const User: React.FC = () => {
     }
   };
 
-  const handleBlockUser = async () => {
-    if (userData && userData.isAdmin) {
-      await blockUser(userData.username);
-      setAppState((prevState) => ({
-        ...prevState,
-        userData: { ...userData, isBlocked: true },
-      }));
-    }
-  };
-
-  const handleUnblockUser = async () => {
-    if (userData && userData.isAdmin) {
-      await unblockUser(userData.username);
-      setAppState((prevState) => ({
-        ...prevState,
-        userData: { ...userData, isBlocked: false },
-      }));
-    }
-  };
-
-  if (!userData) return <div>Loading...</div>;
+  if (!userData) return <Spinner animation="border" role="status"><span className="sr-only">Loading...</span></Spinner>;
 
   return (
-    <div className="user-profile">
-      <h2>Firstname: {userData.firstName} <br /> Lastname: {userData.lastName}</h2>
-      <p>Username: {userData.username}</p>
-      <p>Email: {userData.email}</p>
-      <p>Phone: {userData.phoneNumber}</p>
-      <p>Address: {userData.address}</p>
-      <p>Role: {userData.isTeacher ? 'Educator' : userData.isStudent ? 'Student' : 'User'}</p>
-      <p>Status: {userData.isBlocked ? 'Blocked' : 'Active'}</p>
+    <Container className="mt-4">
+      <Row className="justify-content-center">
+        <Col md={8}>
+          <Card>
+            <Card.Body>
+              <Card.Title>{userData.firstName} {userData.lastName}</Card.Title>
+              <Card.Text>
+                <strong>Username:</strong> {userData.username} <br />
+                <strong>Email:</strong> {userData.email} <br />
+                <strong>Phone:</strong> {userData.phoneNumber} <br />
+                <strong>Address:</strong> {userData.address} <br />
+                <strong>Role:</strong> {userData.isTeacher ? 'Educator' : 'Student'} <br />
+                <strong>Rank:</strong> {userData.rank} <br />
+                <strong>Global Points:</strong> {userData.globalPoints}
+              </Card.Text>
 
-      {editing ? (
-        <div>
-          <input
-            type="text"
-            name="firstName"
-            value={userData.firstName}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="lastName"
-            value={userData.lastName}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="phoneNumber"
-            value={userData.phoneNumber}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="address"
-            value={userData.address}
-            onChange={handleInputChange}
-          />
-          <button onClick={handleProfileUpdate}>Save</button>
-          <button onClick={() => setEditing(false)}>Cancel</button>
-        </div>
-      ) : (
-        <button onClick={() => setEditing(true)}>Edit Profile</button>
-      )}
-
-      {userData.isAdmin && (
-        <div>
-          <button onClick={userData.isBlocked ? handleUnblockUser : handleBlockUser}>
-            {userData.isBlocked ? 'Unblock User' : 'Block User'}
-          </button>
-        </div>
-      )}
-    </div>
+              {editing ? (
+                <Form>
+                  <Form.Group controlId="formFirstName">
+                    <Form.Label>First Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="firstName"
+                      value={userData.firstName}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="formLastName">
+                    <Form.Label>Last Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="lastName"
+                      value={userData.lastName}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="formPhoneNumber">
+                    <Form.Label>Phone Number</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="phoneNumber"
+                      value={userData.phoneNumber}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="formAddress">
+                    <Form.Label>Address</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="address"
+                      value={userData.address}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                  <Button
+                    variant="primary"
+                    onClick={handleProfileUpdate}
+                    className="mr-2"
+                    style={{ marginTop: '10px' }} 
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setEditing(false)}
+                    style={{ marginTop: '10px', marginLeft: '5px'}} 
+                  >
+                    Cancel
+                  </Button>
+                </Form>
+              ) : (
+                <Button variant="primary" onClick={() => setEditing(true)} className="mr-2">
+                  Edit Profile
+                </Button>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

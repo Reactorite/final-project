@@ -13,6 +13,7 @@ import Home from './pages/home/Home';
 import CreateQuiz from './components/quizzes/CreateQuiz/CreateQuiz';
 import LoadingSpinner from './components/common/loading/LoadingSpinner';
 import User from './components/user/user-profile/User';
+import AdminPanel from './components/admin/AdminPanel/AdminPanel';
 import QuizzPage from './components/quizzes/quizz-page/QuizzPage';
 
 
@@ -57,11 +58,6 @@ function App() {
         ...prevState,
         user: null,
         userData: null,
-        isAdmin: false,
-        isBlocked: false,
-        isOwner: false,
-        isTeacher: false,
-        isStudent: false
       }));
     }
   }, [user]);
@@ -92,6 +88,7 @@ function App() {
           <Route path="/create-quiz" element={<CreateQuiz />} />
           <Route path='/user-profile' element={<User />} />
           <Route path='/quizz-page' element={<QuizzPage />} />
+          <Route path='/admin-panel' element={appState.userData?.isAdmin && <AdminPanel />}></Route>
         </Routes>
       </BrowserRouter>
     </AppContext.Provider>

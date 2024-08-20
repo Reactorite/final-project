@@ -16,16 +16,37 @@ export const getUserData = async (uid: string): Promise<Record<string, UserDataT
   return snapshot.val() as Record<string, UserDataType> | null;
 };
 
+export const getAllUsers = async (): Promise<UserDataType[]> => {
+  const usersRef = ref(db, 'users');
+  const snapshot = await get(usersRef);
+
+  if (snapshot.exists()) {
+    const users: UserDataType[] = [];
+    snapshot.forEach((childSnapshot) => {
+      users.push({
+        uid: childSnapshot.key,
+        ...childSnapshot.val(),
+      } as UserDataType);
+    });
+    return users;
+  } else {
+    return [];
+  }
+};
+
+
 export const updateUserProfile = async (userData: UserDataType) => {
   await update(ref(db, `users/${userData.username}`), userData);
 };
 
 export const blockUser = async (username: string) => {
-  await update(ref(db, `users/${username}`), { isBlocked: true });
+  const userRef = ref(db, `users/${username}`);
+  await update(userRef, { isBlocked: true });
 };
 
 export const unblockUser = async (username: string) => {
-  await update(ref(db, `users/${username}`), { isBlocked: false });
+  const userRef = ref(db, `users/${username}`);
+  await update(userRef, { isBlocked: false });
 };
 
 export const getStudentUsers = async (): Promise<UserDataType[] | null> => {
