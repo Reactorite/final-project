@@ -6,3 +6,11 @@
   padding: 10px; /* Optional: Add some padding for better appearance */
   border-bottom: 1px solid #ddd; /* Optional: Add a bottom border for separation */
 }
+
+/* .quiz-page-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  max-width: 100%;
+  padding: 20px;
+} */
