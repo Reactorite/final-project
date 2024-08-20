@@ -1,0 +1,8 @@
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: rgb(255, 255, 255); /* Ensure the background color matches the card */
+  z-index: 1; /* Ensure it stays above other content */
+  padding: 10px; /* Optional: Add some padding for better appearance */
+  border-bottom: 1px solid #ddd; /* Optional: Add a bottom border for separation */
+}
