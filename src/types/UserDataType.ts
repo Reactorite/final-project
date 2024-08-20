@@ -14,7 +14,7 @@ export interface UserDataType {
         [quizId: string]: number;
       }
     };
-    rank: number;
+    rank: string;
     globalPoints: number;
     groups: {
       [groupId: string]: GroupDataType;

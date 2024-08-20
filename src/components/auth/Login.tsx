@@ -2,7 +2,6 @@ import { useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/auth.service';
 import { AppContext } from '../../state/app.context';
-import { UserDataType } from '../../types/UserDataType'; 
 import React from 'react';
 
 export default function Login() {
@@ -28,18 +27,18 @@ export default function Login() {
     }
 
     try {
-      const credentials = await loginUser(user.email, user.password);
+      const { firebaseUser, userData } = await loginUser(user.email, user.password);
 
       setAppState((prevState) => ({
         ...prevState,
-        user: credentials,
-        userData: null,
+        user: firebaseUser, 
+        userData: userData, 
       }));
 
       navigate(location.state?.from.pathname ?? '/');
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message);
+        alert(error.message);  
       } else {
         alert('An unexpected error occurred.');
       }
