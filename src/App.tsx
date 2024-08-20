@@ -13,6 +13,7 @@ import Home from './pages/home/Home';
 import CreateQuiz from './components/quizzes/CreateQuiz/CreateQuiz';
 import LoadingSpinner from './components/common/loading/LoadingSpinner';
 import User from './components/user/user-profile/User';
+import QuizzPage from './components/quizzes/quizz-page/QuizzPage';
 
 
 function App() {
@@ -90,6 +91,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/create-quiz" element={<CreateQuiz />} />
           <Route path='/user-profile' element={<User />} />
+          <Route path='/quizz-page' element={<QuizzPage />} />
         </Routes>
       </BrowserRouter>
     </AppContext.Provider>
