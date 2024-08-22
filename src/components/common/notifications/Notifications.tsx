@@ -47,7 +47,7 @@ const Notification: React.FC<NotificationProps> = ({ userId }) => {
     <NavDropdown
       title={
         <>
-          Notifications{" "}
+          NOTIFICATIONS{" "}
           {notifications.length > 0 && notifications.some((notif) => notif.status === "unread") && (
             <Badge bg="danger">
               {notifications.filter((notif) => notif.status === "unread").length}
