@@ -4,10 +4,10 @@ import { getStudentUsers } from "../../../services/users.service";
 import { UserDataType } from "../../../types/UserDataType";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./QuizzPage.css";
-import { Button, Card, Modal } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import QuizDataType from "../../../types/QuizDataType";
 import { deleteQuiz, getAllQuizzes, getQuizesByUid } from "../../../services/quizes.service";
-import { onValue, ref, set } from "firebase/database";
+import { onValue, ref } from "firebase/database";
 import { db } from "../../../config/firebase-config";
 import { sendNotification } from "../../../services/notification.service";
 
