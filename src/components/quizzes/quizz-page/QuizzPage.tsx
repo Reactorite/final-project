@@ -6,13 +6,27 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./QuizzPage.css";
 import { Button, Card } from "react-bootstrap";
 import QuizDataType from "../../../types/QuizDataType";
-import { getQuizesByUid } from "../../../services/quizes.service";
+import { deleteQuiz, getAllQuizes, getQuizesByUid } from "../../../services/quizes.service";
+import { onValue, ref, set } from "firebase/database";
+import { db } from "../../../config/firebase-config";
+import { get } from "http";
 // import QuizCard from "../../common/quiz-card/QuizCard";
 
 export default function QuizzPage() {
   const { userData } = useContext(AppContext);
   const [students, setStudents] = useState<UserDataType[]>([]);
   const [quizes, setQuizes] = useState<QuizDataType[]>([]);
+  const [allQuizes, setAllQuizes] = useState<QuizDataType[]>([]);
+
+  useEffect(() => {
+    const fetchAllQuizes = async () => {
+      const data = await getAllQuizes();
+      if (data) {
+        setAllQuizes(data);
+      }
+    };
+    fetchAllQuizes();
+  }, []);
 
   useEffect(() => {
     if (students.length === 0) {
@@ -43,7 +57,35 @@ export default function QuizzPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quizes]);
 
-  const ongoingQuizes = quizes.filter((quiz) => (quiz.isOngoing === true && quiz.creator === userData?.uid))
+  const ongoingQuizes = allQuizes.filter((quiz) => (quiz.isOngoing === true && quiz.creator === userData?.uid))
+
+  useEffect(() => {
+    if (allQuizes && allQuizes.length > 0) {
+      const listeners = allQuizes.map((quiz) => {
+        return onValue(ref(db, `quizzes/${quiz.quizID}`), (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            setQuizes((prevQuizes) => [...prevQuizes, data]);
+          }
+        }, (error) => {
+          console.error("Error fetching quizes:", error);
+        });
+      });
+      
+      return () => {
+        listeners.forEach((unsubscribe) => unsubscribe());
+      };
+    }
+  }, [allQuizes]);
+
+  const handleDeleteQuiz = async (quizId: string) => {
+    try {
+      await deleteQuiz(quizId);
+      setQuizes((prevQuizes) => prevQuizes.filter((quiz) => quiz.quizID !== quizId));
+    } catch (err) {
+      console.error("Error deleting quiz:", err);
+    }
+  };
 
   // return <QuizCard quizes={quizes} />;
 
@@ -178,6 +220,7 @@ export default function QuizzPage() {
                             Edit
                           </Button>
                           <Button
+                            onClick={() => handleDeleteQuiz(quiz.quizID)}
                             variant="secondary"
                             style={{
                               marginTop: "10px",
