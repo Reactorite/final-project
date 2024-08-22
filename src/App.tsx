@@ -15,6 +15,7 @@ import LoadingSpinner from './components/common/loading/LoadingSpinner';
 import User from './components/user/user-profile/User';
 import AdminPanel from './components/admin/AdminPanel/AdminPanel';
 import QuizzPage from './components/quizzes/quizz-page/QuizzPage';
+import StudentQuizPage from './components/quizzes/student-quiz-page/StudentQuizPage';
 
 
 function App() {
@@ -87,7 +88,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/create-quiz" element={<CreateQuiz />} />
           <Route path='/user-profile' element={<User />} />
-          <Route path='/quizz-page' element={<QuizzPage />} />
+          <Route path='/quizz-page' element={appState.userData?.isTeacher ? <QuizzPage /> : appState.userData?.isStudent && <StudentQuizPage />} />
           <Route path='/admin-panel' element={appState.userData?.isAdmin && <AdminPanel />}></Route>
         </Routes>
       </BrowserRouter>
