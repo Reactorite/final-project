@@ -4,7 +4,7 @@ import { getStudentUsers } from "../../../services/users.service";
 import { UserDataType } from "../../../types/UserDataType";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./QuizzPage.css";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Modal } from "react-bootstrap";
 import QuizDataType from "../../../types/QuizDataType";
 import { deleteQuiz, getAllQuizzes, getQuizesByUid } from "../../../services/quizes.service";
 import { onValue, ref, set } from "firebase/database";
@@ -16,6 +16,20 @@ export default function QuizzPage() {
   const [students, setStudents] = useState<UserDataType[]>([]);
   const [quizes, setQuizes] = useState<QuizDataType[]>([]);
   const [allQuizes, setAllQuizes] = useState<QuizDataType[]>([]);
+  const [ongoingQuizes, setOngoingQuizes] = useState<QuizDataType[]>([]);
+
+  // const ongoingQuizes = allQuizes.filter((quiz) => (quiz.isOngoing === true && quiz.creator === userData?.uid));
+  const closedQuizes = allQuizes.filter((quiz) => (quiz.isOpen === false && quiz.creator === userData?.uid));
+
+  useEffect(() => {
+    const fetchOngoingQuizes = async () => {
+      const data = await getAllQuizzes();
+      if (data) {
+        setOngoingQuizes(data.filter((quiz) => (quiz.isOngoing === true && quiz.creator === userData?.uid)));
+      }
+    };
+    fetchOngoingQuizes();
+  }, [quizes]);
 
   useEffect(() => {
     const fetchAllQuizes = async () => {
@@ -56,9 +70,6 @@ export default function QuizzPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quizes]);
 
-  const ongoingQuizes = allQuizes.filter((quiz) => (quiz.isOngoing === true && quiz.creator === userData?.uid));
-  const closedQuizes = allQuizes.filter((quiz) => (quiz.isOpen === false && quiz.creator === userData?.uid));
-
   useEffect(() => {
     if (allQuizes && allQuizes.length > 0) {
       const listeners = allQuizes.map((quiz) => {
@@ -82,6 +93,7 @@ export default function QuizzPage() {
     try {
       await deleteQuiz(quizId);
       setQuizes((prevQuizes) => prevQuizes.filter((quiz) => quiz.quizID !== quizId));
+      alert("Quiz deleted!");
     } catch (err) {
       console.error("Error deleting quiz:", err);
     }
