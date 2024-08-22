@@ -6,7 +6,7 @@ import React from 'react';
 
 export default function Login() {
   const [user, setUser] = useState({
-    email: '',
+    username: '',
     password: '',
   });
 
@@ -22,19 +22,19 @@ export default function Login() {
   };
 
   const login = async () => {
-    if (!user.email || !user.password) {
+    if (!user.username || !user.password) {
       return alert('No credentials provided!');
     }
 
     try {
-      const { firebaseUser, userData } = await loginUser(user.email, user.password);
+      const { firebaseUser, userData } = await loginUser(user.username, user.password);
 
       setAppState((prevState) => ({
         ...prevState,
-        user: firebaseUser, 
-        userData: userData, 
+        user: firebaseUser,
+        userData: userData,
       }));
-
+      
       navigate(location.state?.from.pathname ?? '/');
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -48,8 +48,8 @@ export default function Login() {
   return (
     <div>
       <h1>Login</h1>
-      <label htmlFor="email">Email: </label>
-      <input value={user.email} onChange={updateUser('email')} type="text" name="email" id="email" /><br /><br />
+      <label htmlFor="username">Username: </label>
+      <input value={user.username} onChange={updateUser('username')} type="text" name="username" id="username" /><br /><br />
       <label htmlFor="password">Password: </label>
       <input value={user.password} onChange={updateUser('password')} type="password" name="password" id="password" /><br />
       <button onClick={login}>Login</button>
