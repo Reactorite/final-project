@@ -1,3 +1,4 @@
+// src/components/common/Header.tsx
 import { NavLink } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../state/app.context";
@@ -6,11 +7,11 @@ import { logoutUser } from "../../services/auth.service";
 import { auth } from "../../config/firebase-config";
 import { useAuthState } from "react-firebase-hooks/auth";
 import './Header.css'; 
+import Notification from "./notifications/Notifications";
 
 const Header = () => {
   const { userData, setAppState } = useContext(AppContext);
   const navigate = useNavigate();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [user, loading, error] = useAuthState(auth);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,6 +41,9 @@ const Header = () => {
       {user && userData && userData.isTeacher && <NavLink to="/create-quiz" className="header-link">CREATE QUIZ</NavLink>}
       {user && userData && <NavLink to="quizz-page" className="header-link">QUIZ PAGE</NavLink>}
       {user && userData && userData.isAdmin && <NavLink to='/admin-panel' className="header-link">ADMIN PANEL</NavLink>}
+      <div className="header-link">
+      {user && userData && <Notification userId={userData.uid} />} 
+      </div>
     </div>
   );
 };
