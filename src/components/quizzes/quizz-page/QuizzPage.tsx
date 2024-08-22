@@ -43,6 +43,8 @@ export default function QuizzPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quizes]);
 
+  const ongoingQuizes = quizes.filter((quiz) => (quiz.isOngoing === true && quiz.creator === userData?.uid))
+
   // return <QuizCard quizes={quizes} />;
 
   return (
@@ -96,9 +98,8 @@ export default function QuizzPage() {
               >
                 <h3 className="text-center sticky-header">Ongoing quizes</h3>
                 <div className="card-body">
-                  {quizes
-                    .filter((quiz) => quiz.isOngoing === true)
-                    .map((quiz) => (
+                  {ongoingQuizes.length > 0 ?
+                    ongoingQuizes.map((quiz) => (
                       <Card key={quiz.creator} className="card mb-3">
                         <div className="card-body">
                           <h4 className="card-title">{quiz.title}</h4>
@@ -128,7 +129,13 @@ export default function QuizzPage() {
                           </Button>
                         </div>
                       </Card>
-                    ))}
+                    )) : (
+                      <Card className="card mb-3">
+                        <div className="card-body">
+                          <h4 className="card-title">No ongoing quizes!</h4>
+                        </div>
+                      </Card>
+                    )}
                 </div>
               </Card>
             </div>
@@ -151,7 +158,7 @@ export default function QuizzPage() {
                 <h3 className="text-center sticky-header">Closed quizes</h3>
                 <div className="card-body">
                   {quizes
-                    .filter((quiz) => quiz.isOpen === false)
+                    .filter((quiz) => (quiz.isOpen === false && quiz.creator === userData.uid))
                     .map((quiz) => (
                       <Card key={quiz.creator} className="card mb-3">
                         <div className="card-body">
