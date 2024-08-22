@@ -7,10 +7,8 @@ import "./QuizzPage.css";
 import { Button, Card } from "react-bootstrap";
 import QuizDataType from "../../../types/QuizDataType";
 import { deleteQuiz, getAllQuizes, getQuizesByUid } from "../../../services/quizes.service";
-import { onValue, ref, set } from "firebase/database";
+import { onValue, ref } from "firebase/database";
 import { db } from "../../../config/firebase-config";
-import { get } from "http";
-// import QuizCard from "../../common/quiz-card/QuizCard";
 
 export default function QuizzPage() {
   const { userData } = useContext(AppContext);
@@ -57,7 +55,8 @@ export default function QuizzPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quizes]);
 
-  const ongoingQuizes = allQuizes.filter((quiz) => (quiz.isOngoing === true && quiz.creator === userData?.uid))
+  const ongoingQuizes = allQuizes.filter((quiz) => (quiz.isOngoing === true && quiz.creator === userData?.uid));
+  const closedQuizes = allQuizes.filter((quiz) => (quiz.isOpen === false && quiz.creator === userData?.uid));
 
   useEffect(() => {
     if (allQuizes && allQuizes.length > 0) {
@@ -71,7 +70,7 @@ export default function QuizzPage() {
           console.error("Error fetching quizes:", error);
         });
       });
-      
+
       return () => {
         listeners.forEach((unsubscribe) => unsubscribe());
       };
@@ -93,14 +92,15 @@ export default function QuizzPage() {
     <div className="quiz-page-container">
       <div className="container mt-4">
         {userData?.isTeacher && (
-          <div className="row">
-            <div className="col-md-6">
+          <div className="row" style={{ display: "flex" }}>
+            <div className="col-md-4 d-flex">
               <Card
-                className="card"
+                className="card flex-fill"
                 style={{
                   maxHeight: "80vh",
                   maxWidth: "30vw",
                   overflowY: "scroll",
+                  minHeight: "80vh",
                 }}
               >
                 <h3 className="text-center sticky-header">Students</h3>
@@ -129,18 +129,19 @@ export default function QuizzPage() {
                 </div>
               </Card>
             </div>
-            <div className="col-md-6">
+            <div className="col-md-4 d-flex">
               <Card
-                className="card"
+                className="card flex-fill"
                 style={{
                   maxHeight: "80vh",
                   maxWidth: "30vw",
                   overflowY: "scroll",
+                  minHeight: "80vh",
                 }}
               >
                 <h3 className="text-center sticky-header">Ongoing quizes</h3>
                 <div className="card-body">
-                  {ongoingQuizes.length > 0 ?
+                  {ongoingQuizes.length > 0 ? (
                     ongoingQuizes.map((quiz) => (
                       <Card key={quiz.creator} className="card mb-3">
                         <div className="card-body">
@@ -160,6 +161,7 @@ export default function QuizzPage() {
                             Edit
                           </Button>
                           <Button
+                            onClick={() => handleDeleteQuiz(quiz.quizID)}
                             variant="secondary"
                             style={{
                               marginTop: "10px",
@@ -171,36 +173,35 @@ export default function QuizzPage() {
                           </Button>
                         </div>
                       </Card>
-                    )) : (
-                      <Card className="card mb-3">
-                        <div className="card-body">
-                          <h4 className="card-title">No ongoing quizes!</h4>
-                        </div>
-                      </Card>
-                    )}
+                    ))
+                  ) : (
+                    <Card className="card mb-3">
+                      <div className="card-body">
+                        <h4 className="card-title">No ongoing quizes!</h4>
+                      </div>
+                    </Card>
+                  )}
                 </div>
               </Card>
             </div>
-          </div>
-        )}
-      </div>
-      <div className="container mt-4">
-        {userData?.isTeacher && (
-          <div className="row">
-            <div className="col-md-6">
+            <div className="col-md-4 d-flex">
               <Card
-                className="card"
+                className="card flex-fill"
                 style={{
                   maxHeight: "80vh",
                   maxWidth: "30vw",
                   overflowY: "scroll",
+                  minHeight: "80vh",
                   marginBottom: "25px",
                 }}
               >
                 <h3 className="text-center sticky-header">Closed quizes</h3>
                 <div className="card-body">
-                  {quizes
-                    .filter((quiz) => (quiz.isOpen === false && quiz.creator === userData.uid))
+                  {closedQuizes.length > 0 ? quizes
+                    .filter(
+                      (quiz) =>
+                        quiz.isOpen === false && quiz.creator === userData.uid
+                    )
                     .map((quiz) => (
                       <Card key={quiz.creator} className="card mb-3">
                         <div className="card-body">
@@ -232,7 +233,13 @@ export default function QuizzPage() {
                           </Button>
                         </div>
                       </Card>
-                    ))}
+                    )) : (
+                      <Card className="card mb-3">
+                      <div className="card-body">
+                        <h4 className="card-title">No closed quizes!</h4>
+                      </div>
+                    </Card>
+                    )}
                 </div>
               </Card>
             </div>
