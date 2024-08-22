@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./QuizzPage.css";
 import { Button, Card } from "react-bootstrap";
 import QuizDataType from "../../../types/QuizDataType";
-import { deleteQuiz, getAllQuizes, getQuizesByUid } from "../../../services/quizes.service";
+import { deleteQuiz, getAllQuizzes, getQuizesByUid } from "../../../services/quizes.service";
 import { onValue, ref, set } from "firebase/database";
 import { db } from "../../../config/firebase-config";
 import { get } from "http";
@@ -20,7 +20,7 @@ export default function QuizzPage() {
 
   useEffect(() => {
     const fetchAllQuizes = async () => {
-      const data = await getAllQuizes();
+      const data = await getAllQuizzes();
       if (data) {
         setAllQuizes(data);
       }
