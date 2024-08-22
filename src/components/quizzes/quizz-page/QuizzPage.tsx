@@ -17,6 +17,7 @@ export default function QuizzPage() {
   const [quizes, setQuizes] = useState<QuizDataType[]>([]);
   const [allQuizes, setAllQuizes] = useState<QuizDataType[]>([]);
   const [ongoingQuizes, setOngoingQuizes] = useState<QuizDataType[]>([]);
+  const [invitedStudents, setInvitedStudents] = useState<string[]>([]);
 
   // const ongoingQuizes = allQuizes.filter((quiz) => (quiz.isOngoing === true && quiz.creator === userData?.uid));
   const closedQuizes = allQuizes.filter((quiz) => (quiz.isOpen === false && quiz.creator === userData?.uid));
@@ -103,6 +104,7 @@ export default function QuizzPage() {
     if (userData) {
       try {
         await sendNotification(userData.uid, student.uid, `You have been invited to a quiz by ${userData.firstName}`);
+        setInvitedStudents((prevInvited) => [...prevInvited, student.uid]);
         alert("Invitation sent!");
       } catch (err) {
         console.error("Error sending invitation:", err);
@@ -143,10 +145,11 @@ export default function QuizzPage() {
                             style={{
                               marginTop: "10px",
                               marginLeft: "5px",
-                              backgroundColor: "blue",
+                              backgroundColor: invitedStudents.includes(student.uid) ? "green" : "blue",
                             }}
+                            disabled={invitedStudents.includes(student.uid)}
                           >
-                            Invite
+                            {invitedStudents.includes(student.uid) ? "Invited" : "Invite"}
                           </Button>
                         </div>
                       </Card>
