@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { getUserByHandle } from './users.service';
-import { get, set, ref, query, equalTo, orderByChild, update } from 'firebase/database';
+import { get, set, ref, query, equalTo, orderByChild, update, remove } from 'firebase/database';
 import { db } from '../config/firebase-config';
 import QuizDataType from '../types/QuizDataType';
 
@@ -9,3 +9,13 @@ export const getQuizesByUid = async (uid: string): Promise<QuizDataType[] | null
   const allQuizes = snapshot.val() as Record<string, QuizDataType> | null;
   return allQuizes ? Object.values(allQuizes).filter(quiz => quiz.creator === uid) : null;
 };
+
+export const deleteQuiz = async (quizId: string): Promise<void> => {
+  await remove(ref(db, `quizzes/${quizId}`));
+};
+
+export const getAllQuizes = async () => {
+  const snapshot = await get(ref(db, `quizzes`));
+  const allQuizes = snapshot.val() as Record<string, QuizDataType> | null;
+  return allQuizes ? Object.values(allQuizes) : null;
+}
