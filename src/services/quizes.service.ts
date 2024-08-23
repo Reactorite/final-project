@@ -37,3 +37,8 @@ export const getAllQuizzes = async (): Promise<QuizDataType[] | null> => {
   const allQuizzes = snapshot.val() as Record<string, QuizDataType> | null;
   return allQuizzes ? Object.values(allQuizzes) : null;
 };
+
+export const getQuizById = async (quizID: string): Promise<QuizDataType | null> => {
+  const snapshot = await get(ref(db, `quizzes/${quizID}`));
+  return snapshot.val() as QuizDataType | null;
+};
