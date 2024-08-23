@@ -42,7 +42,7 @@ const Header = () => {
       {user && userData && <NavLink to="quizz-page" className="header-link">QUIZ PAGE</NavLink>}
       {user && userData && userData.isAdmin && <NavLink to='/admin-panel' className="header-link">ADMIN PANEL</NavLink>}
       <div className="header-link">
-        {user && userData && <Notification userId={userData.uid} />} 
+        {user && userData && <Notification userId={userData.uid} userName={userData.username}/>} 
       </div>
     </div>
   );
