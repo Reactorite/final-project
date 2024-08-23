@@ -67,7 +67,11 @@ return (
                 <div className="card-body">
                   <h4 className="card-title">{quiz.title}</h4>
                   <p className="card-text">{quiz.category}</p>
-                  <Button variant="primary">Start Quiz</Button>
+                  {quiz.duration === 1
+                    ? <p className="card-text">Duration: {quiz.duration} minute</p>
+                    : <p className="card-text">Duration: {quiz.duration} minutes</p>
+                  }
+                  <Button variant="primary">Enroll</Button>
                 </div>
               </Card>)
             ))}
