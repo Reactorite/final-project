@@ -73,7 +73,7 @@ return (
                     : <p className="card-text">Duration: {quiz.duration} minutes</p>
                   }
                   <NavLink to={`/play-quiz/${quiz.quizID}`} >
-                    <Button variant="primary">Start</Button>
+                    <Button variant="primary">Open</Button>
                   </NavLink>
                   {/* <Button variant="primary">Enroll</Button> */}
                 </div>
