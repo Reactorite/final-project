@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../state/app.context";
 import { onValue, ref } from "firebase/database";
 import { db } from "../../../config/firebase-config";
-import getRanking, { nextRankPoints } from "../../../utils/ranking/ranking";
+import getRanking, { currentPoints, nextRankPoints } from "../../../utils/ranking/ranking";
 import QuizDataType from "../../../types/QuizDataType";
 import { Card, Button, ProgressBar } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 
 export default function StudentQuizPage() {
   const { userData } = useContext(AppContext);
@@ -47,7 +48,7 @@ return (
     <h1>Student Quiz Page</h1>
     <h2>Welcome, {userData?.firstName}</h2>
     <p>{ranking}</p>
-    <ProgressBar now={progress} max={nextRankPoints} label={`${progress}/${nextRankPoints}`} style={{ maxWidth: '30vw', marginBottom: '2vh' }}/>
+    <ProgressBar now={progress} min={currentPoints} max={nextRankPoints} label={`${progress}/${nextRankPoints}`} style={{ maxWidth: '30vw', marginBottom: '2vh' }}/>
     <div className="row" style={{ display: "flex" }}>
       <div className="col-md-8 d-flex">
         <Card
@@ -71,7 +72,10 @@ return (
                     ? <p className="card-text">Duration: {quiz.duration} minute</p>
                     : <p className="card-text">Duration: {quiz.duration} minutes</p>
                   }
-                  <Button variant="primary">Enroll</Button>
+                  <NavLink to={`/play-quiz/${quiz.quizID}`} >
+                    <Button variant="primary">Start</Button>
+                  </NavLink>
+                  {/* <Button variant="primary">Enroll</Button> */}
                 </div>
               </Card>)
             ))}
