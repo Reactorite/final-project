@@ -26,7 +26,7 @@ export default function QuizzPage() {
     const fetchOngoingQuizes = async () => {
       const data = await getAllQuizzes();
       if (data) {
-        setOngoingQuizes(data.filter((quiz) => (quiz.isOngoing === true && quiz.creator === userData?.uid)));
+        setOngoingQuizes(data.filter((quiz) => (quiz.isOpen === true && quiz.creator === userData?.uid)));
       }
     };
     fetchOngoingQuizes();

@@ -1,12 +1,10 @@
 import QuestionDataType from "./QuestionDataType";
-import { UserDataType } from "./UserDataType";
 
 export default interface QuizDataType {
     title: string;
     category: string;
     isOpen: boolean;
     isPublic: boolean;
-    isOngoing: boolean;
     questions: {
         [questID: string]: QuestionDataType;
     }
@@ -19,6 +17,8 @@ export default interface QuizDataType {
     groups: {
         [groupName: string]: boolean;
     }
-    members: { [uid: string]: UserDataType };
+    members: {
+        [studentId: string]: boolean;
+    }
     quizID: string;
 };
