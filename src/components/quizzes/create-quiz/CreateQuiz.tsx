@@ -17,7 +17,6 @@ export default function CreateQuiz() {
     category: "",
     isOpen: false,
     isPublic: false,
-    isOngoing: false,
     questions: {},
     scores: {},
     creator: "",
@@ -81,7 +80,6 @@ export default function CreateQuiz() {
         category: "",
         isOpen: false,
         isPublic: false,
-        isOngoing: false,
         questions: {},
         scores: {},
         creator: user!.uid || "",
@@ -203,7 +201,7 @@ export default function CreateQuiz() {
   };
 
   const saveQuizToDB = async () => {
-    if (quiz.isOpen === null || quiz.isPublic === null || quiz.isOngoing === null) {
+    if (quiz.isOpen === null || quiz.isPublic === null) {
       alert("Please make sure all options are selected.");
       return;
     }
@@ -279,17 +277,6 @@ export default function CreateQuiz() {
         <select
           value={quiz.isPublic ? "true" : "false"}
           onChange={handleDropdownChange("isPublic")}
-        >
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="isOngoing">Is the quiz ongoing?:</label>
-        <select
-          value={quiz.isOngoing ? "true" : "false"}
-          onChange={handleDropdownChange("isOngoing")}
         >
           <option value="true">Yes</option>
           <option value="false">No</option>

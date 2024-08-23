@@ -11,6 +11,7 @@ const QuizManagement: React.FC = () => {
   const [currentQuiz, setCurrentQuiz] = useState<QuizDataType | null>(null);
   const [editedQuiz, setEditedQuiz] = useState<Partial<QuizDataType>>({});
   const [editedQuestions, setEditedQuestions] = useState<{ [questID: string]: QuestionDataType }>({});
+  const [answerText, setAnswerText] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     fetchQuizzes();
@@ -72,16 +73,65 @@ const QuizManagement: React.FC = () => {
     });
   };
 
-  const handleAnswerChange = (questID: string, answer: string, isCorrect: boolean) => {
-    setEditedQuestions({
-      ...editedQuestions,
-      [questID]: {
-        ...editedQuestions[questID],
-        answers: {
-          ...editedQuestions[questID].answers,
-          [answer]: isCorrect
+  const handleLocalAnswerTextChange = (questID: string, answer: string, newAnswer: string) => {
+    setAnswerText(prevState => ({
+      ...prevState,
+      [`${questID}-${answer}`]: newAnswer
+    }));
+  };
+
+  const handleSaveAnswerText = (questID: string, oldAnswer: string) => {
+    const newAnswer = answerText[`${questID}-${oldAnswer}`] || oldAnswer;
+
+    if (newAnswer !== oldAnswer) {
+      setEditedQuestions(prevState => {
+        const updatedAnswers = { ...prevState[questID].answers };
+        updatedAnswers[newAnswer] = updatedAnswers[oldAnswer];
+        delete updatedAnswers[oldAnswer];
+
+        return {
+          ...prevState,
+          [questID]: {
+            ...prevState[questID],
+            answers: updatedAnswers
+          }
+        };
+      });
+
+      setAnswerText(prevState => {
+        const { [`${questID}-${oldAnswer}`]: _, ...rest } = prevState;
+        return rest;
+      });
+    }
+  };
+
+  const handleAnswerCorrectChange = (questID: string, answer: string, isCorrect: boolean) => {
+    setEditedQuestions(prevState => {
+      const updatedAnswers = { ...prevState[questID].answers };
+      updatedAnswers[answer] = isCorrect;
+
+      return {
+        ...prevState,
+        [questID]: {
+          ...prevState[questID],
+          answers: updatedAnswers
         }
-      }
+      };
+    });
+  };
+
+  const handleDeleteAnswer = (questID: string, answer: string) => {
+    setEditedQuestions(prevState => {
+      const updatedAnswers = { ...prevState[questID].answers };
+      delete updatedAnswers[answer];
+
+      return {
+        ...prevState,
+        [questID]: {
+          ...prevState[questID],
+          answers: updatedAnswers
+        }
+      };
     });
   };
 
@@ -95,18 +145,6 @@ const QuizManagement: React.FC = () => {
           ...editedQuestions[questID].answers,
           [newAnswer]: false
         }
-      }
-    });
-  };
-
-  const handleDeleteAnswer = (questID: string, answer: string) => {
-    const updatedAnswers = { ...editedQuestions[questID].answers };
-    delete updatedAnswers[answer];
-    setEditedQuestions({
-      ...editedQuestions,
-      [questID]: {
-        ...editedQuestions[questID],
-        answers: updatedAnswers
       }
     });
   };
@@ -215,14 +253,9 @@ const QuizManagement: React.FC = () => {
                       <Col>
                         <Form.Control
                           type="text"
-                          value={answer}
-                          onChange={(e) => {
-                            const newAnswer = e.target.value;
-                            const updatedAnswers = { ...question.answers };
-                            delete updatedAnswers[answer];
-                            updatedAnswers[newAnswer] = isCorrect;
-                            handleQuestionChange(question.questID, 'answers', updatedAnswers);
-                          }}
+                          value={answerText[`${question.questID}-${answer}`] !== undefined ? answerText[`${question.questID}-${answer}`] : answer}
+                          onChange={(e) => handleLocalAnswerTextChange(question.questID, answer, e.target.value)}
+                          onBlur={() => handleSaveAnswerText(question.questID, answer)} // Когато загуби фокус, записва промените
                         />
                       </Col>
                       <Col>
@@ -230,7 +263,7 @@ const QuizManagement: React.FC = () => {
                           type="checkbox"
                           label="Correct"
                           checked={isCorrect}
-                          onChange={(e) => handleAnswerChange(question.questID, answer, e.target.checked)}
+                          onChange={(e) => handleAnswerCorrectChange(question.questID, answer, e.target.checked)}
                         />
                       </Col>
                       <Col>

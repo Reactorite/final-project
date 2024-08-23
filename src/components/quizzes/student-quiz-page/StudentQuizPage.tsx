@@ -63,7 +63,7 @@ return (
           <h3 className="text-center sticky-header">Active Quizzes</h3>
           <div className="card-body">
             {quizes.map((quiz) => (
-              (quiz.isPublic && quiz.isOngoing) && (
+              (quiz.isPublic && quiz.isOpen) && (
               <Card key={quiz.quizID} className="card mb-3">
                 <div className="card-body">
                   <h4 className="card-title">{quiz.title}</h4>
