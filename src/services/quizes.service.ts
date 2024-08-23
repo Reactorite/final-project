@@ -42,3 +42,14 @@ export const getQuizById = async (quizID: string): Promise<QuizDataType | null> 
   const snapshot = await get(ref(db, `quizzes/${quizID}`));
   return snapshot.val() as QuizDataType | null;
 };
+
+export const addQuizMember = async (quizID: string, memberID: string): Promise<void> => {
+  const quizRef = ref(db, `quizzes/${quizID}/members/${memberID}`);
+  try {
+    await set(quizRef, true);
+    console.log(`User with ID ${memberID} was successfully added to the quiz.`);
+  } catch (error) {
+    console.error('Error adding user to quiz:', error);
+    throw new Error('Could not add the user to the quiz.');
+  }
+}
