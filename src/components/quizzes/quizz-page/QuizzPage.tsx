@@ -4,13 +4,14 @@ import { getStudentUsers } from "../../../services/users.service";
 import { UserDataType } from "../../../types/UserDataType";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./QuizzPage.css";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Modal } from "react-bootstrap";
 import QuizDataType from "../../../types/QuizDataType";
 import { deleteQuiz, getAllQuizzes, getQuizesByUid } from "../../../services/quizes.service";
 import { onValue, ref } from "firebase/database";
 import { db } from "../../../config/firebase-config";
 import { sendNotification } from "../../../services/notification.service";
 import getRanking from "../../../utils/ranking/ranking";
+import CustomAlert from "../../common/custom-alert/CustomAlert"; 
 
 export default function QuizzPage() {
   const { userData } = useContext(AppContext);
@@ -18,9 +19,24 @@ export default function QuizzPage() {
   const [quizes, setQuizes] = useState<QuizDataType[]>([]);
   const [allQuizes, setAllQuizes] = useState<QuizDataType[]>([]);
   const [ongoingQuizes, setOngoingQuizes] = useState<QuizDataType[]>([]);
+  const [privateQuizes, setPrivateQuizes] = useState<QuizDataType[]>([]);
   const [invitedStudents, setInvitedStudents] = useState<string[]>([]);
+  const [selectedStudent, setSelectedStudent] = useState<UserDataType | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [alerts, setAlerts] = useState<{ id: number; message: string; type: "success" | "error" | "warning" | "info" }[]>([]);
+
 
   const closedQuizes = allQuizes.filter((quiz) => (quiz.isOpen === false && quiz.creator === userData?.uid));
+
+  useEffect(() => {
+    const fetchPrivateQuizes = async () => {
+      const data = await getAllQuizzes();
+      if (data) {
+        setPrivateQuizes(data.filter((quiz) => quiz.isPublic === false && quiz.creator === userData?.uid));
+      }
+    };
+    fetchPrivateQuizes();
+  }, [userData?.uid]);
 
   useEffect(() => {
     const fetchOngoingQuizes = async () => {
@@ -89,28 +105,54 @@ export default function QuizzPage() {
     }
   }, [allQuizes, quizes]);
 
+  const showAlert = (message: string, type: "success" | "error" | "warning" | "info") => {
+    const id = Date.now();
+    setAlerts([...alerts, { id, message, type }]);
+
+    setTimeout(() => {
+      setAlerts((alerts) => alerts.filter((alert) => alert.id !== id));
+    }, 3000);
+  };
+
   const handleDeleteQuiz = async (quizId: string) => {
     try {
       await deleteQuiz(quizId);
       setQuizes((prevQuizes) => prevQuizes.filter((quiz) => quiz.quizID !== quizId));
-      alert("Quiz deleted!");
+      showAlert("Quiz deleted!", "success");
     } catch (err) {
       console.error("Error deleting quiz:", err);
+      showAlert("Error deleting quiz!", "error");
     }
   };
 
-  const handleInvite = async (student: UserDataType) => {
-    if (userData) {
+  const handleInvite = (student: UserDataType) => {
+    setSelectedStudent(student);
+    setShowModal(true);
+  };
+
+  const handleSendInvitation = async (quiz: QuizDataType) => {
+    if (userData && selectedStudent && quiz.title && quiz.quizID) { 
       try {
-        await sendNotification(userData.uid, student.uid, `You have been invited to a quiz by ${userData.firstName}`);
-        setInvitedStudents((prevInvited) => [...prevInvited, student.uid]);
-        alert("Invitation sent!");
+        await sendNotification(
+          userData.uid,
+          selectedStudent.uid,
+          `You have been invited to the quiz "${quiz.title}" by ${userData.firstName}`,
+          quiz.title,
+          quiz.quizID
+        );
+        setInvitedStudents((prevInvited) => [...prevInvited, selectedStudent.uid]);
+        setShowModal(false);
+        showAlert("Invitation sent!", "success");
       } catch (err) {
         console.error("Error sending invitation:", err);
+        showAlert("Error sending invitation!", "error");
       }
+    } else {
+      console.error("Quiz title or ID is missing!");
+      showAlert("Quiz title or ID is missing!", "warning");
     }
   };
-
+  
   return (
     <div className="quiz-page-container">
       <div className="container mt-4">
@@ -265,6 +307,47 @@ export default function QuizzPage() {
           </div>
         </div>
       )}
+    </div>
+    <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal.Header closeButton>
+        <Modal.Title>Select a Quiz</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {privateQuizes.length > 0 ? (
+          privateQuizes.map((quiz) => (
+            <Card key={quiz.quizID} className="mb-3">
+              <Card.Body>
+                <Card.Title>{quiz.title}</Card.Title>
+                <Card.Text>Category: {quiz.category}</Card.Text>
+                <Card.Text>Duration: {quiz.duration}min</Card.Text>
+                <Button
+                  variant="primary"
+                  onClick={() => handleSendInvitation(quiz)}
+                >
+                  Invite to this Quiz
+                </Button>
+              </Card.Body>
+            </Card>
+          ))
+        ) : (
+          <p>No private quizzes available.</p>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => setShowModal(false)}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+    <div className="alert-container">
+      {alerts.map((alert) => (
+        <CustomAlert
+          key={alert.id}
+          message={alert.message}
+          type={alert.type}
+          onClose={() => setAlerts(alerts.filter((a) => a.id !== alert.id))}
+        />
+      ))}
     </div>
   </div>
 );

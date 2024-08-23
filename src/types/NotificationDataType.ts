@@ -1,11 +1,13 @@
 export interface NotificationDataType {
-    sender: string;
-    receiver: string;
-    message: string;
-    timestamp: number;
-    status: "unread" | "read";
-    invitationStatus?: "pending" | "accepted" | "rejected";
-  }
+  sender: string;
+  receiver: string;
+  message: string;
+  timestamp: number;
+  status: "unread" | "read";
+  invitationStatus?: "pending" | "accepted" | "rejected";
+  quizTitle?: string; 
+  quizID?: string;  
+}
 
   // const ROLE = {
   //   OWNER: "OWNER",
