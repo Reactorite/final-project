@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import QuizDataType from "../../../types/QuizDataType";
-import { getQuizById } from "../../../services/quizes.service";
+import { addQuizMember, getQuizById } from "../../../services/quizes.service";
+import { Button } from "react-bootstrap";
+import { AppContext } from "../../../state/app.context";
 
 export default function SingleQuiz() {
   const { id } = useParams<{ id: string }>();
+  const {userData} = useContext(AppContext);
   const [quizData, setQuizData] = useState<QuizDataType | null>(null);
-  const [remainingTime, setRemainingTime] = useState<number>(0);
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -25,6 +27,18 @@ export default function SingleQuiz() {
     fetchQuiz();
   }, []);
 
+  const handleStartQuiz = async () => {
+    if (quizData && userData) {
+      addQuizMember(quizData.quizID, userData.uid)
+        .then(() => {
+          console.log('User added to quiz');
+        })
+        .catch((error) => {
+          console.error('Error adding user to quiz:', error);
+        });
+    }
+  };
+
   return (
     <div>
       <h1>Single Quiz</h1>
@@ -33,6 +47,7 @@ export default function SingleQuiz() {
           <h2>{quizData.title}</h2>
           <p>{quizData.category}</p>
           <p>Remaining time: </p>
+          <Button onClick={() => handleStartQuiz()} variant="primary">Start</Button>
         </div>
       ) : (
         <p>Loading...</p>
