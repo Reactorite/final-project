@@ -16,6 +16,7 @@ import User from './components/user/user-profile/User';
 import AdminPanel from './components/admin/AdminPanel/AdminPanel';
 import QuizzPage from './components/quizzes/quizz-page/QuizzPage';
 import StudentQuizPage from './components/quizzes/student-quiz-page/StudentQuizPage';
+import SingleQuiz from './components/quizzes/single-quiz/SingleQuiz';
 
 
 function App() {
@@ -90,6 +91,8 @@ function App() {
           <Route path='/user-profile' element={<User />} />
           <Route path='/quizz-page' element={appState.userData?.isTeacher ? <QuizzPage /> : appState.userData?.isStudent && <StudentQuizPage />} />
           <Route path='/admin-panel' element={appState.userData?.isAdmin && <AdminPanel />}></Route>
+          <Route path='/play-quiz/:id'element={<SingleQuiz />} />
+          <Route path='*' element={<h1>Not Found</h1>} />
         </Routes>
       </BrowserRouter>
     </AppContext.Provider>
