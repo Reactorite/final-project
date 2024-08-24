@@ -1,0 +1,41 @@
+.search-button svg {
+  transition: transform 0.2s ease-in-out;
+}
+
+.search-button:hover svg {
+  transform: scale(1.5);
+}
+
+/* .custom-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-scrollbar:hover {
+  scrollbar-width: thin;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar {
+  display: block;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb:hover {
+  background: #555;
+} */
