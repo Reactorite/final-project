@@ -68,3 +68,24 @@ export const subscribeToMessages = (
 
   return unsubscribe;
 };
+
+export const getUnreadMessagesCount = (userId: string, callback: (count: number) => void) => {
+  const messagesRef = ref(db, "messages");
+
+  const unsubscribe = onValue(messagesRef, (snapshot) => {
+    let unreadCount = 0;
+    const data = snapshot.val();
+    if (data) {
+      Object.entries(data).forEach(([chatId, messages]) => {
+        Object.entries(messages as { [key: string]: any }).forEach(([, msg]) => {
+          if (msg.receiver === userId && msg.status === "unread") {
+            unreadCount++;
+          }
+        });
+      });
+    }
+    callback(unreadCount);
+  });
+
+  return unsubscribe;
+};
