@@ -52,6 +52,10 @@
   margin-left: 10px;
 }
 
+.list-group-item .btn-danger {
+  margin-left: 5px;
+}
+
 .custom-footer {
   position: sticky;
   bottom: 0;
@@ -88,4 +92,17 @@
 
 .green-footer:active {
   background-color: #1e7e34;
+}
+
+.red-footer {
+  background-color: #dc3545; /* Bootstrap red */
+  color: white;
+}
+
+.red-footer:hover {
+  background-color: #c82333;
+}
+
+.red-footer:active {
+  background-color: #bd2130;
 }
