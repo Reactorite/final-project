@@ -16,10 +16,10 @@ interface UserWithUnreadCount extends UserDataType {
 
 const UserList: React.FC<UserListProps> = ({ onSelectUser, userId }) => {
   const [users, setUsers] = useState<UserWithUnreadCount[]>([]);
-  const [userMap, setUserMap] = useState<{ [key: string]: UserWithUnreadCount }>({});
 
   useEffect(() => {
     const usersRef = ref(db, "users");
+    const messagesRef = ref(db, "messages");
 
     const unsubscribeUsers = onValue(usersRef, (snapshot) => {
       const data = snapshot.val();
@@ -32,44 +32,38 @@ const UserList: React.FC<UserListProps> = ({ onSelectUser, userId }) => {
             unreadCount: 0,
           };
         });
-        setUserMap(userMap);
-        setUsers(Object.values(userMap));
+
+        const unsubscribeMessages = onValue(messagesRef, (snapshot) => {
+          const messageData = snapshot.val();
+          if (messageData) {
+            Object.entries(messageData).forEach(([chatId, messages]) => {
+              const participants = chatId.split('_');
+              const otherUserId = participants.find((id) => id !== userId);
+              if (otherUserId && userMap[otherUserId]) {
+                const unreadMessages = Object.entries(messages as { [key: string]: MessageDataType }).filter(
+                  ([, msg]) => msg.receiver === userId && msg.status === "unread"
+                ).length;
+
+                userMap[otherUserId].unreadCount = unreadMessages;
+              }
+            });
+          }
+
+          const sortedUsers = Object.values(userMap).sort((a, b) => b.unreadCount - a.unreadCount);
+          setUsers(sortedUsers);
+
+        });
+
+        return () => {
+          unsubscribeMessages();
+        };
       }
     });
 
     return () => {
       unsubscribeUsers();
     };
-  }, []);
-
-  useEffect(() => {
-    const messagesRef = ref(db, "messages");
-
-    const unsubscribeMessages = onValue(messagesRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const updatedUserMap = { ...userMap };
-        Object.entries(data).forEach(([chatId, messages]) => {
-          const participants = chatId.split('_');
-          const otherUserId = participants.find((id) => id !== userId);
-          if (otherUserId && updatedUserMap[otherUserId]) {
-            const unreadMessages = Object.entries(messages as { [key: string]: MessageDataType }).filter(
-              ([, msg]) => msg.receiver === userId && msg.status === "unread"
-            ).length;
-
-            updatedUserMap[otherUserId].unreadCount = unreadMessages;
-          }
-        });
-
-        const sortedUsers = Object.values(updatedUserMap).sort((a, b) => b.unreadCount - a.unreadCount);
-        setUsers(sortedUsers);  
-      }
-    });
-
-    return () => {
-      unsubscribeMessages();
-    };
-  }, [userMap, userId]);
+  }, [userId]);
 
   const handleUserClick = async (selectedUserId: string, selectedUserName: string) => {
     onSelectUser(selectedUserId, selectedUserName);

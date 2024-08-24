@@ -15,11 +15,17 @@ const Messages: React.FC<MessagePageProps> = ({ userId }) => {
   useEffect(() => {
     if (!selectedUser) return;
 
+    console.log('Subscribing to messages for user:', selectedUser.id);
+
     const unsubscribe = subscribeToMessages(userId, selectedUser.id, (fetchedMessages) => {
+      console.log('Messages updated:', fetchedMessages);
       setMessages(fetchedMessages);
     });
 
-    return () => unsubscribe();
+    return () => {
+      console.log('Unsubscribing from messages for user:', selectedUser.id);
+      unsubscribe();
+    };
   }, [userId, selectedUser]);
 
   const handleSendMessage = async () => {
@@ -27,7 +33,7 @@ const Messages: React.FC<MessagePageProps> = ({ userId }) => {
 
     try {
       await sendMessage(userId, selectedUser.id, newMessage);
-      setNewMessage("");
+      setNewMessage(""); 
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -35,7 +41,7 @@ const Messages: React.FC<MessagePageProps> = ({ userId }) => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      handleSendMessage();
+      handleSendMessage(); 
     }
   };
 

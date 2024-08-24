@@ -94,7 +94,7 @@ function App() {
           <Route path='/quizz-page' element={appState.userData?.isTeacher ? <QuizzPage /> : appState.userData?.isStudent && <StudentQuizPage />} />
           <Route path='/admin-panel' element={appState.userData?.isAdmin && <AdminPanel />}></Route>
           <Route path='/play-quiz/:id'element={<SingleQuiz />} />
-          <Route path='/messages' element={<Messages userId={appState.user?.uid || ''} />} />
+          <Route path='/messages' element={appState.user?.uid ? <Messages userId={appState.user.uid} /> : <Login />} />
           <Route path='*' element={<h1>Not Found</h1>} />
         </Routes>
       </BrowserRouter>
