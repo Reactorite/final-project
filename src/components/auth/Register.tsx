@@ -5,6 +5,7 @@ import { AppContext } from "../../state/app.context";
 import { registerUser } from "../../services/auth.service";
 import { createUserHandle, getUserByHandle } from "../../services/users.service";
 import { UserDataType } from "../../types/UserDataType";
+import { sendEmailVerification } from "firebase/auth";
 
 export default function Register() {
   const [user, setUser] = useState<UserDataType>({
@@ -48,26 +49,31 @@ export default function Register() {
 
   const register = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-  
+
     if (!user.email || !password) {
       return alert('No credentials provided!');
     }
-  
+
     if (password !== repeatPassword) {
       return alert('Passwords do not match!');
     }
-  
+
     try {
       const userFromDB = await getUserByHandle(user.username);
       if (userFromDB) {
         return alert(`User ${user.username} already exists!`);
       }
-  
+
       const credential = await registerUser(user.email, password);
       const uid = credential.user.uid;
-  
+
+      if (credential.user) {
+        await sendEmailVerification(credential.user);
+        alert('Verification email sent! Please check your inbox.');
+      }
+
       const userData: UserDataType = {
-        uid, 
+        uid,
         username: user.username,
         email: user.email,
         firstName: user.firstName,
@@ -85,15 +91,15 @@ export default function Register() {
         isTeacher: user.isTeacher,
         isStudent: user.isStudent,
       };
-  
+
       await createUserHandle(userData);
-  
+
       setAppState({
         user: credential.user,
         userData: userData,
         setAppState
       });
-  
+
       navigate('/');
     } catch (error: unknown) {
       if (error instanceof Error) {
