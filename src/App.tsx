@@ -18,6 +18,7 @@ import StudentQuizPage from './components/quizzes/student-quiz-page/StudentQuizP
 import SingleQuiz from './components/quizzes/single-quiz/SingleQuiz';
 import Home from './components/home/Home';
 import Messages from './components/common/messages/Messages';
+import ResetPassword from './components/auth/ResetPassword';
 
 
 
@@ -25,7 +26,7 @@ function App() {
   const [appState, setAppState] = useState<AppContextType>({
     user: null,
     userData: null,
-    setAppState: () => {},
+    setAppState: () => { },
   });
 
   const [user, loading, error] = useAuthState(auth);
@@ -34,7 +35,7 @@ function App() {
     setAppState({
       ...appState,
       user: user || null
-    } )
+    })
   }
 
   useEffect(() => {
@@ -88,12 +89,13 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/create-quiz" element={<CreateQuiz />} />
+          <Route path="/create-quiz" element={appState.userData?.isTeacher && <CreateQuiz />} />
           <Route path='/user-profile' element={<User />} />
           <Route path='/quizz-page' element={appState.userData?.isTeacher ? <QuizzPage /> : appState.userData?.isStudent && <StudentQuizPage />} />
           <Route path='/admin-panel' element={appState.userData?.isAdmin && <AdminPanel />}></Route>
-          <Route path='/play-quiz/:id'element={<SingleQuiz />} />
+          <Route path='/play-quiz/:id' element={<SingleQuiz />} />
           <Route path='/messages' element={appState.user?.uid ? <Messages userId={appState.user.uid} /> : <Login />} />
           <Route path='*' element={<h1>Not Found</h1>} />
         </Routes>
