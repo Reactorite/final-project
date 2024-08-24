@@ -15,15 +15,11 @@ const Messages: React.FC<MessagePageProps> = ({ userId }) => {
   useEffect(() => {
     if (!selectedUser) return;
 
-    console.log('Subscribing to messages for user:', selectedUser.id);
-
     const unsubscribe = subscribeToMessages(userId, selectedUser.id, (fetchedMessages) => {
-      console.log('Messages updated:', fetchedMessages);
       setMessages(fetchedMessages);
     });
 
     return () => {
-      console.log('Unsubscribing from messages for user:', selectedUser.id);
       unsubscribe();
     };
   }, [userId, selectedUser]);

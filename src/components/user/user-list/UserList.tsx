@@ -20,7 +20,7 @@ const UserList: React.FC<UserListProps> = ({ onSelectUser, userId }) => {
   useEffect(() => {
     const usersRef = ref(db, "users");
     const messagesRef = ref(db, "messages");
-
+  
     const unsubscribeUsers = onValue(usersRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -32,7 +32,7 @@ const UserList: React.FC<UserListProps> = ({ onSelectUser, userId }) => {
             unreadCount: 0,
           };
         });
-
+  
         const unsubscribeMessages = onValue(messagesRef, (snapshot) => {
           const messageData = snapshot.val();
           if (messageData) {
@@ -43,27 +43,27 @@ const UserList: React.FC<UserListProps> = ({ onSelectUser, userId }) => {
                 const unreadMessages = Object.entries(messages as { [key: string]: MessageDataType }).filter(
                   ([, msg]) => msg.receiver === userId && msg.status === "unread"
                 ).length;
-
+  
                 userMap[otherUserId].unreadCount = unreadMessages;
               }
             });
           }
-
+  
           const sortedUsers = Object.values(userMap).sort((a, b) => b.unreadCount - a.unreadCount);
           setUsers(sortedUsers);
-
         });
-
+  
         return () => {
           unsubscribeMessages();
         };
       }
     });
-
+  
     return () => {
       unsubscribeUsers();
     };
   }, [userId]);
+  
 
   const handleUserClick = async (selectedUserId: string, selectedUserName: string) => {
     onSelectUser(selectedUserId, selectedUserName);
