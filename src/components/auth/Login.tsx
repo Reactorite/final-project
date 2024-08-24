@@ -34,11 +34,11 @@ export default function Login() {
         user: firebaseUser,
         userData: userData,
       }));
-      
+
       navigate(location.state?.from.pathname ?? '/');
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message);  
+        alert(error.message);
       } else {
         alert('An unexpected error occurred.');
       }
@@ -52,7 +52,9 @@ export default function Login() {
       <input value={user.username} onChange={updateUser('username')} type="text" name="username" id="username" /><br /><br />
       <label htmlFor="password">Password: </label>
       <input value={user.password} onChange={updateUser('password')} type="password" name="password" id="password" /><br />
-      <button onClick={login}>Login</button>
+      <button onClick={login}>Login</button><br /><br />
+      <p>Forgot your password? Click the button below to reset.</p>
+      <button onClick={() => navigate('/reset-password')}>Reset Password</button>
     </div>
   );
 }
