@@ -1,100 +1,57 @@
-/* CreateQuiz.css */
-.quiz-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .form-group input,
-  .form-group select {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-  }
-  
-  .answer-options {
-    margin-bottom: 15px;
-  }
-  
-  .answer-option {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .answer-option input,
-  .answer-option select {
-    margin-right: 10px;
-  }
-  
-  button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  button:disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
-  }
-  
-  .questions-list {
-    margin-top: 20px;
-  }
-  
-  .question-item {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-  }
-  
-  .question-item h4 {
-    margin: 0;
-    font-size: 18px;
-  }
-  
-  .question-item p {
-    margin: 5px 0;
-  }
-  
-  .question-item ul {
-    list-style: none;
-    padding-left: 0;
-  }
-  
-  .question-item ul li {
-    margin: 5px 0;
-  }
-  
-  .total-points {
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 20px;
-    text-align: center;
-  }
-  
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: rgb(255, 255, 255); /* Ensure the background color matches the card */
+  z-index: 1; /* Ensure it stays above other content */
+  padding: 10px; /* Optional: Add some padding for better appearance */
+  border-bottom: 1px solid #ddd; /* Optional: Add a bottom border for separation */
+}
+
+.quiz-page-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  max-width: 100%;
+  padding: 20px;
+}
+
+.card {
+  margin-bottom: 20px;
+}
+
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.list-group-item .btn {
+  margin-left: 10px;
+}
+
+.question-item {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+}
+
+.question-item h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.question-item p {
+  margin: 5px 0;
+}
+
+.question-item ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.question-item ul li {
+  margin: 5px 0;
+}
