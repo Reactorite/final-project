@@ -33,6 +33,7 @@ const UserList: React.FC<UserListProps> = ({ onSelectUser, userId }) => {
           };
         });
         setUserMap(userMap);
+        setUsers(Object.values(userMap));
       }
     });
 
@@ -61,7 +62,7 @@ const UserList: React.FC<UserListProps> = ({ onSelectUser, userId }) => {
         });
 
         const sortedUsers = Object.values(updatedUserMap).sort((a, b) => b.unreadCount - a.unreadCount);
-        setUsers(sortedUsers);
+        setUsers(sortedUsers);  
       }
     });
 
@@ -92,17 +93,21 @@ const UserList: React.FC<UserListProps> = ({ onSelectUser, userId }) => {
     <div className="user-list">
       <h3>Users</h3>
       <ul>
-        {users.map((user) => (
-          <li
-            key={user.uid}
-            onClick={() => handleUserClick(user.uid, user.username)}
-            className="user-list-item"
-          >
-            {user.username} {user.unreadCount > 0 && (
-              <span className="unread-count-badge">{user.unreadCount}</span>
-            )}
-          </li>
-        ))}
+        {users.length > 0 ? (
+          users.map((user) => (
+            <li
+              key={user.uid}
+              onClick={() => handleUserClick(user.uid, user.username)}
+              className="user-list-item"
+            >
+              {user.username} {user.unreadCount > 0 && (
+                <span className="unread-count-badge">{user.unreadCount}</span>
+              )}
+            </li>
+          ))
+        ) : (
+          <li>No users found</li>
+        )}
       </ul>
     </div>
   );
