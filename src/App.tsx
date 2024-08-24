@@ -17,6 +17,8 @@ import QuizzPage from './components/quizzes/quizz-page/QuizzPage';
 import StudentQuizPage from './components/quizzes/student-quiz-page/StudentQuizPage';
 import SingleQuiz from './components/quizzes/single-quiz/SingleQuiz';
 import Home from './components/home/Home';
+import Messages from './components/common/messages/Messages';
+
 
 
 function App() {
@@ -92,6 +94,7 @@ function App() {
           <Route path='/quizz-page' element={appState.userData?.isTeacher ? <QuizzPage /> : appState.userData?.isStudent && <StudentQuizPage />} />
           <Route path='/admin-panel' element={appState.userData?.isAdmin && <AdminPanel />}></Route>
           <Route path='/play-quiz/:id'element={<SingleQuiz />} />
+          <Route path='/messages' element={<Messages userId={appState.user?.uid || ''} />} />
           <Route path='*' element={<h1>Not Found</h1>} />
         </Routes>
       </BrowserRouter>

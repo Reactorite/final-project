@@ -1,6 +1,5 @@
-// src/components/common/Header.tsx
-import { NavLink } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import { AppContext } from "../../state/app.context";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../services/auth.service";
@@ -42,7 +41,10 @@ const Header = () => {
       {user && userData && <NavLink to="quizz-page" className="header-link">QUIZ PAGE</NavLink>}
       {user && userData && userData.isAdmin && <NavLink to='/admin-panel' className="header-link">ADMIN PANEL</NavLink>}
       <div className="header-link">
-        {user && userData && <Notification userId={userData.uid} userName={userData.username}/>} 
+      {user && userData && <Notification userId={userData.uid} userName={userData.username}/>} 
+      </div>
+      <div className="header-link">
+        {user && userData && <NavLink to="/messages" className="header-link">MESSAGES</NavLink>} 
       </div>
     </div>
   );
