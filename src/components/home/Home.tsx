@@ -65,8 +65,8 @@ export default function Home() {
                 cursor: "pointer"
               }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#0D6EFD" className="bi bi-search" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+              <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#0D6EFD" className="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
               </svg>
             </button>
             {showSearchResults && (
@@ -92,32 +92,32 @@ export default function Home() {
         </Dropdown>
       </div>
       <div className="container mt-4">
-      <div className="row" style={{ display: "flex" }}>
-      <div className="col-md-4 d-flex">
-      <Card
-        className="card flex-fill custom-scrollbar"
-        style={{
-          maxHeight: "80vh",
-          maxWidth: "30vw",
-          overflowY: "scroll",
-          minHeight: "80vh",
-        }}
-      >
-        <h3 className="text-center sticky-header">Top 15</h3>
-        <div className="card-body">
-          {users.slice(0, 14).map((user, index) => (
-            <Card key={index} className="mb-2">
-              <Card.Body>
-                <Card.Title>{user.username}</Card.Title>
-                <Card.Text>Total points: {user.globalPoints}</Card.Text>
-                <Card.Text>{getRanking(user.globalPoints)}</Card.Text>
-              </Card.Body>
+        <div className="row" style={{ display: "flex" }}>
+          <div className="col-md-4 d-flex">
+            <Card
+              className="card flex-fill custom-scrollbar"
+              style={{
+                maxHeight: "80vh",
+                maxWidth: "30vw",
+                overflowY: "scroll",
+                minHeight: "80vh",
+              }}
+            >
+              <h3 className="text-center sticky-header">Top 15</h3>
+              <div className="card-body">
+                {users.slice(0, 14).map((user, index) => (
+                  <Card key={index} className="mb-2">
+                    <Card.Body>
+                      <Card.Title>{user.username}</Card.Title>
+                      <Card.Text>Total points: {user.globalPoints}</Card.Text>
+                      <Card.Text>{getRanking(user.globalPoints)}</Card.Text>
+                    </Card.Body>
+                  </Card>
+                ))}
+              </div>
             </Card>
-          ))}
+          </div>
         </div>
-      </Card>
-      </div>
-      </div>
       </div>
     </div>
   );

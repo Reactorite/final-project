@@ -6,6 +6,11 @@
   transform: scale(1.5);
 }
 
+#search-icon:active {
+  transform: scale(0.9);
+  transition: transform 0.1s;
+}
+
 /* .custom-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
