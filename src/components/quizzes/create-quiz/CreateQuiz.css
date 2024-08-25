@@ -1,10 +1,14 @@
 .sticky-header {
   position: sticky;
   top: 0;
-  background-color: rgb(255, 255, 255); /* Ensure the background color matches the card */
-  z-index: 1; /* Ensure it stays above other content */
-  padding: 10px; /* Optional: Add some padding for better appearance */
-  border-bottom: 1px solid #ddd; /* Optional: Add a bottom border for separation */
+  background-color: rgb(255, 255, 255);
+  /* Ensure the background color matches the card */
+  z-index: 1;
+  /* Ensure it stays above other content */
+  padding: 10px;
+  /* Optional: Add some padding for better appearance */
+  border-bottom: 1px solid #ddd;
+  /* Optional: Add a bottom border for separation */
   margin-bottom: 0px;
 }
 
@@ -19,10 +23,13 @@
   margin-bottom: 10px;
 }
 
-.column-container > .card > .card-body {
-  overflow-y: auto; /* Ensure scrolling inside the main card when content overflows */
-  height: calc(80vh - 160px); /* Adjust height to be within the fixed card height, accounting for header/footer */
-  padding-bottom: 10px; /* Provide padding for content */
+.column-container>.card>.card-body {
+  overflow-y: auto;
+  /* Ensure scrolling inside the main card when content overflows */
+  height: calc(80vh - 160px);
+  /* Adjust height to be within the fixed card height, accounting for header/footer */
+  padding-bottom: 10px;
+  /* Provide padding for content */
 }
 
 .column-container {
@@ -31,8 +38,10 @@
 }
 
 .fixed-height-card {
-  height: 80vh; /* Fixed height for columns */
-  overflow-y: auto; /* Ensure scrolling inside the card when content overflows */
+  height: 80vh;
+  /* Fixed height for columns */
+  overflow-y: auto;
+  /* Ensure scrolling inside the card when content overflows */
 }
 
 .bold-text {
@@ -56,6 +65,7 @@
   margin-left: 5px;
 }
 
+/* Change this to orange */
 .custom-footer {
   position: sticky;
   bottom: 0;
@@ -65,11 +75,28 @@
   font-weight: bold;
   font-size: 16px;
   cursor: pointer;
-  border-top: 1px solid #ddd; /* Optional: to visually separate the footer */
+  border-top: 1px solid #ddd;
+  /* Optional: to visually separate the footer */
 }
 
+.orange-footer {
+  background-color: orange;
+  /* Bootstrap orange */
+  color: white;
+}
+
+.orange-footer:hover {
+  background-color: orange;
+}
+
+.orange-footer:active {
+  background-color: #c9600c;
+}
+
+/* Update the blue to match the buttons inside the cards */
 .blue-footer {
   background-color: #007bff;
+  /* Bootstrap blue */
   color: white;
 }
 
@@ -95,7 +122,8 @@
 }
 
 .red-footer {
-  background-color: #dc3545; /* Bootstrap red */
+  background-color: #dc3545;
+  /* Bootstrap red */
   color: white;
 }
 
