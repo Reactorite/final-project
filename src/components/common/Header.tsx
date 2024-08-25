@@ -5,16 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../services/auth.service";
 import { auth } from "../../config/firebase-config";
 import { useAuthState } from "react-firebase-hooks/auth";
-import './Header.css'; 
+import './Header.css';
 import Notification from "./notifications/Notifications";
-import { getUnreadMessagesCount } from "../../services/message.service"; 
+import { getUnreadMessagesCount } from "../../services/message.service";
 import { Badge } from "react-bootstrap";
 
 const Header = () => {
   const { userData, setAppState } = useContext(AppContext);
   const navigate = useNavigate();
   const [user, loading, error] = useAuthState(auth);
-  const [isLoading, setIsLoading] = useState(true);
   const [unreadMessages, setUnreadMessages] = useState<number>(0);
 
   useEffect(() => {
@@ -25,13 +24,16 @@ const Header = () => {
   }, [loading, userData]);
 
   const logout = async () => {
-    await logoutUser();
-    setAppState((prevState) => ({
-      ...prevState,
-      user: null,
-      userData: null
-    }));
-    navigate('/login');
+    const confirmLogout = window.confirm("Are you sure you want to sign out?");
+    if (confirmLogout) {
+      await logoutUser();
+      setAppState((prevState) => ({
+        ...prevState,
+        user: null,
+        userData: null
+      }));
+      navigate('/login');
+    }
   };
 
   return (
@@ -45,7 +47,7 @@ const Header = () => {
       {user && userData && <NavLink to="quizz-page" className="header-link">QUIZ PAGE</NavLink>}
       {user && userData && userData.isAdmin && <NavLink to='/admin-panel' className="header-link">ADMIN PANEL</NavLink>}
       <div className="header-link">
-        {user && userData && <Notification userId={userData.uid} userName={userData.username}/>} 
+        {user && userData && <Notification userId={userData.uid} userName={userData.username} />}
       </div>
       <div className="header-link">
         {user && userData && (

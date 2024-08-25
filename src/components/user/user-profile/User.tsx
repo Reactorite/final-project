@@ -3,11 +3,31 @@ import { Form, Button, Container, Row, Col, Card, Spinner } from 'react-bootstra
 import { UserDataType } from '../../../types/UserDataType';
 import { AppContext } from '../../../state/app.context';
 import { updateUserProfile } from '../../../services/users.service';
+import { onValue, ref } from 'firebase/database';
+import { db } from '../../../config/firebase-config';
+import getRanking from '../../../utils/ranking/ranking';
 
 const User: React.FC = () => {
   const { user, userData: realUserData, setAppState } = useContext(AppContext);
   const [editing, setEditing] = useState(false);
   const [userData, setUserData] = useState<UserDataType | null>(null);
+  const [points, setPoints] = useState(0);
+
+  useEffect(() => {
+    if (userData) {
+      const pointsRef = ref(db, `users/${userData.username}/globalPoints`);
+      const unsubscribe = onValue(pointsRef, (snapshot) => {
+        const currPoints = snapshot.val();
+        if (currPoints !== null && currPoints !== undefined) {
+          setPoints(currPoints);
+        }
+      }, (error) => {
+        console.error('Error fetching points:', error);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [userData]);
 
   useEffect(() => {
     if (realUserData) {
@@ -49,8 +69,8 @@ const User: React.FC = () => {
                 <strong>Phone:</strong> {userData.phoneNumber} <br />
                 <strong>Address:</strong> {userData.address} <br />
                 <strong>Role:</strong> {userData.isTeacher ? 'Educator' : 'Student'} <br />
-                <strong>Rank:</strong> {userData.rank} <br />
-                <strong>Global Points:</strong> {userData.globalPoints}
+                <strong>Rank:</strong> {getRanking(points)} <br />
+                <strong>Global Points:</strong> {points}
               </Card.Text>
 
               {editing ? (
@@ -95,14 +115,14 @@ const User: React.FC = () => {
                     variant="primary"
                     onClick={handleProfileUpdate}
                     className="mr-2"
-                    style={{ marginTop: '10px' }} 
+                    style={{ marginTop: '10px' }}
                   >
                     Save
                   </Button>
                   <Button
                     variant="secondary"
                     onClick={() => setEditing(false)}
-                    style={{ marginTop: '10px', marginLeft: '5px'}} 
+                    style={{ marginTop: '10px', marginLeft: '5px' }}
                   >
                     Cancel
                   </Button>
