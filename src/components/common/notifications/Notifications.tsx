@@ -43,8 +43,13 @@ const Notification: React.FC<NotificationProps> = ({ userId, userName }) => {
   const handleAccept = async (notificationID: string, quizID?: string) => {
     try {
       await acceptInvitation(notificationID, userName);
+  
       if (quizID) {
-        navigate(`/quiz/${quizID}`);  
+        // Add the student's ID to the quiz members
+        const quizRef = ref(db, `quizzes/${quizID}/members`);
+        await update(quizRef, { [userId]: true });
+  
+        navigate(`/quiz/${quizID}`);
       }
     } catch (error) {
       console.error("Failed to accept invitation:", error);
