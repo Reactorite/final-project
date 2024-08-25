@@ -24,13 +24,16 @@ const Header = () => {
   }, [loading, userData]);
 
   const logout = async () => {
-    await logoutUser();
-    setAppState((prevState) => ({
-      ...prevState,
-      user: null,
-      userData: null
-    }));
-    navigate('/login');
+    const confirmLogout = window.confirm("Are you sure you want to sign out?");
+    if (confirmLogout) {
+      await logoutUser();
+      setAppState((prevState) => ({
+        ...prevState,
+        user: null,
+        userData: null
+      }));
+      navigate('/login');
+    }
   };
 
   return (
