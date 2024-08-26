@@ -356,7 +356,7 @@ export default function CreateQuiz() {
                     onChange={(e) => setQuiz({ ...quiz, title: e.target.value })}
                     type="text"
                     id="title"
-                    placeholder="Title"
+                    placeholder="Title your iQuiz:"
                     className="form-control"
                   />
                 </div>
@@ -368,7 +368,7 @@ export default function CreateQuiz() {
                     onChange={(e) => setQuiz({ ...quiz, category: e.target.value })}
                     type="text"
                     id="category"
-                    placeholder="Category"
+                    placeholder="What category is your iQuiz in?"
                     className="form-control"
                   />
                 </div>
