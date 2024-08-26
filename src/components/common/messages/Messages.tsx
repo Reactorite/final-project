@@ -4,7 +4,7 @@ import UserList from "../../user/user-list/UserList";
 import "./Messages.css";
 
 interface MessagePageProps {
-  userId: string;  
+  userId: string;
 }
 
 const Messages: React.FC<MessagePageProps> = ({ userId }) => {
@@ -29,7 +29,7 @@ const Messages: React.FC<MessagePageProps> = ({ userId }) => {
 
     try {
       await sendMessage(userId, selectedUser.id, newMessage);
-      setNewMessage(""); 
+      setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -37,7 +37,7 @@ const Messages: React.FC<MessagePageProps> = ({ userId }) => {
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      handleSendMessage(); 
+      handleSendMessage();
     }
   };
 
@@ -78,7 +78,7 @@ const Messages: React.FC<MessagePageProps> = ({ userId }) => {
             placeholder="Type a message"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={handleKeyDown}  
+            onKeyDown={handleKeyDown}
             className="message-input"
           />
           <button onClick={handleSendMessage} className="send-button">
