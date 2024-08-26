@@ -19,6 +19,7 @@ import SingleQuiz from './components/quizzes/single-quiz/SingleQuiz';
 import Home from './components/home/Home';
 import Messages from './components/common/messages/Messages';
 import ResetPassword from './components/auth/ResetPassword';
+import BattleArena from './components/battle-arena/BattleArena';
 
 
 
@@ -88,6 +89,7 @@ function App() {
         <Header />
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/battle-arena' element={<BattleArena />}></Route>
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/register" element={<Register />} />
