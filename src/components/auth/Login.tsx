@@ -46,7 +46,7 @@ export default function Login() {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
       <h1>Login</h1>
       <label htmlFor="username">Username: </label>
       <input value={user.username} onChange={updateUser('username')} type="text" name="username" id="username" /><br /><br />
