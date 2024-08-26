@@ -41,8 +41,8 @@ const Header = () => {
       <NavLink to="/" className="header-link">HOME</NavLink>
       {user && userData && <NavLink to="/user-profile" className="header-link">PROFILE</NavLink>}
       {user && userData && <NavLink to="/" className="header-link" onClick={logout}>LOGOUT</NavLink>}
-      <NavLink to="/login" className="header-link">LOGIN</NavLink>
-      <NavLink to="/register" className="header-link">REGISTER</NavLink>
+      {!user && <NavLink to="/login" className="header-link">LOGIN</NavLink>}
+      {!user && <NavLink to="/register" className="header-link">REGISTER</NavLink>}
       {user && userData && userData.isTeacher && <NavLink to="/create-quiz" className="header-link">CREATE QUIZ</NavLink>}
       {user && userData && <NavLink to="quizz-page" className="header-link">QUIZ PAGE</NavLink>}
       {user && userData && userData.isAdmin && <NavLink to='/admin-panel' className="header-link">ADMIN PANEL</NavLink>}
