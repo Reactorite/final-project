@@ -26,15 +26,20 @@ const Header = () => {
   const logout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to sign out?");
     if (confirmLogout) {
-      await logoutUser();
-      setAppState((prevState) => ({
-        ...prevState,
-        user: null,
-        userData: null
-      }));
-      navigate('/login');
+      if (userData && userData.username) {
+        await logoutUser(userData.username);
+        setAppState((prevState) => ({
+          ...prevState,
+          user: null,
+          userData: null
+        }));
+        navigate('/login');
+      } else {
+        console.error("No username found for logged in user.");
+      }
     }
   };
+  
 
   return (
     <div className="header-container">

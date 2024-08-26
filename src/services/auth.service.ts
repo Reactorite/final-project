@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
-import { get, ref, query, equalTo, orderByChild } from 'firebase/database';
+import { get, ref, query, equalTo, orderByChild, update } from 'firebase/database';
 import { auth, db } from '../config/firebase-config';
 import { UserDataType } from '../types/UserDataType'; 
 
@@ -24,11 +24,25 @@ export const loginUser = async (username: string, password: string): Promise<{ f
     throw new Error('This account has been blocked. Please contact support.');
   }
 
+  const userOnlineRef = ref(db, `users/${userData.username}`); 
+  await update(userOnlineRef, { isOnline: true });
+
   return { firebaseUser, userData };
 };
 
 
-export const logoutUser = () => {
+export const logoutUser = async (username: string) => { 
+  const userRef = query(ref(db, 'users'), orderByChild('username'), equalTo(username));
+  const userSnapshot = await get(userRef);
+
+  if (!userSnapshot.exists()) {
+    throw new Error('User not found'); 
+  }
+
+  const userData = Object.values(userSnapshot.val())[0] as UserDataType;
+
+  const userOnlineRef = ref(db, `users/${userData.username}`);
+  await update(userOnlineRef, { isOnline: false });
+
   return signOut(auth);
 };
-
