@@ -25,6 +25,7 @@ export interface UserDataType {
     isTeacher: boolean,
     isStudent: boolean,
     isOnline: boolean,
-    isReadyForBattle: boolean
+    isReadyForBattle: boolean,
+    readyCategory?: string
   }
   
