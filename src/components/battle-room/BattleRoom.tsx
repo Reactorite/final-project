@@ -6,13 +6,13 @@ import { db } from '../../config/firebase-config';
 import { AppContext } from '../../state/app.context';
 import './BattleRoom.css';
 import { UserDataType } from '../../types/UserDataType';
+import BattleModeWrapper from '../battle-mode-wrapper/BattleModeWrapper';
 
 interface Participant {
   username: string;
   status: string;
+  points?: number;  
 }
-
-
 
 const BattleRoom: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -27,17 +27,16 @@ const BattleRoom: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [category, setCategory] = useState<string | null>(null);
   const [hostUserId, setHostUserId] = useState<string | null>(null);
+  const [battleStarted, setBattleStarted] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (Object.keys(participants).length >= 2 && loading) {
-      setLoading(false);
+    return () => {
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current); 
+        clearTimeout(timeoutRef.current);
       }
-    }
-  }, [participants, loading]);
-  
+    };
+  }, []);
 
   useEffect(() => {
     const battleRoomRef = ref(db, `battle-rooms/${roomId}`);
@@ -46,12 +45,25 @@ const BattleRoom: React.FC = () => {
       if (data) {
         setCategory(data.category);
         setParticipants(data.participants || {});
-        setHostUserId(data.hostUserId);
+        setHostUserId(data.hostUserId); 
+        setBattleStarted(data.status === 'in-battle');
+  
+        if (data.randomSearchActive === false && loading) {
+          setLoading(false);
+        }
       }
     });
-
+  
     return () => unsubRoom();
-  }, [roomId]);
+  }, [roomId, loading]);
+
+  useEffect(() => {
+    if (Object.keys(participants).length === 2) {
+      setLoading(false);
+      update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: false });
+      console.log('Two participants found, randomSearchActive set to false.');
+    }
+  }, [participants, roomId]);
 
   const toggleReadyState = async () => {
     if (userData) {
@@ -71,7 +83,7 @@ const BattleRoom: React.FC = () => {
       await update(ref(db, `battle-rooms/${roomId}`), {
         status: 'in-battle',
       });
-      navigate(`/battle-room/${roomId}/battle-mode`);
+      setBattleStarted(true);
     }
   };
 
@@ -92,64 +104,75 @@ const BattleRoom: React.FC = () => {
       console.error('Error fetching online users:', error);
     }
   };
-  
 
   const handleSendInvite = async (invitedUser: UserDataType) => {
     const newNotificationRef = push(ref(db, `notifications`));
     await set(newNotificationRef, {
       receiver: invitedUser.uid,
-      sender: userData?.uid, 
+      sender: userData?.uid,
       message: `${userData?.username} has invited you to join Battle Room ${roomId}`,
       roomId: roomId,
       status: "unread",
       invitationStatus: "pending",
       timestamp: Date.now(),
     });
-  
+
     console.log(`Invite sent to ${invitedUser.username} to join room ${roomId}`);
     setShowInviteModal(false);
   };
-  
 
   const findRandomOpponent = async () => {
     if (userData) {
       console.log('Starting random search...');
       setLoading(true);
   
-      timeoutRef.current = setTimeout(async () => {
-        const usersRef = ref(db, `users`);
-        const opponentQuery = query(usersRef, orderByChild('isReadyForBattle'), equalTo(true));
-        const snapshot = await get(opponentQuery);
+      try {
+        await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: true });
   
-        if (snapshot.exists()) {
-          const users = snapshot.val();
-          const userKeys = Object.keys(users).filter(uid => users[uid].uid !== userData?.uid);
-          if (userKeys.length > 0) {
-            const randomIndex = Math.floor(Math.random() * userKeys.length);
-            const selectedOpponent = users[userKeys[randomIndex]];
-            setOpponent(selectedOpponent.username);
-            console.log('Opponent selected:', selectedOpponent.username);
+        timeoutRef.current = setTimeout(async () => {
+          const usersRef = ref(db, `users`);
+          const opponentQuery = query(usersRef, orderByChild('isReadyForBattle'), equalTo(true));
+          const snapshot = await get(opponentQuery);
+  
+          if (snapshot.exists()) {
+            const users = snapshot.val();
+            const userKeys = Object.keys(users).filter(uid => users[uid].uid !== userData?.uid);
+            if (userKeys.length > 0) {
+              const randomIndex = Math.floor(Math.random() * userKeys.length);
+              const selectedOpponent = users[userKeys[randomIndex]];
+              setOpponent(selectedOpponent.username);
+              console.log('Opponent selected:', selectedOpponent.username);
+  
+              await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: false });
+            } else {
+              console.log('No opponents found.');
+              setLoading(false);
+  
+              await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: false });
+            }
           } else {
-            console.log('No opponents found.');
+            console.log('No users found in the database.');
             setLoading(false);
-          }
-        } else {
-          console.log('No users found in the database.');
-          setLoading(false);
-        }
-      }, 15000);
-    }
-  };
   
-
-  const handleRandomSearchHost = async () => {
-    await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: true });
-    findRandomOpponent();
+            await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: false });
+          }
+        }, 15000);
+      } catch (error) {
+        console.error('Error during random opponent search:', error);
+        setLoading(false);
+        
+        await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: false });
+      }
+    }
   };
 
   const cancelSearch = async () => {
     setLoading(false);
     setOpponent(null);
+    await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: false });
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
     console.log('Search canceled.');
   };
 
@@ -174,6 +197,24 @@ const BattleRoom: React.FC = () => {
   const opponentUser = participantList.find(participant => participant.username !== userData?.username);
 
   const allReady = participantList.every(participant => participant.status === 'Ready');
+
+  if (battleStarted && category && roomId && hostUserId) {
+    const participantsWithDefaultPoints = Object.fromEntries(
+      Object.entries(participants).map(([uid, participant]) => [
+        uid,
+        { ...participant, points: participant.points || 0 },
+      ])
+    );
+  
+    return (
+      <BattleModeWrapper
+        category={category}
+        participants={participantsWithDefaultPoints}
+        roomId={roomId}  
+        hostUserId={hostUserId} 
+      />
+    );
+  }
 
   return (
     <div className="battle-room">
@@ -204,7 +245,7 @@ const BattleRoom: React.FC = () => {
           <>
             <Button variant="secondary" onClick={deleteBattleRoom}>Back</Button>
             <Button onClick={handleInvite}>Invite</Button>
-            <Button onClick={handleRandomSearchHost}>Random Search</Button>
+            <Button onClick={findRandomOpponent}>Random Search</Button>
             {allReady && (
               <Button variant="success" onClick={startBattle}>
                 Start Battle
