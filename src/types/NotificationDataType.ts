@@ -6,7 +6,8 @@ export interface NotificationDataType {
   status: "unread" | "read";
   invitationStatus?: "pending" | "accepted" | "rejected";
   quizTitle?: string; 
-  quizID?: string;  
+  quizID?: string;
+  roomId?: string; 
 }
 
   // const ROLE = {
