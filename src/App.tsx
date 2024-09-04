@@ -20,6 +20,7 @@ import Home from './components/home/Home';
 import Messages from './components/common/messages/Messages';
 import ResetPassword from './components/auth/ResetPassword';
 import BattleArena from './components/battle-arena/BattleArena';
+import BattleRoom from './components/battle-room/BattleRoom';
 
 
 
@@ -90,6 +91,7 @@ function App() {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/battle-arena' element={<BattleArena />}></Route>
+          <Route path="/battle-room/:roomId" element={<BattleRoom />} />
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/register" element={<Register />} />
