@@ -8,6 +8,7 @@ import { AppContext } from "../../../state/app.context";
 import "./CreateQuiz.css";
 import { useNavigate } from 'react-router-dom';
 import { Button, Card } from "react-bootstrap";
+// import HoverState from "../../../types/HoverStateDataType";
 
 export default function CreateQuiz() {
   const { user } = useContext(AppContext);
@@ -16,8 +17,8 @@ export default function CreateQuiz() {
   const [quiz, setQuiz] = useState<QuizDataType>({
     title: "",
     category: "",
-    isOpen: false,
-    isPublic: false,
+    isOpen: true,
+    isPublic: true,
     questions: {},
     scores: {},
     creator: "",
@@ -28,6 +29,7 @@ export default function CreateQuiz() {
     quizID: "",
   });
 
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [question, setQuestion] = useState("");
   const [numAnswers, setNumAnswers] = useState(0);
   const [answers, setAnswers] = useState<{ [answer: string]: boolean }>({});
@@ -67,6 +69,14 @@ export default function CreateQuiz() {
     fetchExistingQuizzes();
   }, []);
 
+  const containsInvalidChars = (str: string) => {
+    return /[.#$\/\[\]]/.test(str);
+  }
+
+  const sections = ['General Information', 'Question Editor', 'In this iQuiz'];
+  const handleMouseEnter = (index: number) => setHoveredIndex(index);
+  const handleMouseLeave = () => setHoveredIndex(null);
+
   const handleQuizSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedID = e.target.value;
     setSelectedQuizID(selectedID);
@@ -80,8 +90,8 @@ export default function CreateQuiz() {
       setQuiz({
         title: "",
         category: "",
-        isOpen: false,
-        isPublic: false,
+        isOpen: true,
+        isPublic: true,
         questions: {},
         scores: {},
         creator: user!.uid || "",
@@ -112,12 +122,12 @@ export default function CreateQuiz() {
   }, [quiz]);
 
   const handleCreateQuestion = () => {
-    if (hasUnsavedChanges) {
-      const confirmSwitch = window.confirm(
-        "You have unsaved changes. Are you sure you want to create a new question without saving?"
-      );
-      if (!confirmSwitch) return;
-    }
+    // if (hasUnsavedChanges) {
+    //   const confirmSwitch = window.confirm(
+    //     "You have unsaved changes. Are you sure you want to create a new question without saving?"
+    //   );
+    //   if (!confirmSwitch) return;
+    // }
     setQuestion("");
     setAnswers({});
     setNumAnswers(0);
@@ -155,10 +165,26 @@ export default function CreateQuiz() {
     }
   };
 
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const title = e.target.value;
+    if (containsInvalidChars(title)) {
+      alert("Please don't use invalid characters (. # $ / [ or ]).");
+      return;
+    }
+    setQuiz(prev => ({
+      ...prev,
+      title: title
+    }));
+  };
+
 
   const addAnswer = () => {
     if (!currentAnswer) {
       alert("Please enter an answer.");
+      return;
+    }
+    if (containsInvalidChars(currentAnswer)) {
+      alert("The answer contains invalid characters (. # $ / [ or ]). Please remove them and try again.");
       return;
     }
     if (Object.keys(answers).length >= numAnswers && !editingAnswer) {
@@ -173,7 +199,7 @@ export default function CreateQuiz() {
         updatedAnswers[currentAnswer] = currentAnswerCorrect;
         return updatedAnswers;
       });
-      setEditingAnswer(null); // Clear the editing state
+      setEditingAnswer(null);
     } else {
       setAnswers((prev) => ({
         ...prev,
@@ -184,6 +210,8 @@ export default function CreateQuiz() {
     setCurrentAnswer("");
     setCurrentAnswerCorrect(false);
   };
+
+
 
   const handleEditAnswer = (answer: string) => {
     setCurrentAnswer(answer);
@@ -327,281 +355,318 @@ export default function CreateQuiz() {
     <div className="quiz-page-container">
       <div className="container mt-4">
         <div className="row">
-          <div className="col-md-4 column-container">
-            <Card className="card flex-fill fixed-height-card">
-              <h3 className="text-center sticky-header">General Information</h3>
-              <div className="card-body">
-                <div className="form-group">
-                  <label htmlFor="existingQuiz">Select Quiz Option:</label>
-                  <select
-                    id="existingQuiz"
-                    value={selectedQuizID || ""}
-                    onChange={handleQuizSelection}
-                    className="form-control"
-                  >
-                    <option value="">Create a New Quiz</option>
-                    {userQuizzes.map(([id, quizData]) => (
-                      <option key={id} value={id}>
-                        {quizData.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-
-                <div className="form-group">
-                  <label htmlFor="title">Title:</label>
-                  <input
-                    value={quiz.title}
-                    onChange={(e) => setQuiz({ ...quiz, title: e.target.value })}
-                    type="text"
-                    id="title"
-                    placeholder="Title your iQuiz:"
-                    className="form-control"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="category">Category:</label>
-                  <input
-                    value={quiz.category}
-                    onChange={(e) => setQuiz({ ...quiz, category: e.target.value })}
-                    type="text"
-                    id="category"
-                    placeholder="What category is your iQuiz in?"
-                    className="form-control"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="isOpen">Is the quiz open?:</label>
-                  <select
-                    value={quiz.isOpen ? "true" : "false"}
-                    onChange={handleDropdownChange("isOpen")}
-                    className="form-control"
-                  >
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="isPublic">Is the quiz public?:</label>
-                  <select
-                    value={quiz.isPublic ? "true" : "false"}
-                    onChange={handleDropdownChange("isPublic")}
-                    className="form-control"
-                  >
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="duration">Duration (in minutes):</label>
-                  <input
-                    value={quiz.duration}
-                    onChange={(e) => setQuiz({ ...quiz, duration: parseInt(e.target.value, 10) })}
-                    type="number"
-                    id="duration"
-                    placeholder="Duration"
-                    className="form-control"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="studentsInQuiz">Students in this iQuiz:</label>
-                  <select id="studentsInQuiz" className="form-control">
-                    <option value="" disabled>No students added</option>
-                  </select>
-                </div>
-                <p className="bold-text">Number of Questions: {questionsList.length}</p>
-                <p className="bold-text">Total Points: {totalPoints}</p>
-              </div>
-              <div
-                className="card-footer custom-footer orange-footer"
-                onClick={() => alert("Invite functionality coming soon!")}
+        <div className="col-md-4 column-container">
+          <Card
+            className="card flex-fill fixed-height-card"
+            onMouseEnter={() => handleMouseEnter(0)}
+            onMouseLeave={handleMouseLeave}
+            style={{
+              transform: hoveredIndex === 0 ? 'scale(1.03)' : 'scale(1)',
+              transition: 'transform 0.3s ease'
+            }}
               >
-                Invite
-              </div>
-
-            </Card>
-          </div>
-
-          <div className="col-md-4 column-container">
-            <Card className="card flex-fill fixed-height-card">
-              <h3 className="text-center sticky-header">Question Editor</h3>
-              <div className="card-body">
-                <div className="form-group">
-                  <label htmlFor="questionSelect">Select Question Option:</label>
-                  <select
-                    id="questionSelect"
-                    value={editingQuestionID || ""} // Ensure the dropdown shows the currently selected question
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        handleEditQuestion(e.target.value);
-                      } else {
-                        handleCreateQuestion();
-                      }
-                    }}
-                    className="form-control"
-                  >
-                    <option value="">Create a New Question</option>
-                    {questionsList.map((q) => (
-                      <option key={q.questID} value={q.questID}>{q.question}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="question-form">
+                <h3 className="text-center sticky-header">General Information</h3>
+                <div className="card-body">
                   <div className="form-group">
-                    <label htmlFor="question">Question:</label>
-                    <input
-                      value={question}
-                      onChange={(e) => {
-                        setQuestion(e.target.value);
-                        setHasUnsavedChanges(true);
-                      }}
-                      type="text"
-                      id="question"
-                      placeholder="Enter the question"
-                      className="form-control"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="numAnswers">Number of Answers:</label>
-                    <input
-                      value={numAnswers}
-                      onChange={handleNumAnswersChange}
-                      type="number"
-                      id="numAnswers"
-                      placeholder="Number of answers"
-                      className="form-control"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="points">Points:</label>
-                    <input
-                      value={points}
-                      onChange={handlePointsChange}
-                      type="number"
-                      id="points"
-                      placeholder="Points for this question"
-                      className="form-control"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="currentAnswer">Current Answer:</label>
-                    <input
-                      value={currentAnswer}
-                      onChange={handleAnswerChange}
-                      type="text"
-                      id="currentAnswer"
-                      placeholder="Enter an answer"
-                      className="form-control"
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="currentAnswerCorrect">Is this answer correct?:</label>
+                    <label htmlFor="existingQuiz">Select Quiz Option:</label>
                     <select
-                      value={currentAnswerCorrect ? "true" : "false"}
-                      onChange={handleAnswerSelectChange}
+                      id="existingQuiz"
+                      value={selectedQuizID || ""}
+                      onChange={handleQuizSelection}
+                      className="form-control"
+                    >
+                      <option value="">Create a New Quiz</option>
+                      {userQuizzes.map(([id, quizData]) => (
+                        <option key={id} value={id}>
+                          {quizData.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+
+                  <div className="form-group">
+                    <label htmlFor="title">Title:</label>
+                    <input
+                      value={quiz.title}
+                      onChange={handleTitleChange}
+                      type="text"
+                      id="title"
+                      placeholder="Title your quiz:"
+                      className="form-control"
+                    />
+
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="category">Category:</label>
+                    <select
+                      value={quiz.category}
+                      onChange={(e) => setQuiz({ ...quiz, category: e.target.value })}
+                      className="form-control"
+                      id="category"
+                    >
+                      <option value="">Select Category</option>
+                      <option value="Science & Technology">Science & Technology</option>
+                      <option value="History & Geography">History & Geography</option>
+                      <option value="Arts & Literature">Arts & Literature</option>
+                      <option value="Movies & Television">Movies & Television</option>
+                      <option value="Music">Music</option>
+                      <option value="Sports & Games">Sports & Games</option>
+                      <option value="Food & Drink">Food & Drink</option>
+                      <option value="Science Fiction & Fantasy">Science Fiction & Fantasy</option>
+                      <option value="Nature & Animals">Nature & Animals</option>
+                      <option value="Health & Wellness">Health & Wellness</option>
+                      <option value="Travel & Cultures">Travel & Cultures</option>
+                      <option value="Fashion & Beauty">Fashion & Beauty</option>
+                      <option value="Business & Economics">Business & Economics</option>
+                      <option value="Politics & Society">Politics & Society</option>
+                      <option value="Hobbies & Crafts">Hobbies & Crafts</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="isOpen">Is the quiz open?:</label>
+                    <select
+                      value={quiz.isOpen ? "true" : "false"}
+                      onChange={handleDropdownChange("isOpen")}
                       className="form-control"
                     >
                       <option value="true">Yes</option>
                       <option value="false">No</option>
                     </select>
                   </div>
-                  <Button
-                    onClick={addAnswer}
-                    className="btn btn-primary"
-                  >
-                    {editingAnswer ? "Update Answer" : "Add Answer"}
-                  </Button>
-                  <div className="answers-list mt-3">
-                    <h4>Answers:</h4>
-                    <ul className="list-group">
-                      {Object.entries(answers).map(([ans, isCorrect]) => (
-                        <li key={ans} className="list-group-item d-flex justify-content-between align-items-center">
-                          <span>{ans} - {isCorrect ? "Correct" : "Incorrect"}</span>
-                          <div>
-                            <Button
-                              onClick={() => handleEditAnswer(ans)}
-                              className="btn btn-sm btn-secondary mr-2"
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              onClick={() => handleDeleteAnswer(ans)}
-                              className="btn btn-sm btn-danger"
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+
+                  <div className="form-group">
+                    <label htmlFor="isPublic">Is the quiz public?:</label>
+                    <select
+                      value={quiz.isPublic ? "true" : "false"}
+                      onChange={handleDropdownChange("isPublic")}
+                      className="form-control"
+                    >
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
                   </div>
 
-                  {/* Delete This Question Button (only when editing) */}
-                  {editingQuestionID && (
-                    <Button
-                      onClick={() => handleDeleteQuestion(editingQuestionID)}
-                      className="btn btn-danger mt-3 w-100"
-                    >
-                      Delete This Question
-                    </Button>
-                  )}
+                  <div className="form-group">
+                    <label htmlFor="duration">Duration (in minutes):</label>
+                    <input
+                      value={quiz.duration}
+                      onChange={(e) => setQuiz({ ...quiz, duration: parseInt(e.target.value, 10) })}
+                      type="number"
+                      id="duration"
+                      placeholder="Duration"
+                      className="form-control"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="studentsInQuiz">Students in this iQuiz:</label>
+                    <select id="studentsInQuiz" className="form-control">
+                      <option value="" disabled>No students added</option>
+                    </select>
+                  </div>
+                  <p className="bold-text">Number of Questions: {questionsList.length}</p>
+                  <p className="bold-text">Total Points: {totalPoints}</p>
                 </div>
-              </div>
+                <div
+                  className="card-footer custom-footer orange-footer"
+                  onClick={() => alert("Invite functionality coming soon!")}
+                >
+                  Invite
+                </div>
+              </Card>
+            </div>
+        <div className="col-md-4 column-container">
+          <Card
+            className="card flex-fill fixed-height-card"
+            onMouseEnter={() => handleMouseEnter(1)}
+            onMouseLeave={handleMouseLeave}
+            style={{
+              transform: hoveredIndex === 1 ? 'scale(1.03)' : 'scale(1)',
+              transition: 'transform 0.3s ease'
+            }}
+              >
+                <h3 className="text-center sticky-header">Question Editor</h3>
+                <div className="card-body">
+                  <div className="form-group">
+                    <label htmlFor="questionSelect">Select Question Option:</label>
+                    <select
+                      id="questionSelect"
+                      value={editingQuestionID || ""} // Ensure the dropdown shows the currently selected question
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          handleEditQuestion(e.target.value);
+                        } else {
+                          handleCreateQuestion();
+                        }
+                      }}
+                      className="form-control"
+                    >
+                      <option value="">Create a New Question</option>
+                      {questionsList.map((q) => (
+                        <option key={q.questID} value={q.questID}>{q.question}</option>
+                      ))}
+                    </select>
+                  </div>
 
-              {/* Footer with Save Question button */}
-              <div className="card-footer custom-footer blue-footer" onClick={addQuestionToQuiz}>
-                {editingQuestionID ? "Save Question" : "Add Question"}
-              </div>
-            </Card>
-          </div>
-
-          <div className="col-md-4 column-container">
-            <Card className="card flex-fill fixed-height-card">
-              <h3 className="text-center sticky-header">In this iQuiz</h3>
-              <div className="card-body">
-                {questionsList.map((q) => (
-                  <Card key={q.questID} className="card mb-3">
-                    <div className="card-body">
-                      <p className="card-title">{q.question}</p>
-                      <ul>
-                        {Object.entries(q.answers).map(([ans, isCorrect]) => (
-                          <li key={ans}>
-                            {ans} - {isCorrect ? "Correct" : "Incorrect"}
+                  <div className="question-form">
+                    <div className="form-group">
+                      <label htmlFor="question">Question:</label>
+                      <input
+                        value={question}
+                        onChange={(e) => {
+                          setQuestion(e.target.value);
+                          setHasUnsavedChanges(true);
+                        }}
+                        type="text"
+                        id="question"
+                        placeholder="Enter the question"
+                        className="form-control"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="numAnswers">Number of Answers:</label>
+                      <input
+                        value={numAnswers}
+                        onChange={handleNumAnswersChange}
+                        type="number"
+                        id="numAnswers"
+                        placeholder="Number of answers"
+                        className="form-control"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="points">Points:</label>
+                      <input
+                        value={points}
+                        onChange={handlePointsChange}
+                        type="number"
+                        id="points"
+                        placeholder="Points for this question"
+                        className="form-control"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="currentAnswer">Current Answer:</label>
+                      <input
+                        value={currentAnswer}
+                        onChange={handleAnswerChange}
+                        type="text"
+                        id="currentAnswer"
+                        placeholder="Enter an answer"
+                        className="form-control"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="currentAnswerCorrect">Is this answer correct?:</label>
+                      <select
+                        value={currentAnswerCorrect ? "true" : "false"}
+                        onChange={handleAnswerSelectChange}
+                        className="form-control"
+                      >
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                      </select>
+                    </div>
+                    <Button
+                      onClick={addAnswer}
+                      className="btn btn-primary"
+                    >
+                      {editingAnswer ? "Update Answer" : "Add Answer"}
+                    </Button>
+                    <div className="answers-list mt-3">
+                      <h4>Answers:</h4>
+                      <ul className="list-group">
+                        {Object.entries(answers).map(([ans, isCorrect]) => (
+                          <li key={ans} className="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{ans} - {isCorrect ? "Correct" : "Incorrect"}</span>
+                            <div>
+                              <Button
+                                onClick={() => handleEditAnswer(ans)}
+                                className="btn btn-sm btn-secondary mr-2"
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                onClick={() => handleDeleteAnswer(ans)}
+                                className="btn btn-sm btn-danger"
+                              >
+                                Delete
+                              </Button>
+                            </div>
                           </li>
                         ))}
                       </ul>
-                      <p><strong>Points:</strong> {q.points}</p>
-                      <Button
-                        onClick={() => handleEditQuestion(q.questID)}
-                        className="btn btn-primary"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        onClick={() => handleDeleteQuestion(q.questID)}
-                        className="btn btn-danger ml-2"
-                      >
-                        Delete
-                      </Button>
                     </div>
-                  </Card>
-                ))}
-              </div>
-              <div
-                className="card-footer custom-footer green-footer"
-                onClick={saveQuizToDB}
+
+                    {/* Delete This Question Button (only when editing) */}
+                    {editingQuestionID && (
+                      <Button
+                        onClick={() => handleDeleteQuestion(editingQuestionID)}
+                        className="btn btn-danger mt-3 w-100"
+                      >
+                        Delete This Question
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Footer with Save Question button */}
+                <div className="card-footer custom-footer blue-footer" onClick={addQuestionToQuiz}>
+                  {editingQuestionID ? "Save Question" : "Add Question"}
+                </div>
+              </Card>
+            </div>
+            <div className="col-md-4 column-container">
+          <Card
+            className="card flex-fill fixed-height-card"
+            onMouseEnter={() => handleMouseEnter(2)}
+            onMouseLeave={handleMouseLeave}
+            style={{
+              transform: hoveredIndex === 2 ? 'scale(1.03)' : 'scale(1)',
+              transition: 'transform 0.3s ease'
+            }}
               >
-                Save Quiz
-              </div>
-            </Card>
-          </div>
+                <h3 className="text-center sticky-header">In this iQuiz</h3>
+                <div className="card-body">
+                  {questionsList.map((q) => (
+                    <Card key={q.questID} className="card mb-3">
+                      <div className="card-body">
+                        <p className="card-title">{q.question}</p>
+                        <ul>
+                          {Object.entries(q.answers).map(([ans, isCorrect]) => (
+                            <li key={ans}>
+                              {ans} - {isCorrect ? "Correct" : "Incorrect"}
+                            </li>
+                          ))}
+                        </ul>
+                        <p><strong>Points:</strong> {q.points}</p>
+                        <Button
+                          onClick={() => handleEditQuestion(q.questID)}
+                          className="btn btn-primary"
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          onClick={() => handleDeleteQuestion(q.questID)}
+                          className="btn btn-danger ml-2"
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+                <div
+                  className="card-footer custom-footer green-footer"
+                  onClick={saveQuizToDB}
+                >
+                  Save Quiz
+                </div>
+              </Card>
+            </div>
         </div>
       </div>
     </div>
