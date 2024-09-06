@@ -6,6 +6,7 @@ import { onValue, ref } from "firebase/database";
 import { db } from "../../config/firebase-config";
 import "./Home.css";
 import Search from "../search/Search";
+import { NavLink } from "react-router-dom";
 
 export default function Home() {
   const [users, setUsers] = useState<UserDataType[]>([]);
@@ -106,13 +107,15 @@ export default function Home() {
               <h3 className="text-center sticky-header">Top 15</h3>
               <div className="card-body">
                 {users.slice(0, 14).map((user, index) => (
-                  <Card key={index} className="mb-2">
-                    <Card.Body>
-                      <Card.Title>{user.username}</Card.Title>
-                      <Card.Text>Total points: {user.globalPoints}</Card.Text>
-                      <Card.Text>{getRanking(user.globalPoints)}</Card.Text>
-                    </Card.Body>
-                  </Card>
+                  <NavLink to={`/profile/${user.uid}`}>
+                    <Card key={index} className="mb-2">
+                      <Card.Body>
+                        <Card.Title>{user.username}</Card.Title>
+                        <Card.Text>Total points: {user.globalPoints}</Card.Text>
+                        <Card.Text>{getRanking(user.globalPoints)}</Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </NavLink>
                 ))}
               </div>
             </Card>
