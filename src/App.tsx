@@ -19,6 +19,9 @@ import SingleQuiz from './components/quizzes/single-quiz/SingleQuiz';
 import Home from './components/home/Home';
 import Messages from './components/common/messages/Messages';
 import ResetPassword from './components/auth/ResetPassword';
+import SingleUser from './components/user/single-user/SingleUser';
+
+
 import BattleArena from './components/battle-arena/BattleArena';
 import BattleRoom from './components/battle-room/BattleRoom';
 
@@ -96,6 +99,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/create-quiz" element={appState.userData?.isTeacher && <CreateQuiz />} />
           <Route path='/user-profile' element={<User />} />
+          <Route path='/profile/:id' element={<SingleUser />} />
           <Route path='/quizz-page' element={appState.userData?.isTeacher ? <QuizzPage /> : appState.userData?.isStudent && <StudentQuizPage />} />
           <Route path='/admin-panel' element={appState.userData?.isAdmin && <AdminPanel />}></Route>
           <Route path='/play-quiz/:id' element={<SingleQuiz />} />
