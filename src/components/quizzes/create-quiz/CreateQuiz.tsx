@@ -77,6 +77,11 @@ export default function CreateQuiz() {
   const handleMouseEnter = (index: number) => setHoveredIndex(index);
   const handleMouseLeave = () => setHoveredIndex(null);
 
+  const updateTotalPoints = (questions: any[]) => {
+    const newTotalPoints = questions.reduce((sum, question) => sum + (question.points || 0), 0);
+    setTotalPoints(newTotalPoints);
+  };
+
   // const handleQuizSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
   //   const selectedID = e.target.value;
   //   setSelectedQuizID(selectedID);
@@ -123,6 +128,8 @@ export default function CreateQuiz() {
       }, 0);
   
       setTotalPoints(updatedTotalPoints);
+
+      // updateTotalPoints();
     } else {
       // Reset if no quiz is selected or new quiz is being created
       const newQuizID = uuidv4();
@@ -219,10 +226,20 @@ export default function CreateQuiz() {
       setEditingQuestionID(questID);
       setQuestion(existingQuestion.question);
       setAnswers(existingQuestion.answers);
-      setPoints(existingQuestion.points);  // Ensure this updates the state properly
+      setPoints(existingQuestion.points);
       setNumAnswers(Object.keys(existingQuestion.answers).length);
       setEditingAnswer(null);
       setHasUnsavedChanges(false);
+  
+      // Immediately recalculate points with the latest question details
+      const updatedQuestionsList = questionsList.map((q) => q.questID === questID ? {
+        ...q,
+        question: existingQuestion.question,
+        answers: existingQuestion.answers,
+        points: existingQuestion.points
+      } : q);
+      setQuestionsList(updatedQuestionsList);
+      updateTotalPoints(updatedQuestionsList);
   
       if (selectedQuizID !== quiz.quizID) {
         setSelectedQuizID(quiz.quizID);
@@ -231,12 +248,7 @@ export default function CreateQuiz() {
       console.error("Question not found");
       handleCreateQuestion();
     }
-  };
-
-  const updateTotalPoints = () => {
-    const newTotalPoints = questionsList.reduce((sum, question) => sum + question.points, 0);
-    setTotalPoints(newTotalPoints);
-  };
+  }; 
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
@@ -292,20 +304,57 @@ export default function CreateQuiz() {
     setEditingAnswer(answer); // Track which answer is being edited
   };
 
+  // const addQuestionToQuiz = () => {
+  //   if (!question || numAnswers <= 0) {
+  //     alert("Please enter a question and the number of answers.");
+  //     return;
+  //   }
+
+  //   const questID = editingQuestionID || uuidv4();
+  //   const newQuestionData: QuestionDataType = {
+  //     questID,
+  //     question,
+  //     answers,
+  //     points,
+  //   };
+
+  //   setQuiz((prev) => ({
+  //     ...prev,
+  //     questions: {
+  //       ...prev.questions,
+  //       [questID]: newQuestionData,
+  //     },
+  //   }));
+
+  //   setQuestionsList((prevQuestions) => {
+  //     if (editingQuestionID) {
+  //       return prevQuestions.map((q) =>
+  //         q.questID === editingQuestionID ? newQuestionData : q
+  //       );
+  //     }
+  //     return [...prevQuestions, newQuestionData];
+  //   });
+
+  //   // setTotalPoints((prevTotal) => prevTotal + newQuestionData.points);
+  //   updateTotalPoints();
+
+  //   handleCreateQuestion(); // Reset the form after adding the question
+  // };
+
   const addQuestionToQuiz = () => {
     if (!question || numAnswers <= 0) {
       alert("Please enter a question and the number of answers.");
       return;
     }
-
+  
     const questID = editingQuestionID || uuidv4();
-    const newQuestionData: QuestionDataType = {
+    const newQuestionData = {
       questID,
       question,
       answers,
       points,
     };
-
+  
     setQuiz((prev) => ({
       ...prev,
       questions: {
@@ -313,21 +362,18 @@ export default function CreateQuiz() {
         [questID]: newQuestionData,
       },
     }));
-
-    setQuestionsList((prevQuestions) => {
-      if (editingQuestionID) {
-        return prevQuestions.map((q) =>
-          q.questID === editingQuestionID ? newQuestionData : q
-        );
-      }
-      return [...prevQuestions, newQuestionData];
-    });
-
-    setTotalPoints((prevTotal) => prevTotal + newQuestionData.points);
-
+  
+    // Directly update questions list and total points
+    const updatedQuestionsList = editingQuestionID 
+      ? questionsList.map((q) => (q.questID === editingQuestionID ? newQuestionData : q))
+      : [...questionsList, newQuestionData];
+  
+    setQuestionsList(updatedQuestionsList);
+    updateTotalPoints(updatedQuestionsList);
+  
     handleCreateQuestion(); // Reset the form after adding the question
   };
-
+  
   const handleQuestionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(e.target.value);
     setHasUnsavedChanges(true);
@@ -403,6 +449,51 @@ export default function CreateQuiz() {
   //   );
   // };
 
+  // const handleDeleteQuestion = (questID: string) => {
+  //   const confirmDelete = window.confirm("Are you sure you want to delete this question?");
+  //   if (!confirmDelete) return;
+  
+  //   setQuiz((prev) => {
+  //     const updatedQuestions = { ...prev.questions };
+  //     delete updatedQuestions[questID];
+  //     return {
+  //       ...prev,
+  //       questions: updatedQuestions,
+  //     };
+  //   });
+  
+  //   setQuestionsList((prevQuestions) =>
+  //     prevQuestions.filter((q) => q.questID !== questID)
+  //   );
+  
+  //   // After updating the questions list, recalculate the total points
+  //   // setTotalPoints((prevTotal) =>
+  //   //   prevTotal - quiz.questions[questID].points
+  //   // );
+
+  //   updateTotalPoints();
+  // };
+
+  // const handleDeleteQuestion = (questID: string) => {
+  //   const confirmDelete = window.confirm("Are you sure you want to delete this question?");
+  //   if (!confirmDelete) return;
+  
+  //   setQuiz((prev) => {
+  //     const updatedQuestions = { ...prev.questions };
+  //     delete updatedQuestions[questID];
+  //     return {
+  //       ...prev,
+  //       questions: updatedQuestions,
+  //     };
+  //   });
+  
+  //   setQuestionsList((prevQuestions) => {
+  //     const updatedList = prevQuestions.filter((q) => q.questID !== questID);
+  //     updateTotalPoints(); // Recalculate points after deletion
+  //     return updatedList;
+  //   });
+  // };
+
   const handleDeleteQuestion = (questID: string) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this question?");
     if (!confirmDelete) return;
@@ -416,22 +507,30 @@ export default function CreateQuiz() {
       };
     });
   
-    setQuestionsList((prevQuestions) =>
-      prevQuestions.filter((q) => q.questID !== questID)
-    );
-  
-    // After updating the questions list, recalculate the total points
-    setTotalPoints((prevTotal) =>
-      prevTotal - quiz.questions[questID].points
-    );
+    setQuestionsList((prevQuestions) => {
+      const updatedList = prevQuestions.filter((q) => q.questID !== questID);
+      updateTotalPoints(updatedList); // Recalculate points with the updated list
+      return updatedList;
+    });
   };
 
-  const handleDeleteAnswer = (answer: string) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this answer?"
-    );
-    if (!confirmDelete) return;
+  // const handleDeleteAnswer = (answer: string) => {
+  //   const confirmDelete = window.confirm(
+  //     "Are you sure you want to delete this answer?"
+  //   );
+  //   if (!confirmDelete) return;
 
+  //   setAnswers((prev) => {
+  //     const updatedAnswers = { ...prev };
+  //     delete updatedAnswers[answer];
+  //     return updatedAnswers;
+  //   });
+  // };
+
+  const handleDeleteAnswer = (answer: string) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this answer?");
+    if (!confirmDelete) return;
+  
     setAnswers((prev) => {
       const updatedAnswers = { ...prev };
       delete updatedAnswers[answer];
