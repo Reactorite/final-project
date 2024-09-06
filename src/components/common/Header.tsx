@@ -8,7 +8,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import './Header.css';
 import Notification from "./notifications/Notifications";
 import { getUnreadMessagesCount } from "../../services/message.service";
-import { Badge } from "react-bootstrap";
+import { Badge, Nav } from "react-bootstrap";
 
 const Header = () => {
   const { userData, setAppState } = useContext(AppContext);
@@ -26,20 +26,26 @@ const Header = () => {
   const logout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to sign out?");
     if (confirmLogout) {
-      await logoutUser();
-      setAppState((prevState) => ({
-        ...prevState,
-        user: null,
-        userData: null
-      }));
-      navigate('/login');
+      if (userData && userData.username) {
+        await logoutUser(userData.username);
+        setAppState((prevState) => ({
+          ...prevState,
+          user: null,
+          userData: null
+        }));
+        navigate('/login');
+      } else {
+        console.error("No username found for logged in user.");
+      }
     }
   };
+  
 
   return (
     <div className="header-container">
       <div className="vertical-header">
         <NavLink to="/" className="header-link">HOME</NavLink>
+        {user && userData && <NavLink to="/battle-arena" className="header-link">BATTLE ARENA</NavLink>}
         {user && userData && <NavLink to="/user-profile" className="header-link">PROFILE</NavLink>}
         {user && userData && <NavLink to="/" className="header-link" onClick={logout}>LOGOUT</NavLink>}
         {!user && <NavLink to="/login" className="header-link">LOGIN</NavLink>}

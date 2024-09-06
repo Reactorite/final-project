@@ -24,5 +24,8 @@ export interface UserDataType {
     isBlocked: boolean,
     isTeacher: boolean,
     isStudent: boolean,
+    isOnline: boolean,
+    isReadyForBattle: boolean,
+    readyCategory?: string
   }
   

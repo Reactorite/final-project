@@ -22,6 +22,8 @@ import ResetPassword from './components/auth/ResetPassword';
 import SingleUser from './components/user/single-user/SingleUser';
 
 
+import BattleArena from './components/battle-arena/BattleArena';
+import BattleRoom from './components/battle-room/BattleRoom';
 
 function App() {
   const [appState, setAppState] = useState<AppContextType>({
@@ -89,6 +91,9 @@ function App() {
         <Header />
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/battle-arena' element={<BattleArena />}></Route>
+          <Route path="/battle-room/:roomId" element={<BattleRoom />} />
+          <Route path="/battle-room/:roomId/battle-mode" element={<BattleRoom />} />
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/register" element={<Register />} />

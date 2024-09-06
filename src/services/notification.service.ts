@@ -9,16 +9,16 @@ export const sendNotification = async (
   quizTitle?: string, 
   quizID?: string 
 ) => {
- 
+
   const notificationData: NotificationDataType = {
     sender: senderID,
-    receiver: receiverID,
+    receiver: receiverID, 
     message: message,
     timestamp: Date.now(),
     status: "unread",
     invitationStatus: "pending",
     quizTitle: quizTitle || "Unknown Quiz",  
-    quizID: quizID || "Unknown ID"  
+    quizID: quizID || "Unknown ID",
   };
 
   try {
@@ -41,7 +41,7 @@ export const acceptInvitation = async (notificationID: string, userName: string)
 
       await update(notificationRef, { invitationStatus: "accepted", status: "read" });
 
-      const message = `Your invitation for the quiz "${notificationData.quizTitle}" was accepted by ${userName}.`;
+      const message = `Your invitation for the battle was accepted by ${userName}.`;
       await sendNotification(notificationData.receiver, notificationData.sender, message, notificationData.quizTitle, notificationData.quizID);
       
       console.log("Invitation accepted and notification sent successfully.");
@@ -62,7 +62,7 @@ export const rejectInvitation = async (notificationID: string, userName: string)
 
       await update(notificationRef, { invitationStatus: "rejected", status: "read" });
 
-      const message = `Your invitation for the quiz "${notificationData.quizTitle}" was rejected by ${userName}.`;
+      const message = `Your invitation for battle was rejected by ${userName}.`;
       await sendNotification(notificationData.receiver, notificationData.sender, message, notificationData.quizTitle, notificationData.quizID);
       
       console.log("Invitation rejected and notification sent successfully.");

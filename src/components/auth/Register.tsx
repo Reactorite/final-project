@@ -26,6 +26,8 @@ export default function Register() {
     isBlocked: false,
     isTeacher: false,
     isStudent: false,
+    isOnline: false,
+    isReadyForBattle: false,
   });
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
@@ -90,6 +92,8 @@ export default function Register() {
         isBlocked: user.isBlocked,
         isTeacher: user.isTeacher,
         isStudent: user.isStudent,
+        isOnline: user.isOnline,
+        isReadyForBattle: user.isReadyForBattle
       };
 
       await createUserHandle(userData);

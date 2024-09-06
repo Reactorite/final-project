@@ -32,6 +32,17 @@
   /* Provide padding for content */
 }
 
+.column-container .card:hover {
+  transform: scale(1.03); /* Scales up the card to 105% of its size */
+  /* transition: transform 0.6s ease; Smooth transition effect */
+  z-index: 2; /* Ensures the card pops out over others */
+}
+
+.column-container .card {
+  margin-bottom: 10px;
+  transition: transform 0.3s ease-in-out; /* Applies a smooth transition for both hover and mouse leave */
+}
+
 .column-container {
   display: flex;
   flex-direction: column;
