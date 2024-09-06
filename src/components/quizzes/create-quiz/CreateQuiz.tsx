@@ -77,15 +77,54 @@ export default function CreateQuiz() {
   const handleMouseEnter = (index: number) => setHoveredIndex(index);
   const handleMouseLeave = () => setHoveredIndex(null);
 
+  // const handleQuizSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const selectedID = e.target.value;
+  //   setSelectedQuizID(selectedID);
+
+  //   if (selectedID) {
+  //     const selectedQuiz = existingQuizzes[selectedID];
+  //     setQuiz(selectedQuiz);
+  //     setQuestionsList(Object.values(selectedQuiz.questions));
+  //   } else {
+  //     const newQuizID = uuidv4();
+  //     setQuiz({
+  //       title: "",
+  //       category: "",
+  //       isOpen: true,
+  //       isPublic: true,
+  //       questions: {},
+  //       scores: {},
+  //       creator: user!.uid || "",
+  //       duration: 0,
+  //       totalPoints: 0,
+  //       groups: {},
+  //       members: {},
+  //       quizID: newQuizID,
+  //     });
+  //     setQuestionsList([]);
+  //   }
+  // };
+
   const handleQuizSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedID = e.target.value;
     setSelectedQuizID(selectedID);
-
-    if (selectedID) {
+  
+    if (selectedID && existingQuizzes[selectedID]) {
       const selectedQuiz = existingQuizzes[selectedID];
       setQuiz(selectedQuiz);
-      setQuestionsList(Object.values(selectedQuiz.questions));
+      const questionsArray = Object.values(selectedQuiz.questions);
+  
+      // Set the questions list for UI rendering
+      setQuestionsList(questionsArray);
+  
+      // Calculate and update total points
+      const updatedTotalPoints = questionsArray.reduce((total, question) => {
+        return total + (question.points || 0); // Ensure points are a number and add to total
+      }, 0);
+  
+      setTotalPoints(updatedTotalPoints);
     } else {
+      // Reset if no quiz is selected or new quiz is being created
       const newQuizID = uuidv4();
       setQuiz({
         title: "",
@@ -102,8 +141,10 @@ export default function CreateQuiz() {
         quizID: newQuizID,
       });
       setQuestionsList([]);
+      setTotalPoints(0);  // Reset total points
     }
   };
+  
 
   // Add this effect to ensure the dropdown updates when editing an existing quiz
   useEffect(() => {
@@ -137,6 +178,34 @@ export default function CreateQuiz() {
     setHasUnsavedChanges(false); // Reset unsaved changes flag
   };
 
+  // const handleEditQuestion = (questID: string) => {
+  //   if (hasUnsavedChanges) {
+  //     const confirmSwitch = window.confirm(
+  //       "You have unsaved changes. Are you sure you want to switch questions without saving?"
+  //     );
+  //     if (!confirmSwitch) return;
+  //   }
+
+  //   const existingQuestion = quiz.questions[questID];
+  //   if (existingQuestion) {
+  //     setEditingQuestionID(questID);
+  //     setQuestion(existingQuestion.question);
+  //     setAnswers(existingQuestion.answers);
+  //     setPoints(existingQuestion.points);
+  //     setNumAnswers(Object.keys(existingQuestion.answers).length);
+  //     setEditingAnswer(null); // Clear answer editing state
+  //     setHasUnsavedChanges(false); // Reset unsaved changes flag
+
+  //     // Ensure that the selected quiz remains consistent
+  //     if (selectedQuizID !== quiz.quizID) {
+  //       setSelectedQuizID(quiz.quizID);
+  //     }
+  //   } else {
+  //     console.error("Question not found");
+  //     handleCreateQuestion();
+  //   }
+  // };
+
   const handleEditQuestion = (questID: string) => {
     if (hasUnsavedChanges) {
       const confirmSwitch = window.confirm(
@@ -144,18 +213,17 @@ export default function CreateQuiz() {
       );
       if (!confirmSwitch) return;
     }
-
+  
     const existingQuestion = quiz.questions[questID];
     if (existingQuestion) {
       setEditingQuestionID(questID);
       setQuestion(existingQuestion.question);
       setAnswers(existingQuestion.answers);
-      setPoints(existingQuestion.points);
+      setPoints(existingQuestion.points);  // Ensure this updates the state properly
       setNumAnswers(Object.keys(existingQuestion.answers).length);
-      setEditingAnswer(null); // Clear answer editing state
-      setHasUnsavedChanges(false); // Reset unsaved changes flag
-
-      // Ensure that the selected quiz remains consistent
+      setEditingAnswer(null);
+      setHasUnsavedChanges(false);
+  
       if (selectedQuizID !== quiz.quizID) {
         setSelectedQuizID(quiz.quizID);
       }
@@ -163,6 +231,11 @@ export default function CreateQuiz() {
       console.error("Question not found");
       handleCreateQuestion();
     }
+  };
+
+  const updateTotalPoints = () => {
+    const newTotalPoints = questionsList.reduce((sum, question) => sum + question.points, 0);
+    setTotalPoints(newTotalPoints);
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -305,26 +378,49 @@ export default function CreateQuiz() {
     navigate(`/quizz-page`);
   };
 
-  const handleDeleteQuestion = (questID: string) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this question?"
-    );
-    if (!confirmDelete) return;
+  // const handleDeleteQuestion = (questID: string) => {
+  //   const confirmDelete = window.confirm(
+  //     "Are you sure you want to delete this question?"
+  //   );
+  //   if (!confirmDelete) return;
 
+  //   setQuiz((prev) => {
+  //     const updatedQuestions = { ...prev.questions };
+  //     delete updatedQuestions[questID];
+
+  //     return {
+  //       ...prev,
+  //       questions: updatedQuestions,
+  //     };
+  //   });
+
+  //   setQuestionsList((prevQuestions) =>
+  //     prevQuestions.filter((q) => q.questID !== questID)
+  //   );
+
+  //   setTotalPoints((prevTotal) =>
+  //     prevTotal - quiz.questions[questID].points
+  //   );
+  // };
+
+  const handleDeleteQuestion = (questID: string) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this question?");
+    if (!confirmDelete) return;
+  
     setQuiz((prev) => {
       const updatedQuestions = { ...prev.questions };
       delete updatedQuestions[questID];
-
       return {
         ...prev,
         questions: updatedQuestions,
       };
     });
-
+  
     setQuestionsList((prevQuestions) =>
       prevQuestions.filter((q) => q.questID !== questID)
     );
-
+  
+    // After updating the questions list, recalculate the total points
     setTotalPoints((prevTotal) =>
       prevTotal - quiz.questions[questID].points
     );

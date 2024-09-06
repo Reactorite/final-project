@@ -26,7 +26,7 @@
 .column-container>.card>.card-body {
   overflow-y: auto;
   /* Ensure scrolling inside the main card when content overflows */
-  height: calc(80vh - 160px);
+  height: calc(80vh);
   /* Adjust height to be within the fixed card height, accounting for header/footer */
   padding-bottom: 10px;
   /* Provide padding for content */
