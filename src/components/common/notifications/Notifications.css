@@ -1,0 +1,39 @@
+/* Notifications.css */
+
+.notification-dropdown {
+    min-width: 250px;
+    /* Adjust width to fit content */
+    margin-left: 10px;
+}
+
+.notification-item {
+    cursor: pointer;
+    padding: 10px;
+    /* Uniform padding around items */
+    display: flex;
+    flex-direction: column;
+    /* Stack content vertically */
+    border-bottom: 1px solid #e1e1e1;
+    /* Light border for separation */
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+    /* Avoid border on the last item */
+}
+
+.notification-message {
+    margin-bottom: 5px;
+    /* Space between message and buttons */
+}
+
+.notification-buttons {
+    display: flex;
+    justify-content: space-between;
+    /* Space between buttons */
+}
+
+.notification-badge {
+    align-self: flex-start;
+    /* Align badge to the start of the line */
+}

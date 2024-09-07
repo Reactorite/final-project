@@ -43,6 +43,8 @@ export default function CreateQuiz() {
   const [selectedQuizID, setSelectedQuizID] = useState<string | null>(null);
   const [editingAnswer, setEditingAnswer] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState('transparent'); // Add this state
+
 
 
   useEffect(() => {
@@ -74,8 +76,23 @@ export default function CreateQuiz() {
   }
 
   const sections = ['General Information', 'Question Editor', 'In this iQuiz'];
-  const handleMouseEnter = (index: number) => setHoveredIndex(index);
-  const handleMouseLeave = () => setHoveredIndex(null);
+  // const handleMouseEnter = (index: number) => setHoveredIndex(index);
+  // const handleMouseLeave = () => setHoveredIndex(null);
+  // const handleMouseEnter = (color: string) => setBackgroundColor(color);
+  // const handleMouseLeave = () => setBackgroundColor('transparent');
+
+  // Setting hovered index and background color
+const handleMouseEnter = (index: number, color: string) => {
+  setHoveredIndex(index);
+  document.body.style.backgroundColor = color; // Set background color
+  document.body.style.transition = 'background-color 0.3s ease'; // Smooth transition for color
+};
+
+// Resetting hovered index and background color to default
+const handleMouseLeave = () => {
+  setHoveredIndex(null);
+  document.body.style.backgroundColor = ''; // Reset to default background color
+};
 
   const updateTotalPoints = (questions: any[]) => {
     const newTotalPoints = questions.reduce((sum, question) => sum + (question.points || 0), 0);
@@ -552,13 +569,13 @@ export default function CreateQuiz() {
         <div className="row">
         <div className="col-md-4 column-container">
           <Card
-            className="card flex-fill fixed-height-card"
-            onMouseEnter={() => handleMouseEnter(0)}
-            onMouseLeave={handleMouseLeave}
-            style={{
-              transform: hoveredIndex === 0 ? 'scale(1.03)' : 'scale(1)',
-              transition: 'transform 0.3s ease'
-            }}
+  className="card flex-fill fixed-height-card"
+  onMouseEnter={() => handleMouseEnter(0, '#fcddc5')} // Orange for the General Information card
+  onMouseLeave={handleMouseLeave}
+  style={{
+    transform: hoveredIndex === 0 ? 'scale(1.03)' : 'scale(1)',
+    transition: 'transform 0.3s ease'
+  }}
               >
                 <h3 className="text-center sticky-header">General Information</h3>
                 <div className="card-body">
@@ -675,13 +692,13 @@ export default function CreateQuiz() {
             </div>
         <div className="col-md-4 column-container">
           <Card
-            className="card flex-fill fixed-height-card"
-            onMouseEnter={() => handleMouseEnter(1)}
-            onMouseLeave={handleMouseLeave}
-            style={{
-              transform: hoveredIndex === 1 ? 'scale(1.03)' : 'scale(1)',
-              transition: 'transform 0.3s ease'
-            }}
+  className="card flex-fill fixed-height-card"
+  onMouseEnter={() => handleMouseEnter(1, '#c4e1ff')} // Blue for the Question Editor card
+  onMouseLeave={handleMouseLeave}
+  style={{
+    transform: hoveredIndex === 1 ? 'scale(1.03)' : 'scale(1)',
+    transition: 'transform 0.3s ease'
+  }}
               >
                 <h3 className="text-center sticky-header">Question Editor</h3>
                 <div className="card-body">
@@ -816,13 +833,13 @@ export default function CreateQuiz() {
             </div>
             <div className="col-md-4 column-container">
           <Card
-            className="card flex-fill fixed-height-card"
-            onMouseEnter={() => handleMouseEnter(2)}
-            onMouseLeave={handleMouseLeave}
-            style={{
-              transform: hoveredIndex === 2 ? 'scale(1.03)' : 'scale(1)',
-              transition: 'transform 0.3s ease'
-            }}
+  className="card flex-fill fixed-height-card"
+  onMouseEnter={() => handleMouseEnter(2, '#c8f2d2')} // Green for the In this iQuiz card
+  onMouseLeave={handleMouseLeave}
+  style={{
+    transform: hoveredIndex === 2 ? 'scale(1.03)' : 'scale(1)',
+    transition: 'transform 0.3s ease'
+  }}
               >
                 <h3 className="text-center sticky-header">In this iQuiz</h3>
                 <div className="card-body">

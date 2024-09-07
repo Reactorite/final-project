@@ -8,13 +8,13 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import './Header.css';
 import Notification from "./notifications/Notifications";
 import { getUnreadMessagesCount } from "../../services/message.service";
-import { Badge, Nav } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 
 const Header = () => {
   const { userData, setAppState } = useContext(AppContext);
   const navigate = useNavigate();
   const [user, loading, error] = useAuthState(auth);
-  const [unreadMessages, setUnreadMessages] = useState<number>(0);
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
     if (!loading && userData) {
@@ -39,32 +39,28 @@ const Header = () => {
       }
     }
   };
-  
 
   return (
     <div className="header-container">
       <div className="vertical-header">
-        <NavLink to="/" className="header-link">HOME</NavLink>
-        {user && userData && <NavLink to="/battle-arena" className="header-link">BATTLE ARENA</NavLink>}
-        {user && userData && <NavLink to="/user-profile" className="header-link">PROFILE</NavLink>}
-        {user && userData && <NavLink to="/" className="header-link" onClick={logout}>LOGOUT</NavLink>}
-        {!user && <NavLink to="/login" className="header-link">LOGIN</NavLink>}
-        {!user && <NavLink to="/register" className="header-link">REGISTER</NavLink>}
-        {user && userData && userData.isTeacher && <NavLink to="/create-quiz" className="header-link">CREATE QUIZ</NavLink>}
-        {user && userData && <NavLink to="quizz-page" className="header-link">QUIZ PAGE</NavLink>}
-        {user && userData && userData.isAdmin && <NavLink to='/admin-panel' className="header-link">ADMIN PANEL</NavLink>}
-        <div className="header-link">
+        <NavLink to="/" className="header-link"><span className="link-text">HOME</span><span className="icon">🏠</span></NavLink>
+        {user && userData && <NavLink to="/battle-arena" className="header-link"><span className="link-text">BATTLE ARENA</span><span className="icon">⚔️</span></NavLink>}
+        {user && userData && <NavLink to="/user-profile" className="header-link"><span className="link-text">PROFILE</span><span className="icon">👤</span></NavLink>}
+        {user && userData && <NavLink to="/" className="header-link" onClick={logout}><span className="link-text">LOGOUT</span><span className="icon">🚪</span></NavLink>}
+        {!user && <NavLink to="/login" className="header-link"><span className="link-text">LOGIN</span><span className="icon">🔓</span></NavLink>}
+        {!user && <NavLink to="/register" className="header-link"><span className="link-text">REGISTER</span><span className="icon">📝</span></NavLink>}
+        {user && userData && userData.isTeacher && <NavLink to="/create-quiz" className="header-link"><span className="link-text">CREATE QUIZ</span><span className="icon">✏️</span></NavLink>}
+        {user && userData && <NavLink to="/quizz-page" className="header-link"><span className="link-text">QUIZ PAGE</span><span className="icon">❓</span></NavLink>}
+        {user && userData && userData.isAdmin && <NavLink to='/admin-panel' className="header-link"><span className="link-text">ADMIN PANEL</span><span className="icon">👑</span></NavLink>}
+        {user && userData && (
+          <NavLink to="/messages" className="header-link">
+            <span className="link-text">MESSAGES {unreadMessages > 0 && (<Badge bg="danger">{unreadMessages}</Badge>)}</span>
+            <span className="icon">💌</span>
+          </NavLink>
+        )}
+        <div className="header-link notification-link">
           {user && userData && <Notification userId={userData.uid} userName={userData.username} />}
-        </div>
-        <div className="header-link">
-          {user && userData && (
-            <NavLink to="/messages" className="header-link">
-              MESSAGES{" "}
-              {unreadMessages > 0 && (
-                <Badge bg="danger">{unreadMessages}</Badge>
-              )}
-            </NavLink>
-          )}
+          <span className="icon">🔔</span>
         </div>
       </div>
     </div>
