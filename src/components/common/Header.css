@@ -29,6 +29,7 @@
   margin-bottom: 5px;  /* Space between links */
   transition: transform 0.3s ease-out;
   transform: translateX(-150px);  /* Hide text by default */
+  border-radius: 0px 15px 15px 0px;  /* Add this line for rounded corners */
 }
 
 .header-link:hover, .notification-link:hover {
