@@ -1,26 +1,23 @@
-/* Основен стил за резюмето на Battle Arena */
 .battle-arena-resume {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     padding: 20px;
-    background-color: #f4f4f9; /* Светло сив фон */
+    background-color: #f4f4f9; 
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 700px;
 }
 
-/* Заглавие на резюмето */
 .resume-title {
     font-size: 2rem;
     font-weight: bold;
-    color: #333; /* Тъмен графитен цвят */
+    color: #333; 
     margin-bottom: 20px;
     text-align: left;
 }
 
-/* Основно съдържание на резюмето */
 .resume-content {
     display: flex;
     flex-direction: column;
@@ -28,58 +25,51 @@
     width: 100%;
 }
 
-/* Секция за Ranked */
 .resume-section.ranked {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* Стилизация на Ranked информация */
 .ranked-info {
-    background-color: #ffffff; /* Бел фон */
+    background-color: #ffffff; 
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Добавяне на ховър ефекти на Ranked информация */
 .ranked-info:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Стилизация на заглавията и текстовете в Ranked */
 .ranked-info h3 {
     font-size: 1.25rem;
     font-weight: bold;
-    color: #ff5733; /* Оранжево по подразбиране */
-    transition: color 0.3s ease; /* Плавна промяна на цвета */
+    color: #ff5733; 
+    transition: color 0.3s ease;
 }
 
-/* Стилизация на текста в Ranked */
 .ranked-info p {
     margin-bottom: 15px;
 }
 
-/* Секция за Unranked */
 .resume-section.unranked {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* Опции за Unranked */
+
 .unranked-options {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* Стилизация на Unranked опция */
 .unranked-option {
-    background-color: #ffffff; /* Бел фон */
+    background-color: #ffffff; 
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -91,48 +81,47 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Заглавия на опции в Unranked */
+
 .unranked-option h3 {
-    color: #ff5733; /* Оранжево по подразбиране */
-    transition: color 0.3s ease; /* Плавна промяна на цвета */
+    color: #ff5733; 
+    transition: color 0.3s ease; 
 }
 
-/* Основен стил за бутоните */
 .arena-button {
     font-size: 1rem;
     border-radius: 8px;
     padding: 10px 20px;
-    color: #fff; /* Бял текст */
-    border: none; /* Без бордюр */
-    background-color: #ff5733; /* Оранжев фон по подразбиране */
-    transition: none; /* Без промяна на фона при ховър */
+    color: #fff; 
+    border: none;
+    background-color: #ff5733; 
+    transition: none; 
     display: inline-block;
     cursor: pointer;
     text-align: center;
-    text-decoration: none; /* За бутоните в линкове */
+    text-decoration: none; 
   }
   
-  /* Специални стилове за бутоните */
+
   .custom-primary {
-    background-color: #ff5733; /* Оранжев */
+    background-color: #ff5733; 
   }
   
   .custom-success {
-    background-color: #28a745; /* Зелен */
+    background-color: #28a745; 
   }
   
   .custom-info {
-    background-color: #17a2b8; /* Син */
+    background-color: #17a2b8; 
   }
   
-  /* Стилове за бутоните при ховър */
+
   .arena-button:hover {
-    background-color: #f39c12; /* Променя цвета на бутона при ховър */
+    background-color: #f39c12; 
   }
   
-  /* Променя цвета на h3 при ховър */
+
   .ranked-info:hover h3,
   .unranked-option:hover h3 {
-    color: #f39c12; /* Жълто при ховър */
+    color: #f39c12;
   }
   
