@@ -4,7 +4,6 @@ import { Button, Card, Modal } from 'react-bootstrap';
 import { AppContext } from "../../state/app.context";
 import { createGroup, deleteGroup, fetchGroups } from "../../services/groups.service";
 import GroupDataType from "../../types/GroupDataType";
-import { getAllUsers } from "../../services/users.service";
 import { onValue, ref } from "firebase/database";
 import { db } from "../../config/firebase-config";
 import { sendGroupInvitation, sendRequestToJoinGroup } from "../../services/notification.service";
@@ -38,11 +37,10 @@ export default function Group() {
       if (data) {
         const groupsArray: GroupDataType[] = Object.values(data);
         setAllGroups(groupsArray);
-      } else {
-        setAllGroups([]);
       }
     });
-  })
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     const usersRef = ref(db, 'users');
@@ -146,7 +144,7 @@ export default function Group() {
         <Card.Body>
           <Card.Header>All groups</Card.Header>
           {allGroups.map(group => (
-            !group.members[userData!.uid] &&
+            userData && !group.members[userData!.uid] &&
             <div key={group.groupId}>
               <h5>{group.name}</h5>
               <p>Members: {Object.keys(group.members).length}</p>
