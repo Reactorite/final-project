@@ -58,9 +58,9 @@ const Header = () => {
         )}
         {!user && <NavLink to="/login" className="header-link"><span className="link-text">LOGIN</span><span className="icon">🔓</span></NavLink>}
         {!user && <NavLink to="/register" className="header-link"><span className="link-text">REGISTER</span><span className="icon">📝</span></NavLink>}
-        {user && userData && userData.isTeacher && <NavLink to="/create-quiz" className="header-link"><span className="link-text">CREATE QUIZ</span><span className="icon">✏️</span></NavLink>}
+        {user && userData && (userData.isTeacher || userData.isAdmin || userData.isOwner) && <NavLink to="/create-quiz" className="header-link"><span className="link-text">CREATE QUIZ</span><span className="icon">✏️</span></NavLink>}
         {user && userData && <NavLink to="/quizz-page" className="header-link"><span className="link-text">QUIZ PAGE</span><span className="icon">❓</span></NavLink>}
-        {user && userData && userData.isAdmin && <NavLink to='/admin-panel' className="header-link"><span className="link-text">ADMIN PANEL</span><span className="icon">👑</span></NavLink>}
+        {user && userData && (userData.isAdmin || userData.isOwner) && <NavLink to='/admin-panel' className="header-link"><span className="link-text">ADMIN PANEL</span><span className="icon">👑</span></NavLink>}
         {user && userData && (
           <NavLink to="/messages" className="header-link">
             <span className="link-text">MESSAGES {unreadMessages > 0 && (<Badge bg="danger">{unreadMessages}</Badge>)}</span>
