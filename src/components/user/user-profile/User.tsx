@@ -4,14 +4,20 @@ import { UserDataType } from '../../../types/UserDataType';
 import { AppContext } from '../../../state/app.context';
 import { updateUserProfile } from '../../../services/users.service';
 import { onValue, ref } from 'firebase/database';
+import { storage } from '../../../config/firebase-config';
+import { getDownloadURL, ref as storageRef, uploadBytes } from 'firebase/storage';
 import { db } from '../../../config/firebase-config';
 import getRanking from '../../../utils/ranking/ranking';
+import './User.css'; 
 
 const User: React.FC = () => {
   const { user, userData: realUserData, setAppState } = useContext(AppContext);
   const [editing, setEditing] = useState(false);
   const [userData, setUserData] = useState<UserDataType | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [points, setPoints] = useState(0);
+  const [preview, setPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (userData) {
@@ -37,6 +43,14 @@ const User: React.FC = () => {
     }
   }, [user, realUserData]);
 
+  useEffect(() => {
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setPreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl); 
+    }
+  }, [file]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (userData) {
       setUserData({
@@ -46,31 +60,73 @@ const User: React.FC = () => {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
   const handleProfileUpdate = async () => {
     if (userData) {
-      await updateUserProfile(userData);
+      let profilePictureURL = userData.photo;
+
+      if (file) {
+        setUploading(true);
+        const imageRef = storageRef(storage, `profile-pictures/${userData.username}`);
+        await uploadBytes(imageRef, file);
+        profilePictureURL = await getDownloadURL(imageRef);
+        setUploading(false);
+      }
+
+      await updateUserProfile({
+        ...userData,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        photo: profilePictureURL,
+      });
+
+      setAppState((prevState) => ({ 
+        ...prevState, 
+        userData: { ...userData, photo: profilePictureURL }
+      }));
       setEditing(false);
-      setAppState((prevState) => ({ ...prevState, userData }));
     }
+  };
+
+  const handleCancel = () => {
+    setEditing(false);
+    setFile(null);
+    setPreview(null);
   };
 
   if (!userData) return <Spinner animation="border" role="status"><span className="sr-only">Loading...</span></Spinner>;
 
   return (
-    <Container className="mt-4">
+    <Container className="user-container mt-4">
       <Row className="justify-content-center">
         <Col md={8}>
-          <Card>
+          <Card className="profile-card">
             <Card.Body>
-              <Card.Title>{userData.firstName} {userData.lastName}</Card.Title>
+              <Card.Title className="profile-card-title">{userData.firstName} {userData.lastName}</Card.Title>
               <Card.Text>
-                <strong>Username:</strong> {userData.username} <br />
-                <strong>Email:</strong> {userData.email} <br />
-                <strong>Phone:</strong> {userData.phoneNumber} <br />
-                <strong>Address:</strong> {userData.address} <br />
-                <strong>Role:</strong> {userData.isTeacher ? 'Educator' : 'Student'} <br />
-                <strong>Rank:</strong> {getRanking(points)} <br />
-                <strong>Global Points:</strong> {points}
+                <div className="profile-picture-container">
+                  {userData.photo ? (
+                    <a href={userData.photo} target="_blank" rel="noopener noreferrer">
+                      <img className="profile-picture" src={userData.photo} alt={`${userData.username}'s profile`} />
+                    </a>
+                  ) : (
+                    <p>No profile picture available</p>
+                  )}
+                </div>
+                <div className="user-information">
+                  <p><strong>Username:</strong> {userData.username}</p>
+                  <p><strong>Email:</strong> {userData.email}</p>
+                  <p><strong>Phone:</strong> {userData.phoneNumber}</p>
+                  <p><strong>Address:</strong> {userData.address}</p>
+                  <p><strong>Role:</strong> {userData.isTeacher ? 'Educator' : 'Student'}</p>
+                  <p><strong>Rank:</strong> {getRanking(points)}</p>
+                  <p><strong>Global Points:</strong> {points}</p>
+                </div>
               </Card.Text>
 
               {editing ? (
@@ -111,17 +167,31 @@ const User: React.FC = () => {
                       onChange={handleInputChange}
                     />
                   </Form.Group>
+                  <Form.Group controlId="formProfilePicture">
+                    <Form.Label>Profile Picture</Form.Label>
+                    <Form.Control
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
+                    {preview && (
+                      <div className="file-preview-container">
+                        <img className="file-preview" src={preview} alt="Preview" />
+                      </div>
+                    )}
+                  </Form.Group>
                   <Button
                     variant="primary"
                     onClick={handleProfileUpdate}
                     className="mr-2"
                     style={{ marginTop: '10px' }}
+                    disabled={uploading}
                   >
-                    Save
+                    {uploading ? 'Uploading...' : 'Save'}
                   </Button>
                   <Button
                     variant="secondary"
-                    onClick={() => setEditing(false)}
+                    onClick={handleCancel}
                     style={{ marginTop: '10px', marginLeft: '5px' }}
                   >
                     Cancel
@@ -138,6 +208,6 @@ const User: React.FC = () => {
       </Row>
     </Container>
   );
-};
+}
 
 export default User;
