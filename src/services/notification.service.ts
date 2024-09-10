@@ -1,4 +1,4 @@
-import { ref, push, update, get } from "firebase/database";
+import { ref, push, update, get, set } from "firebase/database";
 import { db } from "../config/firebase-config";
 import { NotificationDataType } from "../types/NotificationDataType";
 
@@ -31,7 +31,7 @@ export const sendNotification = async (
   }
 };
 
-export const acceptInvitation = async (notificationID: string, userName: string) => {
+export const acceptInvitation = async (notificationID: string, userName: string, roomId: string, userId: string, userPhoto?: string) => {
   try {
     const notificationRef = ref(db, `notifications/${notificationID}`);
     const notificationSnapshot = await get(notificationRef);
@@ -40,6 +40,13 @@ export const acceptInvitation = async (notificationID: string, userName: string)
       const notificationData = notificationSnapshot.val() as NotificationDataType;
 
       await update(notificationRef, { invitationStatus: "accepted", status: "read" });
+
+      const participantsRef = ref(db, `battle-rooms/${roomId}/participants/${userId}`);
+      await set(participantsRef, {
+        username: userName,
+        status: 'Not Ready',
+        photo: userPhoto || 'default-avatar.png'
+      });
 
       const message = `Your invitation for the battle was accepted by ${userName}.`;
       await sendNotification(notificationData.receiver, notificationData.sender, message, notificationData.quizTitle, notificationData.quizID);
@@ -51,6 +58,7 @@ export const acceptInvitation = async (notificationID: string, userName: string)
     throw new Error("Failed to accept invitation");
   }
 };
+
 
 export const rejectInvitation = async (notificationID: string, userName: string) => {
   try {

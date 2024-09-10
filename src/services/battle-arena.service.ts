@@ -10,7 +10,13 @@ import QuizDataType from "../types/QuizDataType";
 //   opponentUserId?: string;
 // }
 
-export const createBattleRoom = async (category: string, hostUserId: string, username: string, capacity: number = 2): Promise<string> => {
+export const createBattleRoom = async (
+  category: string, 
+  hostUserId: string, 
+  username: string, 
+  photo: string,  
+  capacity: number = 2
+): Promise<string> => {
   const roomRef = push(ref(db, 'battle-rooms'));
 
   const roomData = {
@@ -23,6 +29,7 @@ export const createBattleRoom = async (category: string, hostUserId: string, use
       [hostUserId]: {
         username: username,
         status: 'Not Ready',
+        photo: photo  
       }
     }
   };
@@ -32,7 +39,13 @@ export const createBattleRoom = async (category: string, hostUserId: string, use
 };
 
 
-export const joinBattleRoom = async (roomId: string, userId: string, username: string): Promise<string> => {
+
+export const joinBattleRoom = async (
+  roomId: string, 
+  userId: string, 
+  username: string, 
+  photo: string
+): Promise<string> => {
   const roomRef = ref(db, `battle-rooms/${roomId}`);
   const roomSnapshot = await get(roomRef);
 
@@ -42,7 +55,8 @@ export const joinBattleRoom = async (roomId: string, userId: string, username: s
       const participantRef = ref(db, `battle-rooms/${roomId}/participants/${userId}`);
       await set(participantRef, {
         username: username,
-        status: 'Not Ready'
+        status: 'Not Ready',
+        photo: photo  
       });
       return "joined";
     } else {
@@ -52,6 +66,7 @@ export const joinBattleRoom = async (roomId: string, userId: string, username: s
     throw new Error('Room does not exist.');
   }
 };
+
 
 export const getRandomQuizByCategory = async (category: string): Promise<QuizDataType> => {
   const quizzesRef = ref(db, 'quizzes');

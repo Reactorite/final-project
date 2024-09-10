@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { NavDropdown, Badge } from "react-bootstrap";
 import { ref, onValue, update, set } from "firebase/database";
 import { db } from "../../../config/firebase-config";
 import { useNavigate } from "react-router-dom";
 import { NotificationDataType } from "../../../types/NotificationDataType";
 import { acceptInvitation, rejectInvitation } from "../../../services/notification.service";
+import { AppContext } from "../../../state/app.context";
 
 interface NotificationProps {
   userId: string;
@@ -17,6 +18,7 @@ interface NotificationWithId extends NotificationDataType {
 
 const Notification: React.FC<NotificationProps> = ({ userId, userName }) => {
   const [notifications, setNotifications] = useState<NotificationWithId[]>([]);
+  const {userData} = useContext(AppContext)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +42,8 @@ const Notification: React.FC<NotificationProps> = ({ userId, userName }) => {
     const participantRef = ref(db, `battle-rooms/${roomId}/participants/${userId}`);
     await set(participantRef, {
       username: username,
-      status: "Not Ready"
+      status: "Not Ready",
+      photo: userData?.photo || "default-avatar.png"
     });
   };
 
@@ -53,16 +56,27 @@ const Notification: React.FC<NotificationProps> = ({ userId, userName }) => {
 
   const handleAccept = async (notificationID: string, roomId?: string) => {
     try {
-      await acceptInvitation(notificationID, userName);
       if (roomId && userId && userName) {
+        // Предаваме снимката на потребителя (userData.photo)
+        await acceptInvitation(notificationID, userName, roomId, userId, userData?.photo);
+  
+        // Добавяме потребителя към стаята
         await addParticipantToRoom(roomId, userId, userName);
+  
+        // Обновяваме статуса му
         await updateReadyStatus(userId, userName);
+  
+        // Пренасочваме потребителя към стаята
         navigate(`/battle-room/${roomId}`);
+      } else {
+        console.error("Room ID, User ID, or User Name is missing");
       }
     } catch (error) {
       console.error("Failed to accept invitation:", error);
     }
   };
+  
+  
 
   const handleReject = async (notificationID: string) => {
     try {
