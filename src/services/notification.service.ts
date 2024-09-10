@@ -1,23 +1,23 @@
 import { ref, push, update, get } from "firebase/database";
-import { db } from "../config/firebase-config"; 
+import { db } from "../config/firebase-config";
 import { NotificationDataType } from "../types/NotificationDataType";
 
 export const sendNotification = async (
   senderID: string,
   receiverID: string,
   message: string,
-  quizTitle?: string, 
-  quizID?: string 
+  quizTitle?: string,
+  quizID?: string
 ) => {
 
   const notificationData: NotificationDataType = {
     sender: senderID,
-    receiver: receiverID, 
+    receiver: receiverID,
     message: message,
     timestamp: Date.now(),
     status: "unread",
     invitationStatus: "pending",
-    quizTitle: quizTitle || "Unknown Quiz",  
+    quizTitle: quizTitle || "Unknown Quiz",
     quizID: quizID || "Unknown ID",
   };
 
@@ -43,7 +43,7 @@ export const acceptInvitation = async (notificationID: string, userName: string)
 
       const message = `Your invitation for the battle was accepted by ${userName}.`;
       await sendNotification(notificationData.receiver, notificationData.sender, message, notificationData.quizTitle, notificationData.quizID);
-      
+
       console.log("Invitation accepted and notification sent successfully.");
     }
   } catch (error) {
@@ -64,11 +64,27 @@ export const rejectInvitation = async (notificationID: string, userName: string)
 
       const message = `Your invitation for battle was rejected by ${userName}.`;
       await sendNotification(notificationData.receiver, notificationData.sender, message, notificationData.quizTitle, notificationData.quizID);
-      
+
       console.log("Invitation rejected and notification sent successfully.");
     }
   } catch (error) {
     console.error("Error rejecting invitation:", error);
     throw new Error("Failed to reject invitation");
   }
+};
+
+export const sendGroupInvitation = async (senderId: string, receiverID: string, groupName: string) => {
+  const message = `You have been invited to join the group ${groupName}.`;
+
+  await sendNotification(senderId, receiverID, message);
+
+  console.log("Group invitation sent successfully.");
+};
+
+export const sendRequestToJoinGroup = async (senderId: string, senderUsername: string, receiverID: string, groupName: string) => {
+  const message = `${senderUsername} sent a request to join ${groupName}.`;
+
+  await sendNotification(senderId!, receiverID, message);
+
+  console.log("Request to join group sent successfully.");
 };
