@@ -1,21 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';  
-import { Button, Card, Modal, Spinner } from 'react-bootstrap';
+import { Button, Modal, Spinner } from 'react-bootstrap';
 import './BattleArena.css';
+import './BattleArenaResume.css';
 import { createBattleRoom, fetchQuizzes, joinBattleRoom } from '../../services/battle-arena.service';
 import QuizDataType from '../../types/QuizDataType'; 
 import { AppContext } from '../../state/app.context';
-import { ref, update, get, query, orderByChild, equalTo, set } from 'firebase/database';
+import { ref, update, get, query, orderByChild, equalTo, set, limitToLast } from 'firebase/database';
 import { db } from '../../config/firebase-config';
+import { UserDataType } from '../../types/UserDataType';
+import BattleArenaResume from './BattleArenaResume';
 
 const BattleArena: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [quizzes, setQuizzes] = useState<QuizDataType[]>([]);
   const [selectedQuiz, setSelectedQuiz] = useState<QuizDataType | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
-  const [opponentId, setOpponentId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [noRoomMessage, setNoRoomMessage] = useState<string | null>(null);
+  const [topUsers, setTopUsers] = useState<{ username: string, points: number }[]>([]);
 
   const { user, userData } = useContext(AppContext);
   const navigate = useNavigate();
@@ -30,13 +33,28 @@ const BattleArena: React.FC = () => {
       }
     };
 
+    const loadTopUsers = async () => {
+      try {
+        const usersRef = query(ref(db, 'users'), orderByChild('globalPoints'), limitToLast(15));
+        const snapshot = await get(usersRef);
+
+        if (snapshot.exists()) {
+          const usersData = snapshot.val() as Record<string, UserDataType>;
+          const sortedUsers = Object.entries(usersData)
+            .map(([username, data]) => ({ username, points: data.globalPoints }))
+            .sort((a, b) => b.points - a.points);
+          setTopUsers(sortedUsers);
+        }
+      } catch (error) {
+        console.error('Error fetching top users:', error);
+      }
+    };
+
     loadQuizzes();
+    loadTopUsers();
   }, []);
 
-  const handleOpenModal = () => {
-    setShowModal(true);
-  };
-
+  const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => {
     setShowModal(false);
     setNoRoomMessage(null);
@@ -47,8 +65,6 @@ const BattleArena: React.FC = () => {
       try {
         const newRoomId = await createBattleRoom(selectedQuiz.category, user.uid, userData.username);
         setRoomId(newRoomId);
-        console.log('Room created with ID:', newRoomId);
-        console.log('Selected quiz:', selectedQuiz);
         handleCloseModal();
         navigate(`/battle-room/${newRoomId}`);
       } catch (error) {
@@ -56,133 +72,120 @@ const BattleArena: React.FC = () => {
       }
     }
   };
-  
+
   const handleJoinRoom = async () => {
     if (roomId && userData) {
-        try {
-            const roomRef = ref(db, `battle-rooms/${roomId}`);
-            const roomSnapshot = await get(roomRef);
+      try {
+        const roomRef = ref(db, `battle-rooms/${roomId}`);
+        const roomSnapshot = await get(roomRef);
 
-            if (roomSnapshot.exists() && roomSnapshot.val().randomSearchActive) {
-                const participants = roomSnapshot.val().participants || {};
-                const isAlreadyParticipant = !!participants[userData.uid];
+        if (roomSnapshot.exists() && roomSnapshot.val().randomSearchActive) {
+          const participants = roomSnapshot.val().participants || {};
+          const isAlreadyParticipant = !!participants[userData.uid];
 
-                if (!isAlreadyParticipant) {
-                    const participantsRef = ref(db, `battle-rooms/${roomId}/participants/${userData.uid}`);
-                    await set(participantsRef, {
-                        username: userData.username,
-                        status: 'Not Ready'
-                    });
-                }
+          if (!isAlreadyParticipant) {
+            const participantsRef = ref(db, `battle-rooms/${roomId}/participants/${userData.uid}`);
+            await set(participantsRef, {
+              username: userData.username,
+              status: 'Not Ready'
+            });
+          }
 
-                handleCloseModal();
-                navigate(`/battle-room/${roomId}`);
-            } else {
-                console.error('The room does not accept random searches.');
-                setNoRoomMessage('The room does not accept random searches.');
-            }
-        } catch (error) {
-            console.error('Error joining room:', error);
-            setNoRoomMessage('Failed to join the room.');
+          handleCloseModal();
+          navigate(`/battle-room/${roomId}`);
+        } else {
+          setNoRoomMessage('The room does not accept random searches.');
         }
+      } catch (error) {
+        console.error('Error joining room:', error);
+        setNoRoomMessage('Failed to join the room.');
+      }
     }
-};
+  };
 
-const handleReadyForBattle = async () => {
-  if (user && userData && selectedQuiz) {
+  const handleReadyForBattle = async () => {
+    if (user && userData && selectedQuiz) {
       setLoading(true);
       setNoRoomMessage(null);
       try {
-          const userRef = ref(db, `users/${userData.username}`);
-          await update(userRef, {
+        const userRef = ref(db, `users/${userData.username}`);
+        await update(userRef, {
+          'uid': userData.uid, 
+          'isReadyForBattle': true,
+          'readyCategory': selectedQuiz.category,
+        });
+
+        const battleRoomsRef = query(ref(db, 'battle-rooms'), orderByChild('category'), equalTo(selectedQuiz.category));
+        const snapshot = await get(battleRoomsRef);
+        const rooms = snapshot.val() || {};
+        const roomKeys = Object.keys(rooms).filter(key => rooms[key].randomSearchActive);
+
+        setTimeout(async () => {
+          if (roomKeys.length > 0) {
+            const randomRoomIndex = Math.floor(Math.random() * roomKeys.length);
+            const selectedRoomId = roomKeys[randomRoomIndex];
+            await update(userRef, {
+              'isReadyForBattle': false,
+              'readyCategory': null
+            });
+            const participantsRef = ref(db, `battle-rooms/${selectedRoomId}/participants/${userData.uid}`);
+            await set(participantsRef, {
+              username: userData.username,
+              status: 'Not Ready'
+            });
+
+            setRoomId(selectedRoomId);
+            setLoading(false);
+            navigate(`/battle-room/${selectedRoomId}`);
+          } else {
+            setLoading(false);
+            await update(userRef, {
               'uid': userData.uid, 
-              'isReadyForBattle': true,
-              'readyCategory': selectedQuiz.category,
-          });
+              'isReadyForBattle': false,
+              'readyCategory': null,
+            });
 
-          const battleRoomsRef = query(ref(db, 'battle-rooms'), orderByChild('category'), equalTo(selectedQuiz.category));
-          const snapshot = await get(battleRoomsRef);
-          const rooms = snapshot.val() || {};
-          const roomKeys = Object.keys(rooms).filter(key => rooms[key].randomSearchActive);
-
-          setTimeout(async () => {
-              if (roomKeys.length > 0) {
-                  const randomRoomIndex = Math.floor(Math.random() * roomKeys.length);
-                  const selectedRoomId = roomKeys[randomRoomIndex];
-                  await update(userRef, {
-                      'isReadyForBattle': false,
-                      'readyCategory': null
-                  });
-                  const participantsRef = ref(db, `battle-rooms/${selectedRoomId}/participants/${userData.uid}`);
-                  await set(participantsRef, {
-                      username: userData.username,
-                      status: 'Not Ready'
-                  });
-
-                  setRoomId(selectedRoomId);
-                  setLoading(false);
-                  navigate(`/battle-room/${selectedRoomId}`);
-              } else {
-                  setLoading(false);
-                  const userRef = ref(db, `users/${userData.username}`);
-                  await update(userRef, {
-                      'uid': userData.uid, 
-                      'isReadyForBattle': false,
-                      'readyCategory': null,
-                  });
-        
-                  setNoRoomMessage('No available room found for this category with random search activated.');
-              }
-          }, 3500);
+            setNoRoomMessage('No available room found for this category with random search activated.');
+          }
+        }, 3500);
 
       } catch (error) {
-          console.error('Error setting user ready for battle:', error);
-          setLoading(false);
-          setNoRoomMessage('Error occurred while trying to find a room.');
+        console.error('Error setting user ready for battle:', error);
+        setLoading(false);
+        setNoRoomMessage('Error occurred while trying to find a room.');
       }
-  }
-};
+    }
+  };
 
-  
+  const handleStartRankedBattle = () => {
+    handleOpenModal();
+  };
+
+  const handlePlayBlitzQuiz = () => {
+    navigate('/blitz-room');
+  };
+
+  const handleTrySampleQuiz = () => {
+    navigate('/sample-room');
+  };
 
   return (
-    <div className="battle-arena-wrapper">
-        <div className="battle-arena-wrapper">
-    <div className="battle-arena-menu">
-      <Button variant="custom-primary" className="arena-button" onClick={handleOpenModal}>
-        1 vs 1
-      </Button>
-      <Button variant="custom-secondary" className="arena-button">
-        Team battles
-      </Button>
-      <Button variant="custom-success" className="arena-button" onClick={() => navigate('/blitz-room')}>
-        Blitz quiz
-      </Button>
-      <Button variant="custom-info" className="arena-button" onClick={() => navigate('/sample-room')}>
-        Sample quiz
-      </Button>
-    </div>
+    <div className="battle-arena-container">
+      <div className="battle-arena-content">
+        <BattleArenaResume
+          onStartRankedBattle={handleStartRankedBattle}
+          onPlayBlitzQuiz={handlePlayBlitzQuiz}
+          onTrySampleQuiz={handleTrySampleQuiz}
+        />
       </div>
 
-      <div className="battle-arena-scoreboards">
-        <Card className="scoreboard">
-          <Card.Body>
-            <Card.Title>Global scoreboard: Single user</Card.Title>
-            <Card.Text>1. Faker: 12000</Card.Text>
-          </Card.Body>
-        </Card>
-        <Card className="scoreboard">
-          <Card.Body>
-            <Card.Title>Global scoreboard: Teams</Card.Title>
-            <Card.Text>Fnatic: 25000</Card.Text>
-          </Card.Body>
-        </Card>
-        <Card className="scoreboard">
-          <Card.Body>
-            <Card.Title>Global scoreboard: Blitz rank</Card.Title>
-            <Card.Text>...</Card.Text>
-          </Card.Body>
-        </Card>
+      <div className="scoreboard-container">
+        <div className="scoreboard-title">Global Scoreboard</div>
+        <ul className="scoreboard-list">
+          {topUsers.map((user, index) => (
+            <li key={index}>{index + 1}. {user.username}: {user.points}</li>
+          ))}
+        </ul>
       </div>
 
       <Modal show={showModal} onHide={handleCloseModal}>
