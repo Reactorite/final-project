@@ -22,6 +22,7 @@ export default function Group() {
   const [groupData, setGroupData] = useState<GroupDataType[]>([]);
   const [users, setUsers] = useState<UserData[]>([]);
   const [allGroups, setAllGroups] = useState<GroupDataType[]>([]);
+  const [requestedGroups, setRequestedGroups] = useState<string[]>([]);
   const { userData } = useContext(AppContext);
 
   useEffect(() => {
@@ -109,6 +110,7 @@ export default function Group() {
           alert('Request sent successfully');
         })
     }
+    setRequestedGroups(prevState => [...prevState, groupNameInvitation]);
   };
 
   return (
@@ -144,12 +146,16 @@ export default function Group() {
         <Card.Body>
           <Card.Header>All groups</Card.Header>
           {allGroups.map(group => (
-            userData && !group.members[userData!.uid] &&
+            userData && !group.members[userData.uid] &&
             <div key={group.groupId}>
               <h5>{group.name}</h5>
               <p>Members: {Object.keys(group.members).length}</p>
               <p>Creator: {group.creator.username}</p>
-              <Button variant="primary" onClick={() => handleRequestToJoinGroup(userData!.uid, userData!.username, group.creator.id, group.name)}>Ask to join</Button>
+              {requestedGroups.includes(group.name) ? (
+                <Button variant="secondary" disabled>Request sent</Button>
+              ) : (
+                <Button variant="primary" onClick={() => handleRequestToJoinGroup(userData.uid, userData.username, group.creator.id, group.name)}>Ask to join</Button>
+              )}
             </div>
           ))}
         </Card.Body>
