@@ -17,12 +17,28 @@
   flex-direction: column;
   max-width: 100%;
   padding: 20px;
-  transition: background-color 0.5s ease; /* Add transition for background color */
+  transition: background-color 0.5s ease;
+  /* Add transition for background color */
 }
 
 .card {
   margin-bottom: 10px;
 }
+
+.custom-footer.orange-footer button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  /* Adjust color if needed */
+  width: 100%;
+  height: 100%;
+}
+
+.custom-footer.orange-footer button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  /* Light white wash on hover */
+}
+
 
 .column-container>.card>.card-body {
   overflow-y: auto;
@@ -34,14 +50,17 @@
 }
 
 .column-container .card:hover {
-  transform: scale(1.03); /* Scales up the card to 105% of its size */
+  transform: scale(1.03);
+  /* Scales up the card to 105% of its size */
   /* transition: transform 0.6s ease; Smooth transition effect */
-  z-index: 2; /* Ensures the card pops out over others */
+  z-index: 2;
+  /* Ensures the card pops out over others */
 }
 
 .column-container .card {
   margin-bottom: 10px;
-  transition: transform 0.3s ease-in-out; /* Applies a smooth transition for both hover and mouse leave */
+  transition: transform 0.3s ease-in-out;
+  /* Applies a smooth transition for both hover and mouse leave */
 }
 
 .column-container {
@@ -69,6 +88,12 @@
   padding: 10px;
 }
 
+.modal-body .list-group-item .btn {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+  float: right;  /* Ensure the button aligns to the right */
+}
+
 .list-group-item .btn {
   margin-left: 10px;
 }
@@ -77,72 +102,82 @@
   margin-left: 5px;
 }
 
-/* Change this to orange */
+.list-group-item .btn-danger {
+  background-color: #dc3545; /* Bootstrap's default red */
+  border-color: #dc3545;
+  color: white; /* Ensures the text color is white */
+}
+
+.list-group-item .btn-danger:hover {
+  background-color: #c82333; /* Darker red for hover */
+  border-color: #c82333;
+}
+
+.list-group-item .btn-danger:active {
+  background-color: #bd2130; /* Darkest red for active/click */
+  border-color: #bd2130;
+}
+
 .custom-footer {
-  position: sticky;
-  bottom: 0;
-  width: 100%;
-  padding: 15px;
   text-align: center;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-  border-top: 1px solid #ddd;
-  /* Optional: to visually separate the footer */
-}
-
-.orange-footer {
-  background-color: orange;
-  /* Bootstrap orange */
+  /* Centers the text */
   color: white;
-}
-
-.orange-footer:hover {
-  background-color: orange;
+  /* Ensures text color is white */
+  font-size: 16px;
+  /* Adjust font size as needed */
+  font-weight: bold;
+  /* Makes the font bold */
+  padding: 10px 15px;
+  /* Adjust padding for better alignment */
+  cursor: pointer;
+  /* Changes the cursor on hover to indicate clickability */
+  display: flex;
+  /* Use flexbox to center content vertically and horizontally */
+  justify-content: center;
+  /* Centers content horizontally in the flex container */
+  align-items: center;
+  /* Centers content vertically in the flex container */
+  border-top: 1px solid #ddd;
+  /* Adds a subtle top border for separation */
 }
 
 .orange-footer:active {
-  background-color: #c9600c;
-}
-
-/* Update the blue to match the buttons inside the cards */
-.blue-footer {
-  background-color: #007bff;
-  /* Bootstrap blue */
-  color: white;
-}
-
-.blue-footer:hover {
-  background-color: #0056b3;
+  background-color: #cf711f;
+  /* Even darker orange to simulate button press */
 }
 
 .blue-footer:active {
   background-color: #004085;
 }
 
-.green-footer {
-  background-color: #28a745;
-  color: white;
-}
-
-.green-footer:hover {
-  background-color: #218838;
-}
-
 .green-footer:active {
   background-color: #1e7e34;
 }
 
-.red-footer {
-  background-color: #dc3545;
-  /* Bootstrap red */
+.column-container .card .custom-footer.orange-footer {
+  background-color: orange;
   color: white;
 }
 
-.red-footer:hover {
-  background-color: #c82333;
+.column-container .card .custom-footer.orange-footer:hover {
+  background-color: #e67e22;
+  /* Slightly darker orange on hover for visual feedback */
 }
 
-.red-footer:active {
-  background-color: #bd2130;
+.column-container .card .custom-footer.blue-footer {
+  background-color: #007bff;
+  color: white;
+}
+
+.column-container .card .custom-footer.blue-footer:hover {
+  background-color: #0056b3;
+}
+
+.column-container .card .custom-footer.green-footer {
+  background-color: #28a745;
+  color: white;
+}
+
+.column-container .card .custom-footer.green-footer:hover {
+  background-color: #218838;
 }
