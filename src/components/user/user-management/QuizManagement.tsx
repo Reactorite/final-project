@@ -1,51 +1,75 @@
 import React, { useState, useEffect } from 'react';
-import { ListGroup, Row, Col, Card } from 'react-bootstrap';
-import { getAllQuizzes } from '../../../services/quizes.service';
+import { ListGroup, Card, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'; 
+import { getAllQuizzes, deleteQuiz } from '../../../services/quizes.service';
 import QuizDataType from '../../../types/QuizDataType';
-import QuizEditor from '../../quizzes/quiz-editor/QuizEditor';
-
 
 const QuizManagement: React.FC = () => {
-  const [quizzes, setQuizzes] = useState<QuizDataType[]>([]);
+    const [quizzes, setQuizzes] = useState<QuizDataType[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchQuizzes();
-  }, []);
+    useEffect(() => {
+        fetchQuizzes();
+    }, []);
 
-  const fetchQuizzes = async () => {
-    const fetchedQuizzes = await getAllQuizzes();
-    if (fetchedQuizzes) {
-      setQuizzes(fetchedQuizzes);
-    }
-  };
+    const fetchQuizzes = async () => {
+        setLoading(true);
+        try {
+            const fetchedQuizzes = await getAllQuizzes();
+            setQuizzes(fetchedQuizzes ?? []);
+        } catch (error) {
+            console.error('Failed to fetch quizzes:', error);
+            setError('Failed to load quizzes.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const handleQuizUpdated = (updatedQuiz: QuizDataType) => {
-    setQuizzes(prev => prev.map(q => q.quizID === updatedQuiz.quizID ? updatedQuiz : q));
-  };
+    const handleQuizDeleted = async (quizId: string) => {
+        setLoading(true);
+        try {
+            await deleteQuiz(quizId);
+            fetchQuizzes();  
+        } catch (error) {
+            console.error('Error deleting quiz:', error);
+            setError('Failed to delete quiz.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const handleQuizDeleted = (quizId: string) => {
-    setQuizzes(prev => prev.filter(q => q.quizID !== quizId));
-  };
+    const handleEditQuiz = () => {
+        navigate(`/create-quiz`);  
+    };
 
-  return (
-    <Card>
-      <Card.Body>
-        <Card.Title>Manage Quizzes</Card.Title>
-        <ListGroup>
-          {quizzes.map((quiz) => (
-            <ListGroup.Item key={quiz.quizID}>
-              <Row>
-                <Col>{quiz.title}</Col>
-                <Col>
-                  <QuizEditor quiz={quiz} onSave={handleQuizUpdated} onDelete={handleQuizDeleted} />
-                </Col>
-              </Row>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
-      </Card.Body>
-    </Card>
-  );
+    return (
+        <Card>
+            <Card.Body>
+                {loading && <p>Loading...</p>}
+                {error && <p className="text-danger">{error}</p>}
+                <Card.Title>Manage Quizzes</Card.Title>
+                <ListGroup>
+                    {quizzes.map((quiz) => (
+                        <ListGroup.Item key={quiz.quizID}>
+                            <div className="col col-main">{quiz.title}</div>
+                            <div className="col">
+                                <Button variant="primary" style={{ width: "130px" }} onClick={() => handleEditQuiz()}>
+                                    Edit
+                                </Button>
+                            </div>
+                            <div className="col">
+                                <Button variant="danger" style={{ width: "100px" }} onClick={() => handleQuizDeleted(quiz.quizID)}>
+                                    Delete
+                                </Button>
+                            </div>
+                        </ListGroup.Item>
+                    ))}
+                </ListGroup>
+            </Card.Body>
+        </Card>
+    );
 };
 
 export default QuizManagement;
