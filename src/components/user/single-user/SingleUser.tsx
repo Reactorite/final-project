@@ -26,15 +26,18 @@ export default function SingleUser() {
     };
 
     fetchUser();
-  }, []);
-
+  }, [userId]);
 
   return (
     <>
       <div className="single-user-container" style={{ display: "flex", justifyContent: "center", flexDirection: "row", alignItems: "center" }}>
         {user && (
           <Card className="card-appear" style={{ width: "20rem" }}>
-            <Card.Img variant="top" />
+            {user.photo ? (
+              <Card.Img variant="top" src={user.photo} alt={`${user.username}'s profile`} />
+            ) : 
+            'No photo available.'
+            }
             <Card.Body>
               <Card.Title>{user.username}</Card.Title>
               <Card.Text>
@@ -51,7 +54,7 @@ export default function SingleUser() {
               </Card.Text>
             </Card.Body>
             <div className="card-buttons">
-              <Button variant="primary" /*href={`/users/${userId}/edit`}*/ style={{ width: "8rem" }}>
+              <Button variant="primary" style={{ width: "8rem" }}>
                 Play 1v1
               </Button>
             </div>
