@@ -20,10 +20,12 @@ import Home from './components/home/Home';
 import Messages from './components/common/messages/Messages';
 import ResetPassword from './components/auth/ResetPassword';
 import SingleUser from './components/user/single-user/SingleUser';
-
-
 import BattleArena from './components/battle-arena/BattleArena';
 import BattleRoom from './components/battle-room/BattleRoom';
+import BlitzRoom from './components/blitz-room/BlitzRoom';
+import SampleQuizRoom from './components/sample-quiz-room/SampleQuizRoom';
+import BlitzMode from './components/blitz-mode/BlitzMode';
+import SampleQuizMode from './components/sample-quiz-mode/SampleQuizMode';
 
 function App() {
   const [appState, setAppState] = useState<AppContextType>({
@@ -94,6 +96,10 @@ function App() {
           <Route path='/battle-arena' element={<BattleArena />}></Route>
           <Route path="/battle-room/:roomId" element={<BattleRoom />} />
           <Route path="/battle-room/:roomId/battle-mode" element={<BattleRoom />} />
+          <Route path="/blitz-room" element={<BlitzRoom />} />
+          <Route path="/sample-room" element={<SampleQuizRoom />} />
+          <Route path="/blitz-mode/:quizID" element={<BlitzMode />} />
+          <Route path="/sample-mode/:quizID" element={<SampleQuizMode />} />
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/register" element={<Register />} />
