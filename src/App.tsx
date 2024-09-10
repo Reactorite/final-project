@@ -104,11 +104,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/create-quiz" element={appState.userData?.isTeacher && <CreateQuiz />} />
+          <Route path="/create-quiz" element={(appState.userData?.isTeacher || appState.userData?.isAdmin || appState.userData?.isOwner ) && <CreateQuiz />} />
           <Route path='/user-profile' element={<User />} />
           <Route path='/profile/:id' element={<SingleUser />} />
           <Route path='/quizz-page' element={appState.userData?.isTeacher ? <QuizzPage /> : appState.userData?.isStudent && <StudentQuizPage />} />
-          <Route path='/admin-panel' element={appState.userData?.isAdmin && <AdminPanel />}></Route>
+          <Route path='/admin-panel' element={(appState.userData?.isAdmin || appState.userData?.isOwner) && <AdminPanel />}></Route>
           <Route path='/play-quiz/:id' element={<SingleQuiz />} />
           <Route path='/messages' element={appState.user?.uid ? <Messages userId={appState.user.uid} /> : <Login />} />
           <Route path='/groups' element={<Group />} />

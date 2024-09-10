@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../state/app.context';
 import { getRandomQuizByCategory } from '../../services/battle-arena.service';
-import { ref, onValue, update, off } from 'firebase/database';
+import { ref, onValue, update, off, get, remove } from 'firebase/database';
 import QuizDataType from '../../types/QuizDataType';
 import './BattleMode.css';
 import { db } from '../../config/firebase-config';
@@ -13,6 +13,7 @@ interface BattleModeProps {
     [uid: string]: {
       username: string;
       points: number;
+      photo?: string; 
     };
   };
   roomId: string;
@@ -116,14 +117,25 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
   const handleBackToBattleArena = async () => {
     const currentUserPoints = scoreboard[userData?.uid || ''] || 0;
     if (userData?.uid) {
-      const globalPoints = typeof userData.globalPoints === 'number' ? userData.globalPoints : 0;
+        const globalPoints = typeof userData.globalPoints === 'number' ? userData.globalPoints : 0;
+        await update(ref(db, `users/${userData.username}/`), {
+            globalPoints: globalPoints + currentUserPoints,
+        });
+    }
 
-      await update(ref(db, `users/${userData.username}/`), {
-        globalPoints: globalPoints + currentUserPoints,
-      });
+    const roomRef = ref(db, `battle-rooms/${roomId}`);
+    const roomSnapshot = await get(roomRef);
+    if (roomSnapshot.exists()) {
+        const participants = roomSnapshot.val().participants || {};
+        if (Object.keys(participants).length <= 1) {
+            await remove(roomRef);
+        } else {
+            await remove(ref(db, `battle-rooms/${roomId}/participants/${userData?.uid}`));
+        }
     }
     window.location.href = '/battle-arena';
-  };
+};
+
 
   if (loading) return <div>Loading quiz...</div>;
   if (error) return <div>{error}</div>;
@@ -140,9 +152,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
   if (timer <= 0) {
     return (
       <div className="finish-container">
-        <div className="timer">
-          Time's up!
-        </div>
+        <div className="timer">Time's up!</div>
         <h3>Quiz finished!</h3>
         <div className="scoreboard">
           {participantList.map(([uid, { username }]) => (
@@ -159,9 +169,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
   if (!currentQuestion || currentQuestionIndex >= questionKeys.length) {
     return (
       <div className="finish-container">
-        <div className="timer">
-          Time left: {minutes}:{seconds.toString().padStart(2, '0')}
-        </div>
+        {/* <div className="timer">Time left: {minutes}:{seconds.toString().padStart(2, '0')}</div> */}
         <h3>Quiz finished!</h3>
         <div className="scoreboard">
           {participantList.map(([uid, { username }]) => (
@@ -181,6 +189,11 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
     <div className="battle-mode">
       <div className="user-info user1-info">
         <h3>{currentUser ? currentUser[1].username : 'Loading...'}</h3>
+        <img
+          src={currentUser?.[1].photo || 'default-avatar.png'}
+          alt={`${currentUser?.[1].username}'s avatar`}
+          className="participant-avatar"
+        />
         <p>Points: {currentUser ? scoreboard[currentUser[0]] : 0}</p>
       </div>
       <div className="quiz-section">
@@ -208,6 +221,13 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
       </div>
       <div className="user-info user2-info">
         <h3>{opponentUser ? opponentUser[1].username : 'Waiting for opponent...'}</h3>
+        {opponentUser && (
+          <img
+            src={opponentUser[1].photo || 'default-avatar.png'}
+            alt={`${opponentUser[1].username}'s avatar`}
+            className="participant-avatar"
+          />
+        )}
         <p>Points: {opponentUser ? scoreboard[opponentUser[0]] : 0}</p>
       </div>
     </div>

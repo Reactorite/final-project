@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Card, ListGroup, Row, Col, Button, InputGroup, Form } from 'react-bootstrap';
 import { AppContext } from '../../../state/app.context';
-import { blockUser, unblockUser, getAllUsers } from '../../../services/users.service';
+import { blockUser, unblockUser, getAllUsers, makeAdmin, removeAdmin } from '../../../services/users.service';
 import { UserDataType } from '../../../types/UserDataType';
+import './UserManagement.css'
 
 const UserManagement: React.FC = () => {
   const { userData } = useContext(AppContext);
@@ -10,7 +11,7 @@ const UserManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    if (userData?.isAdmin) {
+    if (userData?.isAdmin || userData?.isOwner) {
       fetchUsers();
     }
   }, [userData]);
@@ -36,6 +37,16 @@ const UserManagement: React.FC = () => {
     fetchUsers();
   };
 
+  const handleMakeAdmin = async (username: string) => {
+    await makeAdmin(username);
+    fetchUsers();
+  };
+
+  const handleRemoveAdmin = async (username: string) => {
+    await removeAdmin(username);
+    fetchUsers();
+  };
+
   return (
     <Card>
       <Card.Body>
@@ -49,23 +60,32 @@ const UserManagement: React.FC = () => {
           <Button variant="primary" onClick={fetchUsers}>Search</Button>
         </InputGroup>
         <ListGroup>
-          {users.map((user) => (
-            <ListGroup.Item key={user.uid}>
-              <Row>
-                <Col>{user.username} ({user.firstName} {user.lastName})</Col>
-                <Col>Email: {user.email}</Col>
-                <Col>
-                  <Button
-                    variant={user.isBlocked ? 'success' : 'danger'}
-                    onClick={() => user.isBlocked ? handleUnblockUser(user.username) : handleBlockUser(user.username)}
-                  >
-                    {user.isBlocked ? 'Unblock' : 'Block'}
-                  </Button>
-                </Col>
-              </Row>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+  {users.map((user) => (
+    <ListGroup.Item key={user.uid}>
+      <div className="col">{user.username} ({user.firstName} {user.lastName})</div>
+      <div className="col col-email">{user.email}</div>
+      <div className="col">
+        <Button
+          variant={user.isBlocked ? 'success' : 'danger'}
+          onClick={() => user.isBlocked ? handleUnblockUser(user.username) : handleBlockUser(user.username)}
+        >
+          {user.isBlocked ? 'Unblock' : 'Block'}
+        </Button>
+      </div>
+      <div className="col">
+        {userData?.isOwner && (
+          <Button
+            variant={user.isAdmin ? 'secondary' : 'primary'}
+            onClick={() => user.isAdmin ? handleRemoveAdmin(user.username) : handleMakeAdmin(user.username)}
+          >
+            {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
+          </Button>
+        )}
+      </div>
+    </ListGroup.Item>
+  ))}
+</ListGroup>
+
       </Card.Body>
     </Card>
   );

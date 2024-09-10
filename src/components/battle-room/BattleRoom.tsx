@@ -11,7 +11,8 @@ import BattleModeWrapper from '../battle-mode-wrapper/BattleModeWrapper';
 interface Participant {
   username: string;
   status: string;
-  points?: number;  
+  points?: number;
+  photo?: string
 }
 
 const BattleRoom: React.FC = () => {
@@ -45,15 +46,15 @@ const BattleRoom: React.FC = () => {
       if (data) {
         setCategory(data.category);
         setParticipants(data.participants || {});
-        setHostUserId(data.hostUserId); 
+        setHostUserId(data.hostUserId);
         setBattleStarted(data.status === 'in-battle');
-  
+
         if (data.randomSearchActive === false && loading) {
           setLoading(false);
         }
       }
     });
-  
+
     return () => unsubRoom();
   }, [roomId, loading]);
 
@@ -95,7 +96,7 @@ const BattleRoom: React.FC = () => {
 
       if (snapshot.exists()) {
         const usersData = snapshot.val() as Record<string, UserDataType>;
-        const onlineUsersList = Object.values(usersData).filter(user => 
+        const onlineUsersList = Object.values(usersData).filter(user =>
           user.isOnline && user.uid !== userData?.uid
         );
         setOnlineUsers(onlineUsersList);
@@ -116,55 +117,62 @@ const BattleRoom: React.FC = () => {
       invitationStatus: "pending",
       timestamp: Date.now(),
     });
-
+  
     console.log(`Invite sent to ${invitedUser.username} to join room ${roomId}`);
     setShowInviteModal(false);
   };
+  
 
   const findRandomOpponent = async () => {
     if (userData) {
       console.log('Starting random search...');
       setLoading(true);
-  
+
       try {
         await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: true });
-  
+
         timeoutRef.current = setTimeout(async () => {
           const usersRef = ref(db, `users`);
           const opponentQuery = query(usersRef, orderByChild('isReadyForBattle'), equalTo(true));
           const snapshot = await get(opponentQuery);
-  
+
           if (snapshot.exists()) {
             const users = snapshot.val();
             const userKeys = Object.keys(users).filter(uid => users[uid].uid !== userData?.uid);
             if (userKeys.length > 0) {
               const randomIndex = Math.floor(Math.random() * userKeys.length);
               const selectedOpponent = users[userKeys[randomIndex]];
+
               setOpponent(selectedOpponent.username);
               console.log('Opponent selected:', selectedOpponent.username);
-  
+
+              const participantsRef = ref(db, `battle-rooms/${roomId}/participants/${selectedOpponent.uid}`);
+              await set(participantsRef, {
+                username: selectedOpponent.username,
+                status: 'Not Ready',
+                photo: selectedOpponent.photo || 'default-avatar.png'
+              });
+
               await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: false });
             } else {
               console.log('No opponents found.');
               setLoading(false);
-  
               await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: false });
             }
           } else {
             console.log('No users found in the database.');
             setLoading(false);
-  
             await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: false });
           }
         }, 15000);
       } catch (error) {
         console.error('Error during random opponent search:', error);
         setLoading(false);
-        
         await update(ref(db, `battle-rooms/${roomId}`), { randomSearchActive: false });
       }
     }
   };
+
 
   const cancelSearch = async () => {
     setLoading(false);
@@ -205,13 +213,13 @@ const BattleRoom: React.FC = () => {
         { ...participant, points: participant.points || 0 },
       ])
     );
-  
+
     return (
       <BattleModeWrapper
         category={category}
         participants={participantsWithDefaultPoints}
-        roomId={roomId}  
-        hostUserId={hostUserId} 
+        roomId={roomId}
+        hostUserId={hostUserId}
       />
     );
   }
@@ -219,16 +227,32 @@ const BattleRoom: React.FC = () => {
   return (
     <div className="battle-room">
       <h2 className="room-title">Room Lobby</h2>
+      <div className="category-info">
+        <h4>Category: {category}</h4>
+      </div>
       <div className="participants-wrapper">
         <div className="participant">
           <h3>{currentUser?.username || userData?.username}</h3>
+          <img
+            src={currentUser?.photo || 'default-avatar.png'}
+            alt={`${currentUser?.username}'s avatar`}
+            className="participant-avatar"
+          />
           <p>{currentUser?.status || (isReady ? 'Ready' : 'Not Ready')}</p>
         </div>
         <div className="participant">
           <h3>{opponentUser?.username || '(invite or random)'}</h3>
+          {opponentUser && (
+            <img
+              src={opponentUser.photo || 'default-avatar.png'}
+              alt={`${opponentUser?.username}'s avatar`}
+              className="participant-avatar"
+            />
+          )}
           <p>{opponentUser?.status || ''}</p>
         </div>
       </div>
+
       <div className="center-content">
         {loading && (
           <>
@@ -237,23 +261,20 @@ const BattleRoom: React.FC = () => {
           </>
         )}
       </div>
-      <div className="category-info">
-        <h4>Category: {category}</h4>
-      </div>
       <div className="actions">
         {userData?.uid === hostUserId ? (
           <>
-            <Button variant="secondary" onClick={deleteBattleRoom}>Back</Button>
+            <Button variant="secondary" className='btn-back' onClick={deleteBattleRoom}>Back</Button>
             <Button onClick={handleInvite}>Invite</Button>
             <Button onClick={findRandomOpponent}>Random Search</Button>
             {allReady && (
-              <Button variant="success" onClick={startBattle}>
+              <Button variant="success" className='btn-start-battle' onClick={startBattle}>
                 Start Battle
               </Button>
             )}
           </>
         ) : (
-          <Button variant="danger" onClick={handleReturn}>Return</Button>
+          <Button variant="danger" className='btn-return' onClick={handleReturn}>Return</Button>
         )}
         <Button onClick={toggleReadyState}>
           {isReady ? 'Not Ready' : 'Ready'}

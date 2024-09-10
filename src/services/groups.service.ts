@@ -59,4 +59,23 @@ export const deleteGroup = async (groupId: string, uid: string) => {
     console.error("Error deleting group:", error);
     throw new Error("Failed to delete group");
   }
-}
+};
+
+export const getAllGroups = async () => {
+  try {
+    const groupsRef = ref(db, "groups");
+    const groupsSnapshot = await get(groupsRef);
+    const groupsData = groupsSnapshot.val();
+    if (groupsData) {
+      const groups = Object.keys(groupsData).map((groupId) => ({
+        id: groupId,
+        ...groupsData[groupId],
+      }));
+      return groups;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching groups:", error);
+    throw new Error("Failed to fetch groups");
+  }
+};

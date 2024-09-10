@@ -1,47 +1,115 @@
 .battle-room {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    height: 100vh;
-    padding: 20px;
-  }
-  
-  .room-title {
-    font-size: 2em;
-    margin-bottom: 20px;
-  }
-  
-  .participants-wrapper {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 800px;
-  }
-  
-  .participant {
-    text-align: center;
-    flex: 1;
-  }
-  
-  .center-content {
-    margin: 20px 0;
-  }
-  
-  .category-info {
-    margin: 20px 0;
-  }
-  
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 600px;
-    margin-top: 20px;
-  }
-  
-  .actions button {
-    flex: 1;
-    margin: 0 10px;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  padding: 20px;
+  height: 100vh; 
+}
+
+.room-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.participants-wrapper {
+  display: flex;
+  justify-content: space-around; 
+  width: 80%; 
+  margin-bottom: 40px; 
+}
+
+.participant {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  width: 250px; 
+  margin: 0 30px; 
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.participant:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+
+.participant-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: 10px auto;
+  border: 3px solid #007bff; 
+}
+
+.participant h3 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.participant p {
+  color: #555;
+}
+
+.category-info {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.actions {
+  display: flex;
+  justify-content: center; 
+  padding: 10px 0;
+  gap: 20px;
+}
+
+.actions button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.actions button:hover {
+  background-color: #0056b3;
+}
+
+.modal-content {
+  border-radius: 10px;
+}
+
+.btn-back {
+  background-color: #6c757d !important; 
+  color: white;
+}
+
+.btn-start-battle {
+  background-color: #28a745 !important; 
+  color: white;
+}
+
+.btn-return {
+  background-color: #dc3545 !important; 
+  color: white;
+}
+
+.btn-back:hover,
+.btn-start-battle:hover,
+.btn-return:hover {
+  opacity: 0.85;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-around; 
+  margin-top: 20px;
+}

@@ -1,0 +1,127 @@
+.battle-arena-resume {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    background-color: #f4f4f9; 
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 700px;
+}
+
+.resume-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333; 
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.resume-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+}
+
+.resume-section.ranked {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ranked-info {
+    background-color: #ffffff; 
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ranked-info:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ranked-info h3 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #ff5733; 
+    transition: color 0.3s ease;
+}
+
+.ranked-info p {
+    margin-bottom: 15px;
+}
+
+.resume-section.unranked {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+.unranked-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.unranked-option {
+    background-color: #ffffff; 
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.unranked-option:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+.unranked-option h3 {
+    color: #ff5733; 
+    transition: color 0.3s ease; 
+}
+
+.arena-button {
+    font-size: 1rem;
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: #fff; 
+    border: none;
+    background-color: #ff5733; 
+    transition: none; 
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none; 
+  }
+  
+
+  .custom-primary {
+    background-color: #ff5733; 
+  }
+  
+  .custom-success {
+    background-color: #28a745; 
+  }
+  
+  .custom-info {
+    background-color: #17a2b8; 
+  }
+  
+
+  .arena-button:hover {
+    background-color: #f39c12; 
+  }
+  
+
+  .ranked-info:hover h3,
+  .unranked-option:hover h3 {
+    color: #f39c12;
+  }
+  

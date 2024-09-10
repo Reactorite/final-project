@@ -65,7 +65,6 @@ export const updateUserProfileWithPicture = async (
     
     let profilePictureURL = userData.photo || '';
 
-    // Ако има качен файл, качваме новата профилна снимка в Firebase Storage
     if (file) {
       const storage = getStorage();
       const imageRef = storageRef(storage, `profile-pictures/${userData.username}`);
@@ -73,7 +72,6 @@ export const updateUserProfileWithPicture = async (
       profilePictureURL = await getDownloadURL(imageRef);
     }
 
-    // Актуализиране на потребителския профил с новите данни
     const snapshot = await get(userRef);
     const currentData = snapshot.val();
 
@@ -90,4 +88,14 @@ export const updateUserProfileWithPicture = async (
     console.error("Error updating user profile with picture:", error);
     return null;
   }
+};
+
+export const makeAdmin = async (username: string) => {
+  const userRef = ref(db, `users/${username}`);
+  await update(userRef, { isAdmin: true });
+};
+
+export const removeAdmin = async (username: string) => {
+  const userRef = ref(db, `users/${username}`);
+  await update(userRef, { isAdmin: false });
 };
