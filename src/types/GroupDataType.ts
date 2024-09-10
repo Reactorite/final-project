@@ -1,10 +1,14 @@
 export default interface GroupDataType {
-    name: string;
-    members: {
-        [uid: string]: {
-          role: "creator" | "teacher" | "student";  // You can store member roles or other info
-          joined: string;
-        };
-      };
-    creator: string;
+  name: string;
+  members: {
+    [uid: string]: {
+      role: "creator" | "teacher" | "student";
+      joined: string;
+    };
+  };
+  creator: {
+    id: string;
+    username: string;
+  },
+  groupId: string;
 }

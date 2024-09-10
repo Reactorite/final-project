@@ -50,6 +50,7 @@ const Header = () => {
         {user && userData && <NavLink to="/battle-arena" className="header-link"><span className="link-text">BATTLE ARENA</span><span className="icon">⚔️</span></NavLink>}
         {user && userData && <NavLink to="/user-profile" className="header-link"><span className="link-text">PROFILE</span><span className="icon">👤</span></NavLink>}
         {/* {user && userData && <NavLink to="/" className="header-link" onClick={logout}><span className="link-text">LOGOUT</span><span className="icon">🚪</span></NavLink>} */}
+        {user && userData && <NavLink to="/groups" className="header-link"><span className="link-text">GROUPS</span><span className="icon">👥</span></NavLink>}
         {user && userData && (
           <a href="/" className="header-link" onClick={(e) => { e.preventDefault(); logout(); }}>
             <span className="link-text">LOGOUT</span><span className="icon">🚪</span>

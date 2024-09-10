@@ -26,6 +26,7 @@ import BlitzRoom from './components/blitz-room/BlitzRoom';
 import SampleQuizRoom from './components/sample-quiz-room/SampleQuizRoom';
 import BlitzMode from './components/blitz-mode/BlitzMode';
 import SampleQuizMode from './components/sample-quiz-mode/SampleQuizMode';
+import Group from './components/groups/Group';
 
 function App() {
   const [appState, setAppState] = useState<AppContextType>({
@@ -110,6 +111,7 @@ function App() {
           <Route path='/admin-panel' element={appState.userData?.isAdmin && <AdminPanel />}></Route>
           <Route path='/play-quiz/:id' element={<SingleQuiz />} />
           <Route path='/messages' element={appState.user?.uid ? <Messages userId={appState.user.uid} /> : <Login />} />
+          <Route path='/groups' element={<Group />} />
           <Route path='*' element={<h1>Not Found</h1>} />
         </Routes>
       </BrowserRouter>
