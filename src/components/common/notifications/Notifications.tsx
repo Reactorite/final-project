@@ -57,16 +57,14 @@ const Notification: React.FC<NotificationProps> = ({ userId, userName }) => {
   const handleAccept = async (notificationID: string, roomId?: string) => {
     try {
       if (roomId && userId && userName) {
-        // Предаваме снимката на потребителя (userData.photo)
+
         await acceptInvitation(notificationID, userName, roomId, userId, userData?.photo);
   
-        // Добавяме потребителя към стаята
+
         await addParticipantToRoom(roomId, userId, userName);
-  
-        // Обновяваме статуса му
+
         await updateReadyStatus(userId, userName);
   
-        // Пренасочваме потребителя към стаята
         navigate(`/battle-room/${roomId}`);
       } else {
         console.error("Room ID, User ID, or User Name is missing");
@@ -102,7 +100,7 @@ const Notification: React.FC<NotificationProps> = ({ userId, userName }) => {
 <NavDropdown
   title={
     <>
-      <span style={{ marginLeft: "10px"}}>NOTIFICATIONS</span> {/* Add class here */}
+      <span style={{ marginLeft: "10px"}}>NOTIFICATIONS</span> 
       {notifications.length > 0 &&
         notifications.some((notif) => notif.status === "unread") && (
           <Badge bg="danger">

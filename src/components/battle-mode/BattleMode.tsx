@@ -13,7 +13,7 @@ interface BattleModeProps {
     [uid: string]: {
       username: string;
       points: number;
-      photo?: string; // Add photo field
+      photo?: string; 
     };
   };
   roomId: string;
