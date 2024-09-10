@@ -63,7 +63,12 @@ const BattleArena: React.FC = () => {
   const handleCreateRoom = async () => {
     if (selectedQuiz && user && userData) {
       try {
-        const newRoomId = await createBattleRoom(selectedQuiz.category, user.uid, userData.username);
+        const newRoomId = await createBattleRoom(
+          selectedQuiz.category,
+          user.uid,
+          userData.username,
+          userData.photo || ''
+        );
         setRoomId(newRoomId);
         handleCloseModal();
         navigate(`/battle-room/${newRoomId}`);
@@ -72,27 +77,25 @@ const BattleArena: React.FC = () => {
       }
     }
   };
+  
 
   const handleJoinRoom = async () => {
     if (roomId && userData) {
       try {
         const roomRef = ref(db, `battle-rooms/${roomId}`);
         const roomSnapshot = await get(roomRef);
-
+    
         if (roomSnapshot.exists() && roomSnapshot.val().randomSearchActive) {
-          const participants = roomSnapshot.val().participants || {};
-          const isAlreadyParticipant = !!participants[userData.uid];
-
-          if (!isAlreadyParticipant) {
-            const participantsRef = ref(db, `battle-rooms/${roomId}/participants/${userData.uid}`);
-            await set(participantsRef, {
-              username: userData.username,
-              status: 'Not Ready'
-            });
+          const joinStatus = await joinBattleRoom(
+            roomId, 
+            userData.uid, 
+            userData.username, 
+            userData.photo || ''
+          );
+          if (joinStatus === "joined") {
+            handleCloseModal();
+            navigate(`/battle-room/${roomId}`);
           }
-
-          handleCloseModal();
-          navigate(`/battle-room/${roomId}`);
         } else {
           setNoRoomMessage('The room does not accept random searches.');
         }
@@ -102,6 +105,7 @@ const BattleArena: React.FC = () => {
       }
     }
   };
+  
 
   const handleReadyForBattle = async () => {
     if (user && userData && selectedQuiz) {
@@ -131,7 +135,8 @@ const BattleArena: React.FC = () => {
             const participantsRef = ref(db, `battle-rooms/${selectedRoomId}/participants/${userData.uid}`);
             await set(participantsRef, {
               username: userData.username,
-              status: 'Not Ready'
+              status: 'Not Ready',
+              photo: userData.photo
             });
 
             setRoomId(selectedRoomId);

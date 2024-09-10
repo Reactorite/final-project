@@ -13,6 +13,7 @@ interface BattleModeProps {
     [uid: string]: {
       username: string;
       points: number;
+      photo?: string; // Add photo field
     };
   };
   roomId: string;
@@ -140,9 +141,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
   if (timer <= 0) {
     return (
       <div className="finish-container">
-        <div className="timer">
-          Time's up!
-        </div>
+        <div className="timer">Time's up!</div>
         <h3>Quiz finished!</h3>
         <div className="scoreboard">
           {participantList.map(([uid, { username }]) => (
@@ -159,9 +158,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
   if (!currentQuestion || currentQuestionIndex >= questionKeys.length) {
     return (
       <div className="finish-container">
-        <div className="timer">
-          Time left: {minutes}:{seconds.toString().padStart(2, '0')}
-        </div>
+        {/* <div className="timer">Time left: {minutes}:{seconds.toString().padStart(2, '0')}</div> */}
         <h3>Quiz finished!</h3>
         <div className="scoreboard">
           {participantList.map(([uid, { username }]) => (
@@ -181,6 +178,11 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
     <div className="battle-mode">
       <div className="user-info user1-info">
         <h3>{currentUser ? currentUser[1].username : 'Loading...'}</h3>
+        <img
+          src={currentUser?.[1].photo || 'default-avatar.png'}
+          alt={`${currentUser?.[1].username}'s avatar`}
+          className="participant-avatar"
+        />
         <p>Points: {currentUser ? scoreboard[currentUser[0]] : 0}</p>
       </div>
       <div className="quiz-section">
@@ -208,6 +210,13 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
       </div>
       <div className="user-info user2-info">
         <h3>{opponentUser ? opponentUser[1].username : 'Waiting for opponent...'}</h3>
+        {opponentUser && (
+          <img
+            src={opponentUser[1].photo || 'default-avatar.png'}
+            alt={`${opponentUser[1].username}'s avatar`}
+            className="participant-avatar"
+          />
+        )}
         <p>Points: {opponentUser ? scoreboard[opponentUser[0]] : 0}</p>
       </div>
     </div>
