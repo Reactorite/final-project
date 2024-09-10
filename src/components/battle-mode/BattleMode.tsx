@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AppContext } from '../../state/app.context';
 import { getRandomQuizByCategory } from '../../services/battle-arena.service';
-import { ref, onValue, update, off } from 'firebase/database';
+import { ref, onValue, update, off, get, remove } from 'firebase/database';
 import QuizDataType from '../../types/QuizDataType';
 import './BattleMode.css';
 import { db } from '../../config/firebase-config';
@@ -117,14 +117,25 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
   const handleBackToBattleArena = async () => {
     const currentUserPoints = scoreboard[userData?.uid || ''] || 0;
     if (userData?.uid) {
-      const globalPoints = typeof userData.globalPoints === 'number' ? userData.globalPoints : 0;
+        const globalPoints = typeof userData.globalPoints === 'number' ? userData.globalPoints : 0;
+        await update(ref(db, `users/${userData.username}/`), {
+            globalPoints: globalPoints + currentUserPoints,
+        });
+    }
 
-      await update(ref(db, `users/${userData.username}/`), {
-        globalPoints: globalPoints + currentUserPoints,
-      });
+    const roomRef = ref(db, `battle-rooms/${roomId}`);
+    const roomSnapshot = await get(roomRef);
+    if (roomSnapshot.exists()) {
+        const participants = roomSnapshot.val().participants || {};
+        if (Object.keys(participants).length <= 1) {
+            await remove(roomRef);
+        } else {
+            await remove(ref(db, `battle-rooms/${roomId}/participants/${userData?.uid}`));
+        }
     }
     window.location.href = '/battle-arena';
-  };
+};
+
 
   if (loading) return <div>Loading quiz...</div>;
   if (error) return <div>{error}</div>;

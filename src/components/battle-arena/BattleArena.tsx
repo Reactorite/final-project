@@ -6,7 +6,7 @@ import './BattleArenaResume.css';
 import { createBattleRoom, fetchQuizzes, joinBattleRoom } from '../../services/battle-arena.service';
 import QuizDataType from '../../types/QuizDataType'; 
 import { AppContext } from '../../state/app.context';
-import { ref, update, get, query, orderByChild, equalTo, set, limitToLast } from 'firebase/database';
+import { ref, update, get, query, orderByChild, equalTo, set, limitToLast, onValue } from 'firebase/database';
 import { db } from '../../config/firebase-config';
 import { UserDataType } from '../../types/UserDataType';
 import BattleArenaResume from './BattleArenaResume';
@@ -34,10 +34,8 @@ const BattleArena: React.FC = () => {
     };
 
     const loadTopUsers = async () => {
-      try {
-        const usersRef = query(ref(db, 'users'), orderByChild('globalPoints'), limitToLast(15));
-        const snapshot = await get(usersRef);
-
+      const usersRef = query(ref(db, 'users'), orderByChild('globalPoints'), limitToLast(15));
+      const unsub = onValue(usersRef, (snapshot) => {
         if (snapshot.exists()) {
           const usersData = snapshot.val() as Record<string, UserDataType>;
           const sortedUsers = Object.entries(usersData)
@@ -45,8 +43,12 @@ const BattleArena: React.FC = () => {
             .sort((a, b) => b.points - a.points);
           setTopUsers(sortedUsers);
         }
-      } catch (error) {
+      }, (error) => {
         console.error('Error fetching top users:', error);
+      });
+  
+      return () => {
+        unsub();
       }
     };
 
