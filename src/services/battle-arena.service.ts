@@ -88,3 +88,20 @@ export const fetchQuizzes = async (): Promise<QuizDataType[]> => {
 
   return quizzes;
 };
+
+export const fetchQuizzesByCategory = async (): Promise<string[]> => {
+  const quizzesRef = ref(db, 'quizzes');
+  const snapshot = await get(quizzesRef);
+
+  if (!snapshot.exists()) {
+    throw new Error('No quizzes available.');
+  }
+
+  const categories: Set<string> = new Set(); 
+  snapshot.forEach((childSnapshot) => {
+    const quizData = childSnapshot.val() as QuizDataType;
+    categories.add(quizData.category); 
+  });
+
+  return Array.from(categories); 
+};
