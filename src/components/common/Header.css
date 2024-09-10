@@ -18,7 +18,7 @@
 
 .header-link, .notification-link {
   height: 50px;
-  width: 200px;
+  width: 220px;
   padding: 10px 5px;
   display: flex;
   align-items: center;
@@ -28,7 +28,7 @@
   overflow: visible;
   margin-bottom: 5px;  /* Space between links */
   transition: transform 0.3s ease-out;
-  transform: translateX(-150px);  /* Hide text by default */
+  transform: translateX(-170px);  /* Hide text by default */
   border-radius: 0px 15px 15px 0px;  /* Add this line for rounded corners */
 }
 

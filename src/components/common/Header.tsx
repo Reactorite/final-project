@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { AppContext } from "../../state/app.context";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../services/auth.service";
@@ -15,6 +15,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [user, loading, error] = useAuthState(auth);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const location = useLocation();
 
   useEffect(() => {
     if (!loading && userData) {
@@ -37,6 +38,8 @@ const Header = () => {
       } else {
         console.error("No username found for logged in user.");
       }
+    } else {
+      navigate(location.pathname);
     }
   };
 
@@ -46,7 +49,12 @@ const Header = () => {
         <NavLink to="/" className="header-link"><span className="link-text">HOME</span><span className="icon">🏠</span></NavLink>
         {user && userData && <NavLink to="/battle-arena" className="header-link"><span className="link-text">BATTLE ARENA</span><span className="icon">⚔️</span></NavLink>}
         {user && userData && <NavLink to="/user-profile" className="header-link"><span className="link-text">PROFILE</span><span className="icon">👤</span></NavLink>}
-        {user && userData && <NavLink to="/" className="header-link" onClick={logout}><span className="link-text">LOGOUT</span><span className="icon">🚪</span></NavLink>}
+        {/* {user && userData && <NavLink to="/" className="header-link" onClick={logout}><span className="link-text">LOGOUT</span><span className="icon">🚪</span></NavLink>} */}
+        {user && userData && (
+          <a href="/" className="header-link" onClick={(e) => { e.preventDefault(); logout(); }}>
+            <span className="link-text">LOGOUT</span><span className="icon">🚪</span>
+          </a>
+        )}
         {!user && <NavLink to="/login" className="header-link"><span className="link-text">LOGIN</span><span className="icon">🔓</span></NavLink>}
         {!user && <NavLink to="/register" className="header-link"><span className="link-text">REGISTER</span><span className="icon">📝</span></NavLink>}
         {user && userData && userData.isTeacher && <NavLink to="/create-quiz" className="header-link"><span className="link-text">CREATE QUIZ</span><span className="icon">✏️</span></NavLink>}
