@@ -88,7 +88,6 @@ const BattleArena: React.FC = () => {
     }
 };
 
-
 const handleReadyForBattle = async () => {
   if (user && userData && selectedQuiz) {
       setLoading(true);
@@ -134,7 +133,7 @@ const handleReadyForBattle = async () => {
         
                   setNoRoomMessage('No available room found for this category with random search activated.');
               }
-          }, 5000);
+          }, 3500);
 
       } catch (error) {
           console.error('Error setting user ready for battle:', error);
@@ -148,19 +147,21 @@ const handleReadyForBattle = async () => {
 
   return (
     <div className="battle-arena-wrapper">
-      <div className="battle-arena-menu">
-        <Button variant="custom-primary" className="arena-button" onClick={handleOpenModal}>
-          1 vs 1
-        </Button>
-        <Button variant="custom-secondary" className="arena-button">
-          Team battles
-        </Button>
-        <Button variant="custom-success" className="arena-button">
-          Blitz quiz
-        </Button>
-        <Button variant="custom-info" className="arena-button">
-          Sample quiz
-        </Button>
+        <div className="battle-arena-wrapper">
+    <div className="battle-arena-menu">
+      <Button variant="custom-primary" className="arena-button" onClick={handleOpenModal}>
+        1 vs 1
+      </Button>
+      <Button variant="custom-secondary" className="arena-button">
+        Team battles
+      </Button>
+      <Button variant="custom-success" className="arena-button" onClick={() => navigate('/blitz-room')}>
+        Blitz quiz
+      </Button>
+      <Button variant="custom-info" className="arena-button" onClick={() => navigate('/sample-room')}>
+        Sample quiz
+      </Button>
+    </div>
       </div>
 
       <div className="battle-arena-scoreboards">
