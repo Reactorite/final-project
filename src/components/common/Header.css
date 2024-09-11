@@ -1,16 +1,17 @@
 .header-container {
   position: fixed;
-  top: 0;
+  top: 10px;
   left: 0;
-  height: 100%;
-  width: 50px;  /* Initial width to only show icons */
+  height: 99%;
+  width: 50px;  
   overflow: visible;
   z-index: 1000;
 }
 
 .vertical-header {
+  position: relative; 
   height: 100%;
-  width: 50px;  /* Width to contain the icons */
+  width: 50px;  
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -26,20 +27,20 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: visible;
-  margin-bottom: 5px;  /* Space between links */
+  margin-bottom: 5px; 
   transition: transform 0.3s ease-out;
-  transform: translateX(-170px);  /* Hide text by default */
-  border-radius: 0px 15px 15px 0px;  /* Add this line for rounded corners */
+  transform: translateX(-170px);  
+  border-radius: 0px 15px 15px 0px; 
 }
 
 .header-link:hover, .notification-link:hover {
-  transform: translateX(0);  /* Move text into view on hover */
+  transform: translateX(0); 
 }
 
 .icon {
   position: absolute;
-  right: 0;  /* Place icon at the far right */
-  width: 30px;  /* Ensure icon width */
+  right: 0; 
+  width: 30px; 
   text-align: center;
   margin-right: 10px;
 }
@@ -47,23 +48,37 @@
 .link-text {
   flex-grow: 1;
   position: absolute;
-  left: 5px;  /* Start text off the left edge */
+  left: 5px; 
   white-space: nowrap;
-  opacity: 0;  /* Hide text initially */
+  opacity: 0;  
   transition: opacity 0.3s ease;
   margin-left: 10px;
 }
 
 .header-link:hover .link-text, .notification-link:hover .link-text {
-  opacity: 1;  /* Show text on hover */
+  opacity: 1; 
 }
 
 .header-link a, .notification-link a {
   text-decoration: none;
-  color: #000;  /* Standard link color */
+  color: #000;  
   transition: color 0.3s ease;
 }
 
 .header-link:hover a, .notification-link:hover a {
-  color: #007bff;  /* Link color on hover */
+  color: #007bff;
+}
+
+.logout-link {
+  position: absolute;
+  bottom: 10px;
+  width: 220px; 
+  transform: translateX(-100);
+}
+
+.logout-link:hover {
+  position: absolute;
+  bottom: 10px;
+  width: 220px; 
+  transform: translateX(0); 
 }
