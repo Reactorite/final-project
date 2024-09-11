@@ -61,10 +61,10 @@ const Header = () => {
             <span className="icon">💌</span>
           </NavLink>
         )}
-        <div className="header-link notification-link">
+        {user && userData && <div className="header-link notification-link">
           {user && userData && <Notification userId={userData.uid} userName={userData.username} />}
-          <span className="icon">🔔</span>
-        </div>
+          {user && userData && <span className="icon">🔔</span>}
+        </div>}
         {user && userData && (
           <a href="/" className="header-link logout-link" onClick={(e) => { e.preventDefault(); logout(); }}>
             <span className="link-text">LOGOUT</span><span className="icon">🚪</span>
