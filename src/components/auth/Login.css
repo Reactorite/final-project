@@ -1,0 +1,32 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.login-credentials {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 30vw;
+}
+
+.login-text {
+  padding-right: 1vw;
+}
+
+.login-button {
+  width: 11.3vw;
+}
+
+.reset-password {
+  margin-top: -1vw;
+}
+
+.login-title {
+  font-size: 9.3vh;
+  margin-bottom: 2vh;
+}

@@ -2,7 +2,10 @@ import { useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/auth.service';
 import { AppContext } from '../../state/app.context';
+import "./Login.css";
 import React from 'react';
+import { Button } from 'react-bootstrap';
+import { NavLink } from 'react-router-dom';
 
 export default function Login() {
   const [user, setUser] = useState({
@@ -46,15 +49,18 @@ export default function Login() {
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
-      <h1>Login</h1>
-      <label htmlFor="username">Username: </label>
-      <input value={user.username} onChange={updateUser('username')} type="text" name="username" id="username" /><br /><br />
-      <label htmlFor="password">Password: </label>
-      <input value={user.password} onChange={updateUser('password')} type="password" name="password" id="password" /><br />
-      <button onClick={login}>Login</button><br /><br />
-      <p>Forgot your password? Click the button below to reset.</p>
-      <button onClick={() => navigate('/reset-password')}>Reset Password</button>
+    <div className='login-container' /*style={{ display: "flex", alignItems: "center", flexDirection: "column" }}*/>
+      <h1 className='login-title'>Log-in</h1>
+      <div className='login-credentials'>
+        <input placeholder='Username' value={user.username} onChange={updateUser('username')} type="text" name="username" id="username" /><br /><br />
+      </div>
+      <div className='login-credentials'>
+        <input placeholder='Password' value={user.password} onChange={updateUser('password')} type="password" name="password" id="password" /><br />
+      </div><br />
+      <Button className='login-button' onClick={login}>Login</Button><br />
+      <NavLink className="reset-password" to='/reset-password'>Forgot your password?</NavLink>
+      {/* <p>Forgot your password? Click the button below to reset.</p>
+      <Button onClick={() => navigate('/reset-password')}>Reset Password</Button> */}
     </div>
   );
 }
