@@ -56,10 +56,14 @@ const Header = () => {
         {user && userData && (userData.isTeacher || userData.isAdmin || userData.isOwner) && <NavLink to="/create-quiz" className="header-link"><span className="link-text">CREATE QUIZ</span><span className="icon">❓</span></NavLink>}
         {/* {user && userData && <NavLink to="/quizz-page" className="header-link"><span className="link-text">QUIZ PAGE</span><span className="icon">❓</span></NavLink>} */}
         {user && userData && (
-          <NavLink to="/messages" className="header-link">
-            <span className="link-text">MESSAGES {unreadMessages > 0 && (<Badge bg="danger">{unreadMessages}</Badge>)}</span>
-            <span className="icon">💌</span>
-          </NavLink>
+        <NavLink to="/messages" className="header-link">
+        <span className="link-text">MESSAGES</span>
+        <span className="icon">💌</span>
+        {unreadMessages > 0 && (
+          <Badge bg="danger" className="unread-badge">{unreadMessages}</Badge>
+        )}
+      </NavLink>
+      
         )}
         {user && userData && <div className="header-link notification-link">
           {user && userData && <Notification userId={userData.uid} userName={userData.username} />}
