@@ -19,7 +19,7 @@
 
 .header-link, .notification-link {
   height: 50px;
-  width: 220px;
+  width: 190px;
   padding: 10px 5px;
   display: flex;
   align-items: center;
@@ -29,7 +29,7 @@
   overflow: visible;
   margin-bottom: 5px; 
   transition: transform 0.3s ease-out;
-  transform: translateX(-170px);  
+  transform: translateX(-140px);  
   border-radius: 0px 15px 15px 0px; 
 }
 
@@ -72,8 +72,8 @@
 .logout-link {
   position: absolute;
   bottom: 10px;
-  width: 220px; 
-  transform: translateX(-100);
+  width: 190px; 
+  transform: translateX(-140);
 }
 
 .logout-link:hover {

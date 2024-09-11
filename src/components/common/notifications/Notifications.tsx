@@ -103,7 +103,7 @@ const Notification: React.FC<NotificationProps> = ({ userId, userName }) => {
       <span style={{ marginLeft: "10px"}}>NOTIFICATIONS</span> 
       {notifications.length > 0 &&
         notifications.some((notif) => notif.status === "unread") && (
-          <Badge bg="danger">
+          <Badge bg="danger" style={{ position: 'absolute', top: '2px', right: '-66px' }}>
             {notifications.filter((notif) => notif.status === "unread").length}
           </Badge>
         )}
