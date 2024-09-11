@@ -15,7 +15,7 @@ export default function Register() {
     firstName: '',
     lastName: '',
     phoneNumber: '',
-    photo: 'https://wallpapers-clan.com/wp-content/uploads/2023/02/assassins-creed-desmond-miles-art-wallpaper.jpg', 
+    photo: 'https://wallpapers-clan.com/wp-content/uploads/2023/02/assassins-creed-desmond-miles-art-wallpaper.jpg',
     address: '',
     quizRank: {},
     rank: 'Novice',
@@ -31,6 +31,7 @@ export default function Register() {
   });
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
+  const [secretKey, setSecretKey] = useState('');
   const { setAppState } = useContext(AppContext);
   const navigate = useNavigate();
 
@@ -47,6 +48,10 @@ export default function Register() {
 
   const handleRepeatPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setRepeatPassword(e.target.value);
+  };
+
+  const handleSecretKeyChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSecretKey(e.target.value);
   };
 
   const register = async (e: MouseEvent<HTMLButtonElement>) => {
@@ -74,26 +79,14 @@ export default function Register() {
         alert('Verification email sent! Please check your inbox.');
       }
 
+      const isTeacher = secretKey === "bestkey";
+      const isStudent = !isTeacher;
+
       const userData: UserDataType = {
+        ...user,
         uid,
-        username: user.username,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        phoneNumber: user.phoneNumber,
-        photo: user.photo, 
-        address: user.address,
-        quizRank: user.quizRank,
-        rank: user.rank,
-        globalPoints: user.globalPoints,
-        groups: user.groups,
-        isOwner: user.isOwner,
-        isAdmin: user.isAdmin,
-        isBlocked: user.isBlocked,
-        isTeacher: user.isTeacher,
-        isStudent: user.isStudent,
-        isOnline: user.isOnline,
-        isReadyForBattle: user.isReadyForBattle
+        isTeacher: isTeacher,
+        isStudent: isStudent,
       };
 
       await createUserHandle(userData);
@@ -114,22 +107,27 @@ export default function Register() {
     }
   };
 
+
   return (
     <>
-      <h1>Register</h1>
-      <label htmlFor="username">Username: </label>
-      <input value={user.username} onChange={updateUser('username')} type="text" name="username" id="username" /><br /><br />
-      <label htmlFor="email">Email: </label>
-      <input value={user.email} onChange={updateUser('email')} type="text" name="email" id="email" /><br /><br />
-      <label htmlFor="firstName">First Name: </label>
-      <input value={user.firstName} onChange={updateUser('firstName')} type="text" name="firstName" id="firstName" /><br /><br />
-      <label htmlFor="lastName">Last Name: </label>
-      <input value={user.lastName} onChange={updateUser('lastName')} type="text" name="lastName" id="lastName" /><br /><br />
-      <label htmlFor="password">Password: </label>
-      <input value={password} onChange={handlePasswordChange} type="password" name="password" id="password" /><br /><br />
-      <label htmlFor="repeatPassword">Repeat Password: </label>
-      <input value={repeatPassword} onChange={handleRepeatPasswordChange} type="password" name="repeatPassword" id="repeatPassword" /><br />
-      <button onClick={register}>Register</button>
+      <div style={{ display: "flex", alignItems: "center", flexDirection: "column" }}>
+        <h1>Register</h1>
+        <label htmlFor="username">Username: </label>
+        <input value={user.username} onChange={updateUser('username')} type="text" name="username" id="username" /><br /><br />
+        <label htmlFor="email">Email: </label>
+        <input value={user.email} onChange={updateUser('email')} type="text" name="email" id="email" /><br /><br />
+        <label htmlFor="firstName">First Name: </label>
+        <input value={user.firstName} onChange={updateUser('firstName')} type="text" name="firstName" id="firstName" /><br /><br />
+        <label htmlFor="lastName">Last Name: </label>
+        <input value={user.lastName} onChange={updateUser('lastName')} type="text" name="lastName" id="lastName" /><br /><br />
+        <label htmlFor="password">Password: </label>
+        <input value={password} onChange={handlePasswordChange} type="password" name="password" id="password" /><br /><br />
+        <label htmlFor="repeatPassword">Repeat Password: </label>
+        <input value={repeatPassword} onChange={handleRepeatPasswordChange} type="password" name="repeatPassword" id="repeatPassword" /><br /><br />
+        <label htmlFor="secretKey">Secret Key: </label>
+        <input value={secretKey} onChange={handleSecretKeyChange} type="password" name="secretKey" id="secretKey" /><br /><br />
+        <button onClick={register}>Register</button>
+      </div>
     </>
   );
 }
