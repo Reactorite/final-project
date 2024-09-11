@@ -1,15 +1,10 @@
 .sticky-header {
   position: sticky;
   top: 0;
-  background-color: rgb(255, 255, 255);
-  /* Ensure the background color matches the card */
+  background-color: #fff;
   z-index: 1;
-  /* Ensure it stays above other content */
   padding: 10px;
-  /* Optional: Add some padding for better appearance */
   border-bottom: 1px solid #ddd;
-  /* Optional: Add a bottom border for separation */
-  margin-bottom: 0px;
 }
 
 .quiz-page-container {
@@ -18,7 +13,6 @@
   max-width: 100%;
   padding: 20px;
   transition: background-color 0.5s ease;
-  /* Add transition for background color */
 }
 
 .card {
@@ -29,50 +23,34 @@
   background-color: transparent;
   border: none;
   color: white;
-  /* Adjust color if needed */
   width: 100%;
   height: 100%;
 }
 
 .custom-footer.orange-footer button:hover {
   background-color: rgba(255, 255, 255, 0.2);
-  /* Light white wash on hover */
 }
 
-
-.column-container>.card>.card-body {
+.column-container > .card > .card-body {
   overflow-y: auto;
-  /* Ensure scrolling inside the main card when content overflows */
-  height: calc(80vh);
-  /* Adjust height to be within the fixed card height, accounting for header/footer */
+  height: calc(69vh);
   padding-bottom: 10px;
-  /* Provide padding for content */
+  margin-top: -5px;
 }
 
 .column-container .card:hover {
   transform: scale(1.03);
-  /* Scales up the card to 105% of its size */
-  /* transition: transform 0.6s ease; Smooth transition effect */
   z-index: 2;
-  /* Ensures the card pops out over others */
 }
 
 .column-container .card {
   margin-bottom: 10px;
   transition: transform 0.3s ease-in-out;
-  /* Applies a smooth transition for both hover and mouse leave */
-}
-
-.column-container {
-  display: flex;
-  flex-direction: column;
 }
 
 .fixed-height-card {
   height: 80vh;
-  /* Fixed height for columns */
   overflow-y: auto;
-  /* Ensure scrolling inside the card when content overflows */
 }
 
 .bold-text {
@@ -83,90 +61,93 @@
 
 .list-group-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   padding: 10px;
+  margin-bottom: 20px;
 }
 
-.modal-body .list-group-item .btn {
-  margin-left: auto !important;
-  margin-right: 0 !important;
-  float: right;  /* Ensure the button aligns to the right */
+.list-group-item .is-correct {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.list-group-item .answer-text {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.list-group-item .button-container {
+  display: flex;
+  justify-content: space-between;
 }
 
 .list-group-item .btn {
-  margin-left: 10px;
+  flex: 1;
+  margin: 2px;
 }
 
-.list-group-item .btn-danger {
-  margin-left: 5px;
+.column-container .card .btn-secondary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
 }
 
-.list-group-item .btn-danger {
-  background-color: #dc3545; /* Bootstrap's default red */
+.column-container .card .btn-secondary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.column-container .card .btn-secondary:active {
+  background-color: #003e7e;
+  border-color: #003e7e;
+}
+
+.column-container .card .btn-danger {
+  background-color: #dc3545;
   border-color: #dc3545;
-  color: white; /* Ensures the text color is white */
+  color: white;
 }
 
-.list-group-item .btn-danger:hover {
-  background-color: #c82333; /* Darker red for hover */
+.column-container .card .btn-danger:hover {
+  background-color: #c82333;
   border-color: #c82333;
 }
 
-.list-group-item .btn-danger:active {
-  background-color: #bd2130; /* Darkest red for active/click */
+.column-container .card .btn-danger:active {
+  background-color: #bd2130;
   border-color: #bd2130;
 }
 
 .custom-footer {
   text-align: center;
-  /* Centers the text */
   color: white;
-  /* Ensures text color is white */
   font-size: 16px;
-  /* Adjust font size as needed */
   font-weight: bold;
-  /* Makes the font bold */
   padding: 10px 15px;
-  /* Adjust padding for better alignment */
   cursor: pointer;
-  /* Changes the cursor on hover to indicate clickability */
   display: flex;
-  /* Use flexbox to center content vertically and horizontally */
   justify-content: center;
-  /* Centers content horizontally in the flex container */
   align-items: center;
-  /* Centers content vertically in the flex container */
   border-top: 1px solid #ddd;
-  /* Adds a subtle top border for separation */
 }
 
-.orange-footer:active {
-  background-color: #cf711f;
-  /* Even darker orange to simulate button press */
-}
-
-.blue-footer:active {
-  background-color: #004085;
-}
-
+.orange-footer:active,
+.blue-footer:active,
 .green-footer:active {
-  background-color: #1e7e34;
+  background-color: #cf711f;
 }
 
 .column-container .card .custom-footer.orange-footer {
   background-color: orange;
-  color: white;
 }
 
 .column-container .card .custom-footer.orange-footer:hover {
   background-color: #e67e22;
-  /* Slightly darker orange on hover for visual feedback */
 }
 
 .column-container .card .custom-footer.blue-footer {
   background-color: #007bff;
-  color: white;
 }
 
 .column-container .card .custom-footer.blue-footer:hover {
@@ -175,9 +156,88 @@
 
 .column-container .card .custom-footer.green-footer {
   background-color: #28a745;
-  color: white;
 }
 
 .column-container .card .custom-footer.green-footer:hover {
   background-color: #218838;
+}
+
+.quiz-button-group {
+  display: flex;
+  justify-content: space-between; /* Adjusts spacing between the buttons */
+  margin-top: 10px; /* Extra space above the button group */
+}
+
+.quiz-button-group > button {
+  flex-grow: 1; /* Ensures buttons expand to fill the space */
+  margin: 0 5px; /* Adds space between buttons */
+}
+
+.question-editor .list-group-item .button-container {
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.question-editor .list-group-item .is-correct,
+.in-this-iQuiz .card-body .is-correct {
+    font-size: 16px; /* Adjust as needed */
+    font-weight: bold;
+}
+
+.question-editor .list-group-item {
+  background-color: #f8f9fa; /* Light gray background */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.is-correct.correct {
+  color: green;
+}
+.is-correct.incorrect {
+  color: red;
+}
+
+.is-correct {
+  font-size: 18px; /* Adjust size as needed */
+  font-weight: bold;
+}
+.in-this-iQuiz .card-body li {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.in-this-iQuiz .card-body .is-correct {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.is-correct:contains('Correct') {
+  color: green;
+}
+
+.is-correct:contains('Incorrect') {
+  color: red;
+}
+
+.question-editor .add-answer-btn {
+  width: 100%;
+  display: block;
+}
+
+.sticky-header {
+  margin-top: -5px; /* Adjust based on actual layout needs */
+}
+
+.question-editor .add-answer-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.button-container button {
+    flex-grow: 1;
+    margin: 2px;  /* Adjust margin to ensure buttons are spaced as needed */
 }

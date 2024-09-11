@@ -46,21 +46,15 @@ const Header = () => {
   return (
     <div className="header-container">
       <div className="vertical-header">
+        {user && userData && (userData.isAdmin || userData.isOwner) && <NavLink to='/admin-panel' className="header-link"><span className="link-text">ADMIN PANEL</span><span className="icon">👑</span></NavLink>}
         <NavLink to="/" className="header-link"><span className="link-text">HOME</span><span className="icon">🏠</span></NavLink>
-        {user && userData && <NavLink to="/battle-arena" className="header-link"><span className="link-text">BATTLE ARENA</span><span className="icon">⚔️</span></NavLink>}
         {user && userData && <NavLink to="/user-profile" className="header-link"><span className="link-text">PROFILE</span><span className="icon">👤</span></NavLink>}
-        {/* {user && userData && <NavLink to="/" className="header-link" onClick={logout}><span className="link-text">LOGOUT</span><span className="icon">🚪</span></NavLink>} */}
-        {user && userData && <NavLink to="/groups" className="header-link"><span className="link-text">GROUPS</span><span className="icon">👥</span></NavLink>}
-        {user && userData && (
-          <a href="/" className="header-link" onClick={(e) => { e.preventDefault(); logout(); }}>
-            <span className="link-text">LOGOUT</span><span className="icon">🚪</span>
-          </a>
-        )}
+        {user && userData && <NavLink to="/battle-arena" className="header-link"><span className="link-text">BATTLE ARENA</span><span className="icon">⚔️</span></NavLink>}
+        {/* {user && userData && <NavLink to="/groups" className="header-link"><span className="link-text">GROUPS</span><span className="icon">👥</span></NavLink>} */}
         {!user && <NavLink to="/login" className="header-link"><span className="link-text">LOGIN</span><span className="icon">🔓</span></NavLink>}
         {!user && <NavLink to="/register" className="header-link"><span className="link-text">REGISTER</span><span className="icon">📝</span></NavLink>}
-        {user && userData && (userData.isTeacher || userData.isAdmin || userData.isOwner) && <NavLink to="/create-quiz" className="header-link"><span className="link-text">CREATE QUIZ</span><span className="icon">✏️</span></NavLink>}
-        {user && userData && <NavLink to="/quizz-page" className="header-link"><span className="link-text">QUIZ PAGE</span><span className="icon">❓</span></NavLink>}
-        {user && userData && (userData.isAdmin || userData.isOwner) && <NavLink to='/admin-panel' className="header-link"><span className="link-text">ADMIN PANEL</span><span className="icon">👑</span></NavLink>}
+        {user && userData && (userData.isTeacher || userData.isAdmin || userData.isOwner) && <NavLink to="/create-quiz" className="header-link"><span className="link-text">CREATE QUIZ</span><span className="icon">❓</span></NavLink>}
+        {/* {user && userData && <NavLink to="/quizz-page" className="header-link"><span className="link-text">QUIZ PAGE</span><span className="icon">❓</span></NavLink>} */}
         {user && userData && (
           <NavLink to="/messages" className="header-link">
             <span className="link-text">MESSAGES {unreadMessages > 0 && (<Badge bg="danger">{unreadMessages}</Badge>)}</span>
@@ -71,6 +65,11 @@ const Header = () => {
           {user && userData && <Notification userId={userData.uid} userName={userData.username} />}
           <span className="icon">🔔</span>
         </div>
+        {user && userData && (
+          <a href="/" className="header-link" onClick={(e) => { e.preventDefault(); logout(); }}>
+            <span className="link-text">LOGOUT</span><span className="icon">🚪</span>
+          </a>
+        )}
       </div>
     </div>
   );

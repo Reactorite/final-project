@@ -491,12 +491,12 @@ export default function CreateQuiz() {
   };
 
   const saveQuizToDB = async () => {
-    if (!selectedQuizID && quiz.title && quiz.category && Object.keys(quiz.questions).length > 0 && quiz.duration > 0 && quiz.quizID) { // Assuming these are the required fields
+    if (!selectedQuizID || (quiz.title && quiz.category && Object.keys(quiz.questions).length > 0 && quiz.duration > 0 && quiz.quizID)) { // Assuming these are the required fields
       const quizID = quiz.quizID || uuidv4();
       const quizRef = ref(db, `quizzes/${quizID}`);
       await set(quizRef, { ...quiz, totalPoints, creator: quiz.creator });
       alert("Quiz created successfully!");
-      navigate(`/quiz-page/${quizID}`);
+      navigate(`/create-quiz`);
       if (Object.keys(selectedStudents).length > 0) {
         inviteSelectedStudents();  // Send queued invitations
       }
@@ -768,34 +768,39 @@ export default function CreateQuiz() {
                   </Button>
                   <div className="answers-list mt-3">
                     <h4>Answers:</h4>
-                    <ul className="list-group">
-                      {Object.entries(answers).map(([ans, isCorrect]) => (
-                        <li key={ans} className="list-group-item d-flex justify-content-between align-items-center">
-                          <span>{ans} - {isCorrect ? "Correct" : "Incorrect"}</span>
-                          <div>
-                            <Button
-                              onClick={() => handleEditAnswer(ans)}
-                              className="btn btn-sm btn-secondary mr-2"
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              onClick={() => handleDeleteAnswer(ans)}
-                              className="btn btn-sm btn-danger"
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="question-editor">
+                      <ul className="list-group">
+                        {Object.entries(answers).map(([ans, isCorrect]) => (
+                          <li key={ans} className="list-group-item">
+                            <span className={isCorrect ? 'is-correct correct' : 'is-correct incorrect'}>{isCorrect ? "Correct" : "Incorrect"}</span>
+                            <div className="answer-text">{ans}</div>
+                            <div className="button-container">
+                              <Button
+                                onClick={() => handleEditAnswer(ans)}
+                                className="btn btn-sm btn-secondary"
+                                style={{ flex: 1, margin: '2px' }}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                onClick={() => handleDeleteAnswer(ans)}
+                                className="btn btn-sm btn-danger"
+                                style={{ flex: 1, margin: '2px' }}
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
 
                   {/* Delete This Question Button (only when editing) */}
                   {editingQuestionID && (
                     <Button
                       onClick={() => handleDeleteQuestion(editingQuestionID)}
-                      className="btn btn-danger mt-3 w-100"
+                      className="btn btn-danger mt-3 w-100" id="delete-this-question"
                     >
                       Delete This Question
                     </Button>
@@ -821,34 +826,31 @@ export default function CreateQuiz() {
             >
               <h3 className="text-center sticky-header">In this iQuiz</h3>
               <div className="card-body">
-                {questionsList.map((q) => (
+                {questionsList.map((q, index) => (
                   <Card key={q.questID} className="card mb-3">
                     <div className="card-body">
-                      <p className="card-title">{q.question}</p>
-                      <ul>
+                      <p className="card-title">{index + 1}. {q.question}</p>
+                      <ol>
                         {Object.entries(q.answers).map(([ans, isCorrect]) => (
-                          <li key={ans}>
-                            {ans} - {isCorrect ? "Correct" : "Incorrect"}
+                          <li key={ans} className={isCorrect ? 'correct-answer' : 'incorrect-answer'}>
+                            {ans}
                           </li>
                         ))}
-                      </ul>
-                      <p><strong>Points:</strong> {q.points}</p>
-                      <Button
-                        onClick={() => handleEditQuestion(q.questID)}
-                        className="btn btn-primary"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        onClick={() => handleDeleteQuestion(q.questID)}
-                        className="btn btn-danger ml-2"
-                      >
-                        Delete
-                      </Button>
+                      </ol>
+                      <p><strong>Points:</strong> <span className="bold-text">{q.points}</span></p>
+                      <div className="button-container quiz-button-group">
+                        <Button onClick={() => handleEditQuestion(q.questID)} className="btn btn-primary">
+                          Edit
+                        </Button>
+                        <Button onClick={() => handleDeleteQuestion(q.questID)} className="btn btn-danger ml-2">
+                          Delete
+                        </Button>
+                      </div>
                     </div>
                   </Card>
                 ))}
               </div>
+
               <div
                 className="card-footer custom-footer green-footer"
                 onClick={saveQuizToDB}
