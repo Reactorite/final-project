@@ -14,6 +14,7 @@ import BattleArenaResume from './BattleArenaResume';
 const BattleArena: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [quizzes, setQuizzes] = useState<QuizDataType[]>([]);
+  const [uniqueCategories, setUniqueCategories] = useState<string[]>([]);
   const [selectedQuiz, setSelectedQuiz] = useState<QuizDataType | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,10 @@ const BattleArena: React.FC = () => {
       try {
         const fetchedQuizzes = await fetchQuizzes();
         setQuizzes(fetchedQuizzes);
+
+        // Extract unique categories
+        const categories = Array.from(new Set(fetchedQuizzes.map((quiz) => quiz.category)));
+        setUniqueCategories(categories);
       } catch (error) {
         console.error('Error fetching quizzes:', error);
       }
@@ -60,6 +65,7 @@ const BattleArena: React.FC = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setNoRoomMessage(null);
+    setSelectedQuiz(null); // Reset selectedQuiz when modal closes
   };
 
   const handleCreateRoom = async () => {
@@ -79,7 +85,6 @@ const BattleArena: React.FC = () => {
       }
     }
   };
-  
 
   const handleJoinRoom = async () => {
     if (roomId && userData) {
@@ -107,7 +112,6 @@ const BattleArena: React.FC = () => {
       }
     }
   };
-  
 
   const handleReadyForBattle = async () => {
     if (user && userData && selectedQuiz) {
@@ -203,29 +207,44 @@ const BattleArena: React.FC = () => {
           <select
             className="form-control"
             onChange={(e) => {
-              const selectedQuiz = quizzes.find((quiz) => quiz.quizID === e.target.value);
+              const selectedCategory = e.target.value;
+              const selectedQuiz = quizzes.find((quiz) => quiz.category === selectedCategory);
               setSelectedQuiz(selectedQuiz || null);
             }}
+            value={selectedQuiz?.category || ''}
           >
             <option value="">Select Category</option>
-            {quizzes.map((quiz) => (
-              <option key={quiz.quizID} value={quiz.quizID}>
-                {quiz.category}
+            {uniqueCategories.map((category, idx) => (
+              <option key={idx} value={category}>
+                {category}
               </option>
             ))}
           </select>
           <div className="mt-3">
-            <Button variant="primary" onClick={handleCreateRoom} disabled={!selectedQuiz}>
+            <Button
+              variant="primary"
+              onClick={handleCreateRoom}
+              disabled={!selectedQuiz || loading}
+            >
               Create Room
             </Button>
             {roomId && (
-              <Button variant="secondary" onClick={handleJoinRoom} className="ml-2">
+              <Button
+                variant="secondary"
+                onClick={handleJoinRoom}
+                className="ml-2"
+                disabled={loading}
+              >
                 Join Room
               </Button>
             )}
           </div>
           <div className="mt-3">
-            <Button variant="info" onClick={handleReadyForBattle} disabled={!selectedQuiz || loading}>
+            <Button
+              variant="info"
+              onClick={handleReadyForBattle}
+              disabled={!selectedQuiz || loading}
+            >
               {loading ? <Spinner animation="border" size="sm" /> : 'Ready for Battle'}
             </Button>
           </div>

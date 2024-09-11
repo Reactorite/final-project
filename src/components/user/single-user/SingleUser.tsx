@@ -32,7 +32,7 @@ export default function SingleUser() {
     <>
       <div className="single-user-container" style={{ display: "flex", justifyContent: "center", flexDirection: "row", alignItems: "center" }}>
         {user && (
-          <Card className="card-appear" style={{ width: "20rem" }}>
+          <Card className="card-appear" style={{ width: "15rem" }}>
             {user.photo ? (
               <Card.Img variant="top" src={user.photo} alt={`${user.username}'s profile`} />
             ) : 
@@ -54,9 +54,9 @@ export default function SingleUser() {
               </Card.Text>
             </Card.Body>
             <div className="card-buttons">
-              <Button variant="primary" style={{ width: "8rem" }}>
+              {/* <Button variant="primary" style={{ width: "8rem" }}>
                 Play 1v1
-              </Button>
+              </Button> */}
             </div>
           </Card>
         )}
