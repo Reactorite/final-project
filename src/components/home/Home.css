@@ -1,46 +1,60 @@
-.search-button svg {
-  transition: transform 0.2s ease-in-out;
+/* HomePage.css */
+.home-page-container {
+  padding: 20px;
+  background-color: #f4f4f4;
 }
 
-.search-button:hover svg {
-  transform: scale(1.5);
+.page-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+  color: #333;
 }
 
-#search-icon:active {
-  transform: scale(0.9);
-  transition: transform 0.1s;
+.site-description {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 1.2rem;
+  color: #555;
 }
 
-/* .custom-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+.cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px; /* Adjust gap between cards if needed */
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  display: none;
+.feature-card {
+  width: 100%;
+  max-width: 300px; /* Adjust width of cards if needed */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
 }
 
-.custom-scrollbar:hover {
-  scrollbar-width: thin;
+.feature-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.custom-scrollbar:hover::-webkit-scrollbar {
-  display: block;
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
 }
 
-.custom-scrollbar:hover::-webkit-scrollbar {
-  width: 5px;
+.feature-title {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
 }
 
-.custom-scrollbar:hover::-webkit-scrollbar-track {
-  background: #f1f1f1;
+.feature-card .card-body {
+  text-align: center;
+  padding: 20px;
 }
 
-.custom-scrollbar:hover::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
+.feature-card .card-text {
+  font-size: 1rem;
+  color: #666;
 }
-
-.custom-scrollbar:hover::-webkit-scrollbar-thumb:hover {
-  background: #555;
-} */
