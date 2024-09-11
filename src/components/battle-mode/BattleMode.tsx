@@ -13,7 +13,7 @@ interface BattleModeProps {
     [uid: string]: {
       username: string;
       points: number;
-      photo?: string; 
+      photo?: string;
     };
   };
   roomId: string;
@@ -30,6 +30,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [timer, setTimer] = useState<number>(0);
+  const [quizTitle, setQuizTitle] = useState<string>('');
 
   const participantList = Object.entries(participants);
   const currentUser = participantList.find(([uid]) => uid === userData?.uid);
@@ -55,6 +56,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
           currentQuestionIndex: 0,
           turn: hostUserId,
           scoreboard: initialScoreboard,
+          quizTitle: randomQuiz.title  
         });
       } catch (error) {
         setError('Failed to load quiz');
@@ -63,7 +65,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
     };
 
     loadQuiz();
-  }, [category]);
+  }, []);  
 
   useEffect(() => {
     const syncBattleState = onValue(battleRoomRef, (snapshot) => {
@@ -72,6 +74,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
         setCurrentQuestionIndex(data.currentQuestionIndex);
         setTurn(data.turn);
         setScoreboard(data.scoreboard);
+        setQuizTitle(data.quizTitle); 
       }
     });
 
@@ -117,25 +120,24 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
   const handleBackToBattleArena = async () => {
     const currentUserPoints = scoreboard[userData?.uid || ''] || 0;
     if (userData?.uid) {
-        const globalPoints = typeof userData.globalPoints === 'number' ? userData.globalPoints : 0;
-        await update(ref(db, `users/${userData.username}/`), {
-            globalPoints: globalPoints + currentUserPoints,
-        });
+      const globalPoints = typeof userData.globalPoints === 'number' ? userData.globalPoints : 0;
+      await update(ref(db, `users/${userData.username}/`), {
+        globalPoints: globalPoints + currentUserPoints,
+      });
     }
 
     const roomRef = ref(db, `battle-rooms/${roomId}`);
     const roomSnapshot = await get(roomRef);
     if (roomSnapshot.exists()) {
-        const participants = roomSnapshot.val().participants || {};
-        if (Object.keys(participants).length <= 1) {
-            await remove(roomRef);
-        } else {
-            await remove(ref(db, `battle-rooms/${roomId}/participants/${userData?.uid}`));
-        }
+      const participants = roomSnapshot.val().participants || {};
+      if (Object.keys(participants).length <= 1) {
+        await remove(roomRef);
+      } else {
+        await remove(ref(db, `battle-rooms/${roomId}/participants/${userData?.uid}`));
+      }
     }
     window.location.href = '/battle-arena';
-};
-
+  };
 
   if (loading) return <div>Loading quiz...</div>;
   if (error) return <div>{error}</div>;
@@ -169,7 +171,6 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
   if (!currentQuestion || currentQuestionIndex >= questionKeys.length) {
     return (
       <div className="finish-container">
-        {/* <div className="timer">Time left: {minutes}:{seconds.toString().padStart(2, '0')}</div> */}
         <h3>Quiz finished!</h3>
         <div className="scoreboard">
           {participantList.map(([uid, { username }]) => (
@@ -197,6 +198,9 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
         <p>Points: {currentUser ? scoreboard[currentUser[0]] : 0}</p>
       </div>
       <div className="quiz-section">
+        {quiz && (
+          <h2 className="quiz-title">{quizTitle}</h2>
+        )}
         <div className="timer">
           Time left: {minutes}:{seconds.toString().padStart(2, '0')}
         </div>
@@ -207,10 +211,10 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
               key={answer}
               onClick={() => handleAnswer(answer, Boolean(isCorrect), currentQuestion.points)}
               className={`answer-button ${selectedAnswer === answer
-                  ? isCorrect
-                    ? 'correct-answer'
-                    : 'incorrect-answer'
-                  : ''
+                ? isCorrect
+                  ? 'correct-answer'
+                  : 'incorrect-answer'
+                : ''
                 }`}
               disabled={!isUserTurn || selectedAnswer !== null}
             >
@@ -219,6 +223,7 @@ const BattleMode: React.FC<BattleModeProps> = ({ category, participants, roomId,
           ))}
         </div>
       </div>
+
       <div className="user-info user2-info">
         <h3>{opponentUser ? opponentUser[1].username : 'Waiting for opponent...'}</h3>
         {opponentUser && (

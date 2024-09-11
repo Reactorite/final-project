@@ -187,3 +187,20 @@
     grid-column: 1;
   }
 }
+
+.quiz-title {
+  font-size: 32px;
+  color: #343a40; 
+  font-weight: bold; 
+  margin: 20px 0; 
+  text-align: center; 
+  padding: 10px 20px; 
+  background-color: #ffffff; 
+  border: 2px solid #343a40; 
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  position: absolute; 
+  top: 10px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+}
