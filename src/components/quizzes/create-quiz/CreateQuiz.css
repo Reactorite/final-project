@@ -284,3 +284,23 @@
     flex-grow: 1;
     margin: 2px;  /* Adjust margin to ensure buttons are spaced as needed */
 }
+
+.modal-body-custom {
+  max-height: calc(100vh - 210px); /* Adjust based on your modal header and footer */
+  overflow-y: auto; /* Enable scrolling */
+}
+
+.list-group-custom-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Align items in a row */
+}
+
+.student-name {
+  flex-grow: 1; /* Allow the name to take up remaining space */
+  margin-right: 10px; /* Space between name and button */
+}
+
+.select-button {
+  white-space: nowrap; /* Prevent the button text from wrapping */
+}

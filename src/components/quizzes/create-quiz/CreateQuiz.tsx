@@ -267,7 +267,7 @@ export default function CreateQuiz() {
         <Modal.Header closeButton>
           <Modal.Title>Invite Students</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="modal-body-custom">
           {Object.keys(studentsByGroup).map((groupId) => (
             <div key={groupId}>
               <h5>{studentsByGroup[groupId].groupName}</h5>
@@ -283,34 +283,34 @@ export default function CreateQuiz() {
               </Button>
               <ListGroup>
                 {studentsByGroup[groupId].members.map((student) => (
-                  <ListGroup.Item key={student.uid}>
-                    {student.username}
+                  <ListGroup.Item key={student.uid} className="list-group-custom-item">
+                    <span className="student-name">{student.username}</span>
                     <Button
-                      className="invite-button"
+                      className="select-button"
                       variant={selectedStudents[student.uid] ? "secondary" : "primary"}
                       onClick={() => toggleSelectStudent(student.uid)}
                     >
-                      {selectedStudents[student.uid] ? "Invited" : "Invite"}
+                      Select
                     </Button>
                   </ListGroup.Item>
                 ))}
               </ListGroup>
             </div>
           ))}
-
+    
           {ungroupedStudents.length > 0 && (
             <div>
-              <h5>Not belonging to a group:</h5>
+              {/* <h5>Not belonging to a group:</h5> */}
               <ListGroup>
                 {ungroupedStudents.map((student) => (
-                  <ListGroup.Item key={student.uid}>
-                    {student.username}
+                  <ListGroup.Item key={student.uid} className="list-group-custom-item">
+                    <span className="student-name">{student.username}</span>
                     <Button
-                      className="invite-button"
+                      className="select-button"
                       variant={selectedStudents[student.uid] ? "secondary" : "primary"}
                       onClick={() => toggleSelectStudent(student.uid)}
                     >
-                      {selectedStudents[student.uid] ? "Invited" : "Invite"}
+                      Select
                     </Button>
                   </ListGroup.Item>
                 ))}
