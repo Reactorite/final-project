@@ -762,7 +762,7 @@ export default function CreateQuiz() {
                     onClick={addAnswer}
                     className="btn btn-primary"
                   >
-                    {editingAnswer ? "Update Answer" : "Add Answer"}
+                    {editingAnswer ? "Save Answer" : "Add Answer"}
                   </Button>
                   <div className="answers-list mt-3">
                     <h4>Answers:</h4>
