@@ -102,26 +102,17 @@ export default function CreateQuiz() {
   const handleQuizSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedID = e.target.value;
     setSelectedQuizID(selectedID);
-
+  
     if (selectedID && existingQuizzes[selectedID]) {
       const selectedQuiz = existingQuizzes[selectedID];
       setQuiz(selectedQuiz);
       const questionsArray = Object.values(selectedQuiz.questions);
-
-      // Set the questions list for UI rendering
+  
       setQuestionsList(questionsArray);
-
-      // Calculate and update total points
-      const updatedTotalPoints = questionsArray.reduce((total, question) => {
-        return total + (question.points || 0); // Ensure points are a number and add to total
-      }, 0);
-
+      const updatedTotalPoints = questionsArray.reduce((total, question) => total + (question.points || 0), 0);
       setTotalPoints(updatedTotalPoints);
-
-      // updateTotalPoints();
     } else {
       // Reset if no quiz is selected or new quiz is being created
-      const newQuizID = uuidv4();
       setQuiz({
         title: "",
         category: "",
@@ -134,12 +125,19 @@ export default function CreateQuiz() {
         totalPoints: 0,
         groups: {},
         members: {},
-        quizID: newQuizID,
+        quizID: uuidv4(),
       });
       setQuestionsList([]);
-      setTotalPoints(0);  // Reset total points
+      setTotalPoints(0);
+      setEditingQuestionID(null);
+      setQuestion("");  // Reset the question state
+      setNumAnswers(0);  // Reset the number of answers
+      setAnswers({});  // Clear the answers state
+      setPoints(0)
     }
   };
+  
+  
 
   // Correctly applying UserDataType and filtering only students
   useEffect(() => {
@@ -650,13 +648,13 @@ export default function CreateQuiz() {
                     className="form-control"
                   />
                 </div>
-
+{/* 
                 <div className="form-group">
                   <label htmlFor="studentsInQuiz">Students in this iQuiz:</label>
                   <select id="studentsInQuiz" className="form-control">
                     <option value="" disabled>No students added</option>
                   </select>
-                </div>
+                </div> */}
                 <p className="bold-text">Number of Questions: {questionsList.length}</p>
                 <p className="bold-text">Total Points: {totalPoints}</p>
               </div>
@@ -769,7 +767,7 @@ export default function CreateQuiz() {
                   <div className="answers-list mt-3">
                     <h4>Answers:</h4>
                     <div className="question-editor">
-                      <ul className="list-group">
+                      <li className="list-group">
                         {Object.entries(answers).map(([ans, isCorrect]) => (
                           <li key={ans} className="list-group-item">
                             <span className={isCorrect ? 'is-correct correct' : 'is-correct incorrect'}>{isCorrect ? "Correct" : "Incorrect"}</span>
@@ -792,7 +790,7 @@ export default function CreateQuiz() {
                             </div>
                           </li>
                         ))}
-                      </ul>
+                      </li>
                     </div>
                   </div>
 
